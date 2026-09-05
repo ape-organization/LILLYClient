@@ -1,4 +1,5 @@
-<div class="dialog-content">
+<div class="container">
+<div class="dialog-content" *ngIf="product() as product">
 
   <!-- =====================================================
        PRODUCT IMAGE
@@ -102,7 +103,7 @@
       </h2>
 
 
-      <!-- CATEGORY -->
+      <!-- CATEGORY / SUBCATEGORIES -->
 
       <div class="product-location">
 
@@ -184,10 +185,7 @@
         </span>
 
 
-        <span
-          class="offer-text"
-          *ngIf="hasDiscount"
-        >
+        <span class="offer-text">
 
           {{ product.discountPercentage }}% OFF
 
@@ -276,7 +274,7 @@
       </label>
 
 
-      <div class="quantity-control">
+      <!-- <div class="quantity-control">
 
         <input
           id="quantity"
@@ -291,10 +289,52 @@
           aria-label="Quantity"
         />
 
-      </div>
+      </div> -->
+<div
+  class="quantity-section"
+  *ngIf="!isOutOfStock"
+>
 
+  <label for="quantity">
+    {{ 'PRODUCT.QUANTITY' | translate }}
+  </label>
 
+  <div class="quantity-control">
 
+    <button
+      type="button"
+      class="quantity-btn"
+      (click)="setQuantity(quantity() - 1)"
+      [disabled]="quantity() <= 1"
+    >
+      −
+    </button>
+
+    <input
+      id="quantity"
+      type="number"
+      [ngModel]="quantity()"
+      (ngModelChange)="setQuantity($event)"
+      [ngModelOptions]="{ standalone: true }"
+      min="1"
+      [max]="stock || null"
+      step="1"
+      class="quantity-input"
+      aria-label="Quantity"
+    />
+
+    <button
+      type="button"
+      class="quantity-btn"
+      (click)="setQuantity(quantity() + 1)"
+     
+    >
+      +
+    </button>
+
+  </div>
+
+</div>
     </div>
 
 
@@ -305,7 +345,7 @@
 
     <div class="dialog-actions">
 
-      <!-- ADD -->
+      <!-- ADD TO CART -->
 
       <button
         mat-raised-button
@@ -326,16 +366,22 @@
       </button>
 
 
-      <!-- CLOSE -->
+      <!-- BACK -->
 
       <button
-        mat-button
+         mat-raised-button
         type="button"
-        class="close-btn"
-        (click)="closeDialog()"
+        class="back-btn"
+        (click)="goBack()"
       >
 
-        {{ 'COMMON.CLOSE' | translate }}
+        <mat-icon>
+          arrow_back
+        </mat-icon>
+
+        <span>
+          {{ 'COMMON.BACK' | translate }}
+        </span>
 
       </button>
 
@@ -343,4 +389,5 @@
 
   </div>
 
+</div>
 </div>

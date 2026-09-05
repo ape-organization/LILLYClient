@@ -114,7 +114,7 @@ export class ProductService {
   ): Observable<Product> {
 
     return this.http.get<Product>(
-      `${this.apiUrl}/${id}`
+      `${this.apiUrl}/products/${id}`
     );
   }
 

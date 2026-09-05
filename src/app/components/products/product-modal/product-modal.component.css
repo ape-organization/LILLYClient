@@ -11,7 +11,12 @@ display: block;
 /* ============================================================
 CONTENT
 ============================================================ */
-
+.container
+{
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
 .dialog-content {
 display: flex;
 gap: 32px;
@@ -22,7 +27,7 @@ min-height: 430px;
 
 padding: 28px;
 
-background: var(--color-surface);
+background: var(--color-footer);
 }
 
 /* ============================================================
@@ -494,8 +499,32 @@ gap: 8px;
 margin-top: auto;
 padding-top: 12px;
 }
+.add-btn,.back-btn
+ {
+flex: 1;
 
-.add-btn {
+min-height: 44px;
+
+display: flex !important;
+align-items: center;
+justify-content: center;
+gap: 7px;
+
+border: 0 !important;
+border-radius: var(--radius-sm) !important;
+
+background: var(--color-surface) !important;
+color: black !important;
+
+font-size: 13px;
+font-weight: 600;
+
+transition:
+background 0.2s ease,
+transform 0.2s ease;
+}
+.add-btn
+ {
 flex: 1;
 
 min-height: 44px;
@@ -688,13 +717,79 @@ padding: 8px 10px;
 margin-bottom: 12px;
 }
 
-.dialog-actions {
+/* .dialog-actions {
 flex-direction: column;
-}
+} */
 
-.add-btn,
+/* .add-btn,
 .close-btn {
 width: 100%;
+} */
+
+}
+.quantity-control {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
 }
 
+.quantity-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  background: transparent;
+
+  color: var(--color-primary);
+  font-size: 22px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.quantity-btn:hover:not(:disabled) {
+  background: var(--color-background);
+  color: var(--color-accent);
+}
+
+.quantity-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.quantity-input {
+  width: 55px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+
+  outline: none;
+  background: transparent;
+
+  text-align: center;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text);
+
+  /* Hide native arrows */
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

@@ -2312,7 +2312,7 @@ private showAddedToCartSuccess(
   // PRODUCT DETAILS
   // ========================================================
 
-  openProductDetails(
+ /*  openProductDetails(
     product: Product
   ): void {
 
@@ -2329,8 +2329,12 @@ private showAddedToCartSuccess(
         disableClose: false
       }
     );
-  }
+  } */
 
+    openProductDetails(product: Product): void {
+      console.log("___________")
+  this.router.navigate(['/product', product.id]);
+}
   // ========================================================
   // IMAGE URL
   // ========================================================

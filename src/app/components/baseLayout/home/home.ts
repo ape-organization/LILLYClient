@@ -223,7 +223,7 @@ export class Home implements OnInit, OnDestroy {
     product: Product
   ): void {
 
-    this.dialog.open(
+   /*  this.dialog.open(
       ProductModalComponent,
       {
         width: '800px',
@@ -231,7 +231,10 @@ export class Home implements OnInit, OnDestroy {
         data: product,
         disableClose: false
       }
-    );
+    ); */
+  
+  this.router.navigate(['/product', product.id]);
+
   }
 
 

@@ -1,17 +1,12 @@
 import {
   Component,
-  Inject,
+  inject,
+  OnInit,
   signal
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-import {
-  MatDialogModule,
-  MAT_DIALOG_DATA,
-  MatDialogRef
-} from '@angular/material/dialog';
 
 import { MatButtonModule } from '@angular/material/button';
 
@@ -27,6 +22,13 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Product } from '../../../models/product.model';
 import { SubCategory } from '../../../models/subCategory.model';
 
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
+
+import { ProductService } from '../../../services/product.service';
+
 
 @Component({
   selector: 'app-product-modal',
@@ -37,7 +39,6 @@ import { SubCategory } from '../../../models/subCategory.model';
     TranslatePipe,
     CommonModule,
     FormsModule,
-    MatDialogModule,
     MatButtonModule,
     MaterialModule
   ],
@@ -46,7 +47,25 @@ import { SubCategory } from '../../../models/subCategory.model';
 
   styleUrl: './product-modal.component.css'
 })
-export class ProductModalComponent {
+export class ProductModalComponent implements OnInit {
+
+  // =====================================================
+  // SERVICES
+  // =====================================================
+
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private productService = inject(ProductService);
+  private cartService = inject(CartService);
+
+  public languageService = inject(LanguageService);
+
+
+  // =====================================================
+  // PRODUCT
+  // =====================================================
+
+  product = signal<Product | null>(null);
 
 
   // =====================================================
@@ -64,20 +83,49 @@ export class ProductModalComponent {
 
 
   // =====================================================
-  // CONSTRUCTOR
+  // INIT
   // =====================================================
 
-  constructor(
-    public dialogRef:
-      MatDialogRef<ProductModalComponent>,
+  ngOnInit(): void {
+console.log("**************")
+    const productId = Number(
+      this.route.snapshot.paramMap.get('id')
+    );
 
-    @Inject(MAT_DIALOG_DATA)
-    public product: Product,
+    if (!productId) {
 
-    private cartService: CartService,
+      this.goBack();
 
-    public languageService: LanguageService
-  ) {}
+      return;
+    }
+
+    this.loadProduct(productId);
+  }
+
+
+  // =====================================================
+  // LOAD PRODUCT
+  // =====================================================
+
+  private loadProduct(id: number): void {
+
+    this.productService.getProduct(id).subscribe({
+
+      next: (product) => {
+
+        this.product.set(product);
+
+      },
+
+      error: () => {
+
+        this.goBack();
+
+      }
+
+    });
+
+  }
 
 
   // =====================================================
@@ -87,7 +135,7 @@ export class ProductModalComponent {
   get stock(): number {
 
     return Number(
-      this.product?.stockQuantity ?? 0
+      this.product()?.stockQuantity ?? 0
     );
 
   }
@@ -95,17 +143,15 @@ export class ProductModalComponent {
 
   get isOutOfStock(): boolean {
 
-    return this.product?.isInStock !== true;
+    return this.product()?.isInStock !== true;
 
   }
 
 
   get canAddToCart(): boolean {
-
     return (
-      this.product?.isInStock === true &&
-      this.quantity() > 0 &&
-      (this.stock <= 0 || this.quantity() <= this.stock)
+      this.product()?.isInStock === true &&
+      this.quantity() > 0
     );
 
   }
@@ -118,7 +164,7 @@ export class ProductModalComponent {
   get hasDiscount(): boolean {
 
     return Number(
-      this.product?.discountPercentage ?? 0
+      this.product()?.discountPercentage ?? 0
     ) > 0;
 
   }
@@ -127,7 +173,7 @@ export class ProductModalComponent {
   get oldPrice(): number {
 
     return Number(
-      this.product?.price ?? 0
+      this.product()?.price ?? 0
     );
 
   }
@@ -141,10 +187,9 @@ export class ProductModalComponent {
 
     }
 
-    const discount =
-      Number(
-        this.product?.discountPercentage ?? 0
-      );
+    const discount = Number(
+      this.product()?.discountPercentage ?? 0
+    );
 
     return Math.max(
       0,
@@ -159,37 +204,24 @@ export class ProductModalComponent {
   // QUANTITY
   // =====================================================
 
-  setQuantity(value: number): void {
+setQuantity(value: number): void {
 
-    let newQuantity = Number(value);
+  let newQuantity = Number(value);
 
-    if (!Number.isFinite(newQuantity)) {
-
-      newQuantity = 0;
-
-    }
-
-    newQuantity = Math.floor(newQuantity);
-
-    if (newQuantity < 0) {
-
-      newQuantity = 0;
-
-    }
-
-    if (
-      this.stock > 0 &&
-      newQuantity > this.stock
-    ) {
-
-      newQuantity = this.stock;
-
-    }
-
-    this.quantity.set(newQuantity);
-
+  if (!Number.isFinite(newQuantity)) {
+    newQuantity = 1;
   }
 
+  newQuantity = Math.floor(newQuantity);
+
+  if (newQuantity < 1) {
+    newQuantity = 1;
+  }
+
+
+
+  this.quantity.set(newQuantity);
+}
 
   validateQuantity(): void {
 
@@ -204,39 +236,47 @@ export class ProductModalComponent {
   // ADD TO CART
   // =====================================================
 
- addToCart(): void {
-  if (!this.product?.isInStock) {
-    return;
+  addToCart(): void {
+
+    const product = this.product();
+
+    if (!product?.isInStock) {
+
+      return;
+
+    }
+
+    this.validateQuantity();
+
+    const selectedQuantity = this.quantity();
+
+    if (selectedQuantity <= 0) {
+
+      return;
+
+    }
+
+    const added = this.cartService.replaceCartItem(
+      product,
+      selectedQuantity
+    );
+
+    if (!added) {
+
+      return;
+
+    }
+this.goBack()
   }
-
-  this.validateQuantity();
-
-  const selectedQuantity = this.quantity();
-
-  if (selectedQuantity <= 0) {
-    return;
-  }
-
-  const added = this.cartService.replaceCartItem(
-    this.product,
-    selectedQuantity
-  );
-
-  if (!added) {
-    return;
-  }
-
-  this.dialogRef.close();
-}
 
 
   // =====================================================
-  // CLOSE
+  // GO BACK
   // =====================================================
 
-  closeDialog(): void {
+  goBack(): void {
 
-    this.dialogRef.close();
+    this.router.navigate(['/products']);
 
   }
 
@@ -275,21 +315,27 @@ export class ProductModalComponent {
 
   getProductName(): string {
 
-    if (
-      this.languageService.isArabic()
-    ) {
+    const product = this.product();
+
+    if (!product) {
+
+      return '';
+
+    }
+
+    if (this.languageService.isArabic()) {
 
       return (
-        this.product?.nameAr?.trim() ||
-        this.product?.nameEn?.trim() ||
+        product.nameAr?.trim() ||
+        product.nameEn?.trim() ||
         'Product'
       );
 
     }
 
     return (
-      this.product?.nameEn?.trim() ||
-      this.product?.nameAr?.trim() ||
+      product.nameEn?.trim() ||
+      product.nameAr?.trim() ||
       'Product'
     );
 
@@ -302,21 +348,27 @@ export class ProductModalComponent {
 
   getProductDescription(): string {
 
-    if (
-      this.languageService.isArabic()
-    ) {
+    const product = this.product();
+
+    if (!product) {
+
+      return '';
+
+    }
+
+    if (this.languageService.isArabic()) {
 
       return (
-        this.product?.descriptionAr?.trim() ||
-        this.product?.descriptionEn?.trim() ||
+        product.descriptionAr?.trim() ||
+        product.descriptionEn?.trim() ||
         ''
       );
 
     }
 
     return (
-      this.product?.descriptionEn?.trim() ||
-      this.product?.descriptionAr?.trim() ||
+      product.descriptionEn?.trim() ||
+      product.descriptionAr?.trim() ||
       ''
     );
 
@@ -329,8 +381,10 @@ export class ProductModalComponent {
 
   getCategoryName(): string {
 
+    const product = this.product();
+
     const subCategory =
-      this.product?.subCategories?.[0];
+      product?.subCategories?.[0];
 
     if (!subCategory) {
 
@@ -338,9 +392,7 @@ export class ProductModalComponent {
 
     }
 
-    if (
-      this.languageService.isArabic()
-    ) {
+    if (this.languageService.isArabic()) {
 
       return (
         subCategory.categoryNameAr?.trim() ||
@@ -367,9 +419,7 @@ export class ProductModalComponent {
     subCategory: SubCategory
   ): string {
 
-    if (
-      this.languageService.isArabic()
-    ) {
+    if (this.languageService.isArabic()) {
 
       return (
         subCategory?.nameAr?.trim() ||
@@ -395,7 +445,7 @@ export class ProductModalComponent {
   getBrandName(): string {
 
     const brand =
-      this.product?.brand;
+      this.product()?.brand;
 
     if (!brand) {
 
@@ -403,9 +453,7 @@ export class ProductModalComponent {
 
     }
 
-    if (
-      this.languageService.isArabic()
-    ) {
+    if (this.languageService.isArabic()) {
 
       return (
         brand.nameAr?.trim() ||
