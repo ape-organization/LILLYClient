@@ -659,10 +659,7 @@ private addedToCartTimer?:
 
         error: error => {
 
-          console.error(
-            'Error loading categories:',
-            error
-          );
+       
 
           this.categories.set([]);
 
@@ -732,11 +729,7 @@ private addedToCartTimer?:
 
         error: error => {
 
-          console.error(
-            'Error loading brands:',
-            error
-          );
-
+       
           this.brands.set([]);
 
           this.isLoadingBrands.set(
@@ -921,11 +914,7 @@ private addedToCartTimer?:
             return;
           }
 
-          console.error(
-            'Error searching products:',
-            error
-          );
-
+       
           this.searchResults.set([]);
 
           this.products.set([]);
@@ -1024,11 +1013,7 @@ private addedToCartTimer?:
             return;
           }
 
-          console.error(
-            'Error loading products:',
-            error
-          );
-
+        
           this.products.set([]);
 
           this.filteredProducts.set([]);
@@ -1170,11 +1155,7 @@ private addedToCartTimer?:
 
         error: error => {
 
-          console.error(
-            'Error loading next product page:',
-            error
-          );
-
+         
           this.isLoadingMore.set(false);
         }
       });
@@ -1243,10 +1224,7 @@ private addedToCartTimer?:
             return;
           }
 
-          console.error(
-            'Error loading filtered products:',
-            error
-          );
+        
 
           this.products.set([]);
 
@@ -2332,7 +2310,6 @@ private showAddedToCartSuccess(
   } */
 
     openProductDetails(product: Product): void {
-      console.log("___________")
   this.router.navigate(['/product', product.id]);
 }
   // ========================================================

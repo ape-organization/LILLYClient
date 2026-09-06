@@ -279,11 +279,6 @@ export class Home implements OnInit, OnDestroy {
           response: HomeSlide[]
         ) => {
 
-          console.log(
-            'Sliders:',
-            response
-          );
-
           this.slides.set(
             response ?? []
           );
@@ -296,11 +291,6 @@ export class Home implements OnInit, OnDestroy {
         },
 
         error: (error) => {
-
-          console.error(
-            'Failed to load sliders:',
-            error
-          );
 
           this.slides.set([]);
         }

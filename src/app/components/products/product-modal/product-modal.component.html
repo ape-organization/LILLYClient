@@ -264,32 +264,6 @@
          QUANTITY
          =================================================== -->
 
-    <div
-      class="quantity-section"
-      *ngIf="!isOutOfStock"
-    >
-
-      <label for="quantity">
-        {{ 'PRODUCT.QUANTITY' | translate }}
-      </label>
-
-
-      <!-- <div class="quantity-control">
-
-        <input
-          id="quantity"
-          type="number"
-          [ngModel]="quantity()"
-          (ngModelChange)="setQuantity($event)"
-          [ngModelOptions]="{ standalone: true }"
-          min="0"
-          [max]="stock || null"
-          step="1"
-          class="quantity-input"
-          aria-label="Quantity"
-        />
-
-      </div> -->
 <div
   class="quantity-section"
   *ngIf="!isOutOfStock"
@@ -335,7 +309,7 @@
   </div>
 
 </div>
-    </div>
+    
 
 
 

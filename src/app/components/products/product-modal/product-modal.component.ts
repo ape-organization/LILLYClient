@@ -87,7 +87,6 @@ export class ProductModalComponent implements OnInit {
   // =====================================================
 
   ngOnInit(): void {
-console.log("**************")
     const productId = Number(
       this.route.snapshot.paramMap.get('id')
     );

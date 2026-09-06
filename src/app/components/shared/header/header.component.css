@@ -62,11 +62,18 @@
 }
 
 .logo-symbol {
+  height: 45px;
+  width: 45px;
   color: var(--color-accent);
   font-size: 25px;
   line-height: 1;
 }
-
+.logo-symbol img
+{
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
 .logo-text {
   font-size: 19px;
   font-weight: 700;
