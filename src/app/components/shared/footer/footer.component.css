@@ -1,4 +1,22 @@
 /* ============================================================
+   FOOTER 
+   ============================================================ */
+/* 
+.footer,
+.footer * {
+  font-family: Cursive !important;
+}
+
+.footer {
+  position: relative;
+  padding: 10px;
+  background: var(--color-footer);
+  color: var(--color-text);
+  border-top: 1px solid var(--color-footer);
+  overflow: hidden;
+}
+ */
+/* ============================================================
    FOOTER
    ============================================================ */
 

@@ -1,4 +1,20 @@
+/* :host {
+  display: block;
+  font-family: Cursive;
+}
 
+.main-header > *,
+.main-header a,
+.main-header button,
+.main-header span,
+.main-header input,
+.mobile-sidebar,
+.mobile-sidebar a,
+.mobile-sidebar button,
+.mobile-sidebar span,
+.mobile-sidebar input {
+  font-family: Cursive !important;
+} */
 /* =========================================================
    HEADER
    ========================================================= */
@@ -75,6 +91,7 @@
   object-fit: fill;
 }
 .logo-text {
+  font-family: Cursive;
   font-size: 19px;
   font-weight: 700;
 }
@@ -128,7 +145,6 @@
 
   color: var(--color-text);
 
-  font-family: inherit;
   font-size: 12px;
 }
 
@@ -293,7 +309,6 @@
 
   color: var(--color-text);
 
-  font-family: inherit;
   font-size: 12px;
 }
 
@@ -329,7 +344,6 @@ flex: .5;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text);
-  font-family: inherit;
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
@@ -351,6 +365,7 @@ flex: .5;
   color: var(--color-primary);
   background: transparent;
   font-weight: 600;
+
 }
 
 /* Underline */
@@ -554,7 +569,6 @@ min-width: 130px;
   border: 0;
   background: transparent;
 
-  font-family: inherit;
   cursor: pointer;
   text-align: left;
 }
@@ -614,7 +628,6 @@ min-width: 130px;
   background: transparent;
   color: var(--color-text-secondary);
 
-  font-family: inherit;
   font-size: 11px;
 
   cursor: pointer;
@@ -654,7 +667,6 @@ min-width: 130px;
   background: transparent;
   color: var(--color-text);
 
-  font-family: inherit;
   font-size: 12px;
 
   cursor: pointer;
@@ -806,7 +818,6 @@ min-width: 130px;
   background: transparent;
   color: var(--color-text-secondary);
 
-  font-family: inherit;
   font-size: 11px;
   font-weight: 600;
 
@@ -972,7 +983,6 @@ min-width: 130px;
   background: transparent;
   color: var(--color-text);
 
-  font-family: inherit;
   font-size: 13px;
   font-weight: 500;
 
@@ -1066,7 +1076,6 @@ min-width: 130px;
 
   color: var(--color-text-secondary);
 
-  font-family: inherit;
   font-size: 11px;
 
   cursor: pointer;
@@ -1100,7 +1109,6 @@ min-width: 130px;
   background: transparent;
   color: var(--color-text);
 
-  font-family: inherit;
   font-size: 11px;
 
   cursor: pointer;
@@ -1201,6 +1209,8 @@ min-width: 130px;
   }
 
   .logo-text {
+      font-family: Cursive;
+
     font-size: 17px;
   }
 

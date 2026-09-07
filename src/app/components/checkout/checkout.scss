@@ -1,4 +1,27 @@
 /* ============================================================
+   CHECKOUT FONT
+   ============================================================ */
+/* 
+.checkout-page {
+  font-family: Cursive !important;
+}
+
+.checkout-page h1,
+.checkout-page h2,
+.checkout-page h3,
+.checkout-page p,
+.checkout-page span,
+.checkout-page label,
+.checkout-page small,
+.checkout-page em,
+.checkout-page strong,
+.checkout-page button,
+.checkout-page input,
+.checkout-page textarea {
+  font-family: Cursive !important;
+}
+ */
+ /* ============================================================
    CHECKOUT
    Uses the global application variables
    ============================================================ */
@@ -741,9 +764,8 @@
   border: 0;
   border-radius: 7px;
 
-  background: var(--color-primary, #3a2721);
-  color: white;
-
+   background: var(--color-primary, #3a2721);
+  color: white; 
   font-family: inherit;
   font-size: 11px;
   font-weight: 700;
@@ -755,7 +777,6 @@
   justify-content: center;
 
   gap: 8px;
-
   transition:
     background 0.2s ease,
     transform 0.2s ease,

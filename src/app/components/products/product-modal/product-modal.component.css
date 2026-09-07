@@ -1,4 +1,17 @@
 /* ============================================================
+   PRODUCT MODAL FONT
+   ============================================================ */
+
+/* .dialog-content,
+.dialog-content span,
+.dialog-content p,
+.dialog-content h2,
+.dialog-content label,
+.dialog-content button,
+.dialog-content input {
+  font-family: Cursive !important;
+} */
+/* ============================================================
 PRODUCT MODAL
 Component-specific styles only.
 Colors, shadows, borders and radius come from global.css.

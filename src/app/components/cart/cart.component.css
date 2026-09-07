@@ -1,3 +1,18 @@
+/* .cart-container {
+  font-family: Cursive !important;
+}
+
+.cart-container button,
+.cart-container input,
+.cart-container h1,
+.cart-container h2,
+.cart-container h3,
+.cart-container span,
+.cart-container strong,
+.cart-container small,
+.cart-container p {
+  font-family: Cursive !important;
+} */
 /* =========================================================
    CART
    ========================================================= */
@@ -516,7 +531,6 @@
 .purchase-actions {
   display: flex;
   align-items: center;
-
   gap: 8px;
 }
 
@@ -1356,7 +1370,6 @@
     border-radius: 8px;
 
     font-size: 12px;
-
     font-weight: 700;
   }
 

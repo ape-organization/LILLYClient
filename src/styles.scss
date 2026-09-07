@@ -1,4 +1,3 @@
-
 /* ============================================================
    GLOBAL APPLICATION STYLES
    ============================================================ */
@@ -71,11 +70,7 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 18px;
-  //==============================================
-  // font family 
-  //==============================================
---font-body: 'Montserrat', sans-serif;
- --font-heading: 'Playfair Display', serif;
+
 
 }
 
@@ -97,15 +92,10 @@ html {
 
 
 body {
-  font-family: var(--font-body);
+
   min-height: 100vh;
 
-  font-family:
-    'Segoe UI',
-    Tahoma,
-    Geneva,
-    Verdana,
-    sans-serif;
+  
 
   line-height: 1.6;
 
@@ -150,24 +140,48 @@ body {
 .language-switcher:active {
   transform: scale(0.97);
 }
-/* ======================================================
-  heads 
-========================================================*/ 
-.section-heading h2,span,
-.page-title,
-.hero-title {
-  font-family: var(--font-heading);
-}
-button,
-input,
-select,
-textarea,
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-menu-item {
-  font-family: var(--font-body) !important;
+/* ============================================================
+   GLOBAL FONT
+   ============================================================ */
+
+html,
+body {
+    //==============================================
+  // font family 
+  //==============================================
+ //font-family: 'Montserrat', sans-serif;
+ // font-family: 'Playfair Display', serif;
+   font-family: Cursive, sans-serif; 
+ //font-family: 'Cairo Play', sans-serif;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+label,
+small,
+strong,
+em,
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+//=================================
+// ios problem
+//================================
+input,
+textarea,
+select {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: 100%;
+}
 /* ============================================================
    BUTTONS / INPUTS
    ============================================================ */
