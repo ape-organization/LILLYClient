@@ -27,8 +27,7 @@ export class ProductService {
   getProducts(
     page: number = 1,
     categoryId: number | null = null,
-    subCategoryId: number | null = null,
-    brandId: number | null = null,
+ 
     offers: boolean = false
   ): Observable<PagedResponse<Product>> {
 
@@ -42,19 +41,6 @@ export class ProductService {
       );
     }
 
-    if (subCategoryId !== null) {
-      params = params.set(
-        'subCategoryId',
-        subCategoryId
-      );
-    }
-
-    if (brandId !== null) {
-      params = params.set(
-        'brandId',
-        brandId
-      );
-    }
 
     if (offers) {
       params = params.set(

@@ -1,35 +1,53 @@
-import { Brand } from "./brand.model";
-import { SubCategory } from "./subCategory.model";
-
+import { Category } from './category.model';
+import { HeelSize } from './heel-size.model';
+import { Size } from './size,model';
 
 
 export interface Product {
   id: number;
- nameEn: string;
-  nameAr: string;
-  isInStock:boolean;
+
+  nameEn: string;
   descriptionEn?: string | null;
-descriptionAr?: string | null;
+
+  nameAr: string;
+  descriptionAr?: string | null;
+
   price: number;
+  actualPrice: number;
 
-  discountPercentage: number;
+  isInStock: boolean;
+  discountPercentage?: number | null;
 
+  // Used when the product has no variants
   stockQuantity: number;
 
-  imageUrl?: string | null;
+  categoryId: number;
+  category?: Category | null;
 
-  brandId: number | null;
+  images: ProductImage[];
 
-  brand?: Brand | null;
-
-  // Keep this if some old code still uses it
-  brandName?: string | null;
-
-  subCategories: SubCategory[];
+  variants: ProductVariant[];
 }
-export interface ProductFilterValue {
-  categoryId: number | null;
-  subCategoryId: number | null;
-  brandId: number | null;
-  offers: boolean;
+
+export interface ProductImage {
+  id: number;
+  imageUrl?: string | null;
+  sortOrder: number;
+}
+
+export interface ProductVariant {
+  id?: any;
+
+  sizeId?: number | null;
+  size?: Size | null;
+
+  heelSizeId?: number | null;
+  heelSize?: HeelSize | null;
+
+  stockQuantity: number;
+  isActive?: boolean;
+
+heelSizeName?: string,
+sizeName?: string,
+
 }

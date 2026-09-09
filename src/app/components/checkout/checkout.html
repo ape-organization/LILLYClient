@@ -1,278 +1,283 @@
 <div class="checkout-page">
 
-  <!-- ========================================= -->
+  <!-- ====================================================== -->
+
   <!-- HEADER -->
-  <!-- ========================================= -->
 
-  <div class="checkout-header">
+  <!-- ====================================================== -->
 
-    <div class="checkout-header-content">
+  <header class="checkout-header">
 
-      <button
-        type="button"
-        class="back-button"
-        (click)="goBackToCart()"
-      >
-        <span class="back-icon">←</span>
+<button
+  type="button"
+  class="back-button"
+  (click)="goBackToCart()"
+>
+  <mat-icon>arrow_back</mat-icon>
+  <span>{{ 'CHECKOUT.BACK_TO_CART' | translate }}</span>
+</button>
 
-        {{'CHECKOUT.Back_to_Cart' | translate}}
-      </button>
+<div class="header-content">
 
-
-      <div class="header-title">
-
-        <span class="title-accent">
-          ✦
-        </span>
-
-        <div>
-
-          <h1>
-            {{'CHECKOUT.TITLE' | translate}}
-          </h1>
-
-          <p>
-            {{'CHECKOUT.Complete_your_order' | translate }}
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
+  <div class="header-icon">
+    <mat-icon>shopping_bag</mat-icon>
   </div>
 
+  <div class="header-text">
+    <h1>
+      {{ 'CHECKOUT.TITLE' | translate }}
+    </h1>
+
+    <p>
+      {{ 'CHECKOUT.SUBTITLE' | translate }}
+    </p>
+  </div>
+
+</div>
+
+  </header>
+
+  <!-- ====================================================== -->
+
+  <!-- EMPTY CART -->
+
+  <!-- ====================================================== -->
+
+@if (cartItems.length === 0) {
+
+<section class="empty-checkout">
+
+  <div class="empty-icon">
+    <mat-icon>shopping_cart</mat-icon>
+  </div>
+
+  <h2>
+    {{ 'CHECKOUT.EMPTY_CART' | translate }}
+  </h2>
+
+  <p>
+    {{ 'CHECKOUT.EMPTY_CART_MESSAGE' | translate }}
+  </p>
+
+  <button
+    type="button"
+    class="primary-button"
+    (click)="goBackToCart()"
+  >
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'CHECKOUT.BACK_TO_CART' | translate }}
+  </button>
+
+</section>
+
+}
+
+  <!-- ====================================================== -->
+
+  <!-- CHECKOUT CONTENT -->
+
+  <!-- ====================================================== -->
+
+@if (cartItems.length > 0) {
+
+<main class="checkout-container">
+
+  <div class="checkout-grid">
 
 
-  <!-- ========================================= -->
-  <!-- CONTENT -->
-  <!-- ========================================= -->
+    <!-- ================================================== -->
+    <!-- LEFT SIDE -->
+    <!-- ================================================== -->
 
-  <div class="checkout-container">
+    <section class="checkout-form-section">
 
-
-    <!-- ======================================= -->
-    <!-- CHECKOUT FORM -->
-    <!-- ======================================= -->
-
-    <form
-      class="checkout-form"
-      [formGroup]="checkoutForm"
-      (ngSubmit)="placeOrder()"
-      novalidate
-    >
+      <form
+        [formGroup]="checkoutForm"
+        (ngSubmit)="placeOrder()"
+        novalidate
+      >
 
 
-      <!-- ===================================== -->
-      <!-- CUSTOMER INFORMATION -->
-      <!-- ===================================== -->
+        <!-- ============================================== -->
+        <!-- CUSTOMER INFORMATION -->
+        <!-- ============================================== -->
 
-      <section class="checkout-card">
+        <div class="checkout-card">
 
+          <div class="card-header">
 
-        <div class="section-header">
+            <div class="card-icon">
+              <mat-icon>person_outline</mat-icon>
+            </div>
 
-          <div class="section-icon">
-            01
+            <div>
+              <h2>
+                {{ 'CHECKOUT.CUSTOMER_INFORMATION' | translate }}
+              </h2>
+
+              <p>
+                {{ 'CHECKOUT.CUSTOMER_INFORMATION_SUBTITLE' | translate }}
+              </p>
+            </div>
+
           </div>
 
-          <div>
 
-            <h2>
-              {{'CHECKOUT.CUSTOMER_INFORMATION' | translate }}
-            </h2>
-
-            
-
-          </div>
-
-        </div>
+          <div class="form-grid">
 
 
+            <!-- PHONE -->
 
-        <div class="form-grid">
+            <div class="form-field full-width">
 
+              <label for="phone">
+                {{ 'CHECKOUT.PHONE' | translate }}
+                <span class="required">*</span>
+              </label>
 
-          <!-- ================================= -->
-          <!-- PHONE -->
-          <!-- ================================= -->
+              <div class="input-wrapper">
 
-          <div class="form-field full-width">
+                <mat-icon>phone</mat-icon>
 
-            <label for="phone">
+                <input
+                  id="phone"
+                  type="tel"
+                  formControlName="phone"
+                  autocomplete="tel"
+                  [placeholder]="'CHECKOUT.PHONE_PLACEHOLDER' | translate"
+                />
 
-               {{'CHECKOUT.PHONE' | translate }}
+                @if (isSearchingClient()) {
+                  <span class="input-spinner">
+                    <mat-spinner diameter="18"></mat-spinner>
+                  </span>
+                }
 
-              <span>
-                *
-              </span>
+              </div>
 
-            </label>
+              @if (
+                checkoutForm.get('phone')?.touched &&
+                checkoutForm.get('phone')?.invalid
+              ) {
 
+                <div class="field-error">
 
-            <div class="phone-wrapper">
+                  @if (checkoutForm.get('phone')?.errors?.['required']) {
+                    {{ 'CHECKOUT.PHONE_REQUIRED' | translate }}
+                  }
 
-              <input
-                id="phone"
-                type="tel"
-                formControlName="phone"
-                placeholder="01XXXXXXXXX"
-                autocomplete="tel"
-                maxlength="11"
-                [class.invalid]="isInvalid('phone')"
-              />
+                  @if (checkoutForm.get('phone')?.errors?.['pattern']) {
+                    {{ 'CHECKOUT.PHONE_INVALID' | translate }}
+                  }
 
-
-              <!-- Searching -->
-
-              @if (isSearchingClient()) {
-
-                <span class="searching">
-
-                   {{'COMMON.Searching' | translate }}
-
-                </span>
+                </div>
 
               }
 
 
-              <!-- Client Found -->
-
               @if (clientFound()) {
 
-                <span class="client-found">
+                <div class="client-found">
 
-                  ✓  {{'COMMON.client-found' | translate }}
+                  <mat-icon>check_circle</mat-icon>
 
-                </span>
+                  <span>
+                    {{ 'CHECKOUT.CLIENT_FOUND' | translate }}
+                  </span>
+
+                </div>
 
               }
 
             </div>
 
 
-            @if (isInvalid('phone')) {
+            <!-- FULL NAME -->
 
-              <small>
+            <div class="form-field">
 
-                 {{'CHECKOUT.INVALID_PHONE' | translate }}
+              <label for="fullName">
+                {{ 'CHECKOUT.FULL_NAME' | translate }}
+                <span class="required">*</span>
+              </label>
 
-              </small>
+              <div class="input-wrapper">
 
-            }
+                <mat-icon>badge</mat-icon>
 
+                <input
+                  id="fullName"
+                  type="text"
+                  formControlName="fullName"
+                  autocomplete="name"
+                  [placeholder]="'CHECKOUT.FULL_NAME_PLACEHOLDER' | translate"
+                />
 
-            
+              </div>
 
-          </div>
+              @if (
+                checkoutForm.get('fullName')?.touched &&
+                checkoutForm.get('fullName')?.invalid
+              ) {
 
+                <div class="field-error">
 
+                  @if (checkoutForm.get('fullName')?.errors?.['required']) {
+                    {{ 'CHECKOUT.FULL_NAME_REQUIRED' | translate }}
+                  }
 
-          <!-- ================================= -->
-          <!-- FULL NAME -->
-          <!-- ================================= -->
+                  @if (checkoutForm.get('fullName')?.errors?.['minlength']) {
+                    {{ 'CHECKOUT.FULL_NAME_INVALID' | translate }}
+                  }
 
-          <div class="form-field">
+                </div>
 
-            <label for="fullName">
+              }
 
-              {{'CHECKOUT.FULL_NAME' | translate }}
-
-              <span>
-                *
-              </span>
-
-            </label>
-
-
-            <input
-              id="fullName"
-              type="text"
-              formControlName="fullName"
-              placeholder="Enter your full name"
-              autocomplete="name"
-              [class.invalid]="isInvalid('fullName')"
-            />
-
-
-            @if (isInvalid('fullName')) {
-
-              <small>
-
-                {{'CHECKOUT.INVALID_NAME' | translate }}
-
-              </small>
-
-            }
-
-          </div>
+            </div>
 
 
+            <!-- EMAIL -->
 
-          <!-- ================================= -->
-          <!-- EMAIL -->
-          <!-- ================================= -->
+            <div class="form-field">
 
-          <div class="form-field">
+              <label for="email">
+                {{ 'CHECKOUT.EMAIL' | translate }}
+                <span class="optional">
+                  {{ 'CHECKOUT.OPTIONAL' | translate }}
+                </span>
+              </label>
 
-            <label for="email">
+              <div class="input-wrapper">
 
-              {{'CHECKOUT.EMAIL' | translate }}
+                <mat-icon>email</mat-icon>
 
-              <em>
-                {{'CHECKOUT.OPTIONAL' | translate }}
-              </em>
+                <input
+                  id="email"
+                  type="email"
+                  formControlName="email"
+                  autocomplete="email"
+                  [placeholder]="'CHECKOUT.EMAIL_PLACEHOLDER' | translate"
+                />
 
-            </label>
+              </div>
 
+              @if (
+                checkoutForm.get('email')?.touched &&
+                checkoutForm.get('email')?.invalid
+              ) {
 
-            <input
-              id="email"
-              type="email"
-              formControlName="email"
-              placeholder="example@email.com"
-              autocomplete="email"
-              [class.invalid]="isInvalid('email')"
-            />
+                <div class="field-error">
 
+                  @if (checkoutForm.get('email')?.errors?.['email']) {
+                    {{ 'CHECKOUT.EMAIL_INVALID' | translate }}
+                  }
 
-            @if (isInvalid('email')) {
+                </div>
 
-              <small>
+              }
 
-                {{'CHECKOUT.INVALID_EMAIL' | translate }}
-
-              </small>
-
-            }
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- ===================================== -->
-      <!-- DELIVERY INFORMATION -->
-      <!-- ===================================== -->
-
-      <section class="checkout-card">
-
-
-        <div class="section-header">
-
-          <div class="section-icon">
-            02
-          </div>
-
-          <div>
-
-            <h2>
-              {{'CHECKOUT.DELIVERY_INFORMATION' | translate }}
-            </h2>
+            </div>
 
 
           </div>
@@ -280,276 +285,242 @@
         </div>
 
 
+        <!-- ============================================== -->
+        <!-- DELIVERY INFORMATION -->
+        <!-- ============================================== -->
 
-        <div class="form-grid">
+        <div class="checkout-card">
 
+          <div class="card-header">
 
+            <div class="card-icon">
+              <mat-icon>location_on</mat-icon>
+            </div>
 
+            <div>
+              <h2>
+                {{ 'CHECKOUT.DELIVERY_INFORMATION' | translate }}
+              </h2>
 
+              <p>
+                {{ 'CHECKOUT.DELIVERY_INFORMATION_SUBTITLE' | translate }}
+              </p>
+            </div>
 
+          </div>
 
-          <!-- ================================= -->
-          <!-- ADDRESS -->
-          <!-- ================================= -->
 
           <div class="form-field full-width">
 
             <label for="address">
-
-               {{'CHECKOUT.ADDRESS' | translate }}
-
-              <span>
-                *
-              </span>
-
+              {{ 'CHECKOUT.ADDRESS' | translate }}
+              <span class="required">*</span>
             </label>
 
+            <div class="textarea-wrapper">
 
-            <textarea
-              id="address"
-              formControlName="address"
-              rows="3"
-              placeholder="Street name, building number, area..."
-              autocomplete="street-address"
-              [class.invalid]="isInvalid('address')"
-            ></textarea>
+              <mat-icon>home</mat-icon>
 
+              <textarea
+                id="address"
+                rows="4"
+                formControlName="address"
+                autocomplete="street-address"
+                [placeholder]="'CHECKOUT.ADDRESS_PLACEHOLDER' | translate"
+              ></textarea>
 
-            @if (isInvalid('address')) {
+            </div>
 
-              <small>
+            @if (
+              checkoutForm.get('address')?.touched &&
+              checkoutForm.get('address')?.invalid
+            ) {
 
-                {{'CHECKOUT.INVALID_ADDRESS' | translate }}
+              <div class="field-error">
 
-              </small>
+                @if (checkoutForm.get('address')?.errors?.['required']) {
+                  {{ 'CHECKOUT.ADDRESS_REQUIRED' | translate }}
+                }
+
+                @if (checkoutForm.get('address')?.errors?.['minlength']) {
+                  {{ 'CHECKOUT.ADDRESS_INVALID' | translate }}
+                }
+
+              </div>
 
             }
 
           </div>
 
-
-
-          <!-- ================================= -->
-          <!-- NOTES -->
-          <!-- ================================= -->
-
-        <!--   <div class="form-field full-width">
-
-            <label for="notes">
-
-              Delivery Notes
-
-              <em>
-                Optional
-              </em>
-
-            </label>
-
-
-            <textarea
-              id="notes"
-              formControlName="notes"
-              rows="3"
-              placeholder="Any special instructions for delivery?"
-            ></textarea>
-
-          </div> -->
-
-        </div>
-
-      </section>
-
-
-
-      <!-- ===================================== -->
-      <!-- PAYMENT -->
-      <!-- ===================================== -->
-
-      <section class="checkout-card">
-
-
-        <div class="section-header">
-
-          <div class="section-icon">
-            03
-          </div>
-
-          <div>
-
-            <h2>
-              {{'CHECKOUT.PAYMENT_METHOD' | translate }}
-            </h2>
-
-         
-
-          </div>
-
         </div>
 
 
+        <!-- ============================================== -->
+        <!-- PAYMENT -->
+        <!-- ============================================== -->
 
-        <!-- Cash On Delivery -->
+        <div class="checkout-card">
 
-        <div class="payment-option selected">
+          <div class="card-header">
 
+            <div class="card-icon">
+              <mat-icon>payments</mat-icon>
+            </div>
 
-          <div class="payment-radio">
+            <div>
+              <h2>
+                {{ 'CHECKOUT.PAYMENT' | translate }}
+              </h2>
 
-            <div class="radio-dot"></div>
-
-          </div>
-
-
-
-          <div class="payment-content">
-
-            <div class="payment-title">
-
-              <span class="payment-icon">
-                ₣
-              </span>
-
-
-              <div>
-
-                <h3>
-                  {{'CHECKOUT.CASH_ON_DELIVERY' | translate }}
-                </h3>
-
-                <p>
-                   {{'CHECKOUT.CASH_ON_DELIVERY_DESCRIPTION' | translate }}
-                </p>
-
-              </div>
-
+              <p>
+                {{ 'CHECKOUT.PAYMENT_SUBTITLE' | translate }}
+              </p>
             </div>
 
           </div>
 
 
+          <div class="payment-option selected">
 
-          <div class="payment-check">
+            <div class="payment-radio">
 
-            ✓
+              <span class="radio-circle">
+                <span></span>
+              </span>
+
+            </div>
+
+
+            <div class="payment-icon">
+              <mat-icon>local_atm</mat-icon>
+            </div>
+
+
+            <div class="payment-content">
+
+              <h3>
+                {{ 'CHECKOUT.CASH_ON_DELIVERY' | translate }}
+              </h3>
+
+              <p>
+                {{ 'CHECKOUT.CASH_ON_DELIVERY_DESCRIPTION' | translate }}
+              </p>
+
+            </div>
+
+
+            <div class="payment-check">
+              <mat-icon>check_circle</mat-icon>
+            </div>
 
           </div>
 
         </div>
 
-      </section>
 
-    </form>
+        <!-- ============================================== -->
+        <!-- SUBMIT -->
+        <!-- ============================================== -->
+
+        <button
+          type="submit"
+          class="place-order-button"
+          [disabled]="isSubmitting() || checkoutForm.invalid || cartItems.length === 0"
+        >
+
+          @if (isSubmitting()) {
+
+            <mat-spinner diameter="22"></mat-spinner>
+
+            <span>
+              {{ 'CHECKOUT.PLACING_ORDER' | translate }}
+            </span>
+
+          } @else {
+
+            <mat-icon>check_circle</mat-icon>
+
+            <span>
+              {{ 'CHECKOUT.PLACE_ORDER' | translate }}
+            </span>
+
+          }
+
+        </button>
+
+
+      </form>
+
+    </section>
 
 
 
-    <!-- ======================================= -->
-    <!-- ORDER SUMMARY -->
-    <!-- ======================================= -->
+    <!-- ================================================== -->
+    <!-- RIGHT SIDE - ORDER SUMMARY -->
+    <!-- ================================================== -->
 
     <aside class="order-summary">
 
 
-      <!-- ===================================== -->
+      <!-- ============================================== -->
       <!-- SUMMARY HEADER -->
-      <!-- ===================================== -->
+      <!-- ============================================== -->
 
       <div class="summary-header">
 
         <div>
 
-          <span class="summary-label">
-            {{'CHECKOUT.YOUR_ORDER' | translate }}
-            
-          </span>
-
           <h2>
-            {{'CHECKOUT.Order_Summary' | translate }}
-            
+            {{ 'CHECKOUT.ORDER_SUMMARY' | translate }}
           </h2>
+
+          <p>
+            {{ totalItems }}
+            {{ 'CHECKOUT.ITEMS' | translate }}
+          </p>
 
         </div>
 
-
-        <span class="items-count">
-
-          {{ totalItems }}
-
-          {{ totalItems === 1 ? ('CART.ITEM' | translate) : ('CART.ITEMS' | translate) }}
-
-        </span>
+        <div class="summary-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
 
       </div>
 
 
-
-      <!-- ===================================== -->
-      <!-- EMPTY CART -->
-      <!-- ===================================== -->
-
-      @if (cartItems.length === 0) {
-
-        <div class="empty-cart">
-
-          <span class="empty-cart-icon">
-            🛒
-          </span>
-
-          <h3>
-            {{'CART.EMPTY' | translate }}
-          </h3>
-
-          <p>
-            {{'CART.EMPTY_MESSAGE' | translate }}
-       
-          </p>
-
-
-          <button
-            type="button"
-            class="back-to-products"
-            (click)="goBackToCart()"
-          >
-            {{'CHECKOUT.Back_to_Cart' | translate }}
-          </button>
-
-        </div>
-
-      }
-
-
-
-      <!-- ===================================== -->
+      <!-- ============================================== -->
       <!-- PRODUCTS -->
-      <!-- ===================================== -->
+      <!-- ============================================== -->
 
       @if (cartItems.length > 0) {
 
         <div class="summary-products">
 
-
           @for (
             item of cartItems;
-            track item.product.id
+            track trackCartItem($index, item)
           ) {
-
 
             <div class="summary-product">
 
 
-              <!-- Product Image -->
+              <!-- PRODUCT IMAGE -->
 
               <div class="product-image">
 
                 <img
-                  [src]="getImageUrl(item.product.imageUrl)"
+                  [src]="getImageUrl(getFirstImage(item.product))"
                   [alt]="getProductName(item)"
                 />
+
+                <span class="quantity-badge">
+                  {{ item.quantity }}
+                </span>
 
               </div>
 
 
-
-              <!-- Product Info -->
+              <!-- PRODUCT INFORMATION -->
 
               <div class="product-info">
 
@@ -558,58 +529,139 @@
                 </h3>
 
 
-                <p>
-                  {{'CHECKOUT.Qty' | translate }}
-                  : {{ item.quantity }}
-                </p>
+                <!-- VARIANTS -->
+
+              @if (hasVariant(item)) {
+
+  <div class="product-variants">
+
+    @if (hasSize(item)) {
+
+      <span class="variant-chip">
+
+        <span class="variant-label">
+          {{ 'CART.SIZE' | translate }}
+        </span>
+
+        <span class="variant-value">
+          {{ getSizeName(item.variant) }}
+        </span>
+
+      </span>
+
+    }
+
+    @if (hasHeelSize(item)) {
+
+      <span class="variant-chip">
+
+        <span class="variant-label">
+          {{ 'CART.HEEL_SIZE' | translate }}
+        </span>
+
+        <span class="variant-value">
+          {{ getHeelSizeName(item.variant) }}
+        </span>
+
+      </span>
+
+    }
+
+  </div>
+
+}
 
 
-               <!-- Product Price -->
+                <!-- QUANTITY -->
 
-<div class="product-pricing">
+                <div class="product-quantity">
 
-  @if (item.product.discountPercentage > 0) {
+                  <span>
+                    {{ 'CHECKOUT.QTY' | translate }}
+                  </span>
 
-  
-    <div class="new-price">
+                  <div class="quantity-control">
 
-      {{ getDiscountedPrice(item) | number:'1.2-2' }}
+                    <button
+                      type="button"
+                      class="quantity-btn"
+                      [disabled]="item.quantity <= 1"
+                      (click)="decreaseQuantity(item)"
+                      [attr.aria-label]="'CHECKOUT.DECREASE_QUANTITY' | translate"
+                    >
+                      <mat-icon>remove</mat-icon>
+                    </button>
 
-      {{'COMMON.EGP' | translate }}
 
-    </div>
+                    <span class="quantity-value">
+                      {{ item.quantity }}
+                    </span>
 
-  
 
-  }
+                    <button
+                      type="button"
+                      class="quantity-btn"
+                      (click)="increaseQuantity(item)"
+                      [attr.aria-label]="'CHECKOUT.INCREASE_QUANTITY' | translate"
+                    >
+                      <mat-icon>add</mat-icon>
+                    </button>
 
-  @else {
+                  </div>
 
-    <div class="new-price">
+                </div>
 
-      {{ getDiscountedPrice(item) | number:'1.2-2' }}
 
-      {{'COMMON.EGP' | translate }}
+                <!-- PRICE -->
 
-    </div>
+                <div class="product-pricing">
 
-  }
+                  @if (hasDiscount(item.product)) {
 
-</div>
+                    <span class="new-price">
+                      {{ getDiscountedPrice(item) | number:'1.2-2' }}
+                      {{ 'COMMON.EGP' | translate }}
+                    </span>
+
+                    <span class="old-price">
+                      {{ item.product.price | number:'1.2-2' }}
+                      {{ 'COMMON.EGP' | translate }}
+                    </span>
+
+                  } @else {
+
+                    <span class="new-price">
+                      {{ getDiscountedPrice(item) | number:'1.2-2' }}
+                      {{ 'COMMON.EGP' | translate }}
+                    </span>
+
+                  }
+
+                </div>
 
               </div>
 
 
+              <!-- SUBTOTAL + REMOVE -->
 
-              <!-- Product Subtotal -->
+              <div class="product-actions">
 
-             <strong class="product-subtotal">
+                <strong class="product-subtotal">
+                  {{ getItemSubtotal(item) | number:'1.2-2' }}
+                  {{ 'COMMON.EGP' | translate }}
+                </strong>
 
-  {{ getItemSubtotal(item) | number:'1.2-2' }}
+                <button
+                  type="button"
+                  class="remove-item"
+                  (click)="removeItem(item)"
+                  [attr.aria-label]="'CHECKOUT.REMOVE_ITEM' | translate"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
 
-  {{'COMMON.EGP' | translate }}
+              </div>
 
-</strong>
 
             </div>
 
@@ -620,142 +672,94 @@
       }
 
 
-
-      <!-- ===================================== -->
+      <!-- ============================================== -->
       <!-- TOTALS -->
-      <!-- ===================================== -->
+      <!-- ============================================== -->
 
-      @if (cartItems.length > 0) {
+      <div class="summary-divider"></div>
 
-        <div class="summary-totals">
+      <div class="summary-row">
 
+        <span>
+          {{ 'CHECKOUT.SUBTOTAL' | translate }}
+        </span>
 
-          <!-- Subtotal -->
+        <strong>
+          {{ subtotal | number:'1.2-2' }}
+          {{ 'COMMON.EGP' | translate }}
+        </strong>
 
-          <div class="summary-row">
-
-            <span>
-              {{'CART.Subtotal' | translate }}
-            </span>
-
-            <strong>
-
-              {{ subtotal }}
-
-              {{'COMMON.EGP' | translate }}
-
-            </strong>
-
-          </div>
+      </div>
 
 
+      <div class="summary-row">
 
-          <!-- Delivery -->
+        <span>
+          {{ 'CHECKOUT.DELIVERY' | translate }}
+        </span>
 
-         <!--  <div class="summary-row">
+        <strong class="free-delivery">
+          {{ 'CHECKOUT.FREE' | translate }}
+        </strong>
 
-            <span>
-              {{'CHECKOUT.DELIVERY_FEE' | translate }}
-            </span>
+      </div>
 
-            <strong>
 
-              {{ deliveryFee() }}
+      <div class="summary-divider"></div>
 
-              {{'COMMON.EGP' | translate }}
 
-            </strong>
+      <div class="summary-total">
 
-          </div> -->
+        <div>
+
+          <span>
+            {{ 'CHECKOUT.TOTAL' | translate }}
+          </span>
+
+          <small>
+            {{ 'CHECKOUT.INCLUDING_DELIVERY' | translate }}
+          </small>
 
         </div>
 
+        <strong>
+          {{ total | number:'1.2-2' }}
+          {{ 'COMMON.EGP' | translate }}
+        </strong>
+
+      </div>
 
 
-        <!-- ================================= -->
-        <!-- FINAL TOTAL -->
-        <!-- ================================= -->
+      <!-- ============================================== -->
+      <!-- SECURE CHECKOUT -->
+      <!-- ============================================== -->
 
-        <div class="summary-total">
+      <div class="secure-checkout">
 
-          <span>
-            {{'CART.TOTAL' | translate }}
-          </span>
+        <mat-icon>verified_user</mat-icon>
+
+        <div>
 
           <strong>
-
-            {{ total }}
-
-            {{'COMMON.EGP' | translate }}
-
+            {{ 'CHECKOUT.SECURE_ORDER' | translate }}
           </strong>
 
-        </div>
-
-
-
-        <!-- ================================= -->
-        <!-- PLACE ORDER BUTTON -->
-        <!-- ================================= -->
-
-        <button
-          type="button"
-          class="place-order-button"
-          [disabled]="
-            isSubmitting() ||
-            cartItems.length === 0
-          "
-          (click)="placeOrder()"
-        >
-
-
-          @if (isSubmitting()) {
-
-            <span class="spinner"></span>
-
-            <span>
-              {{'COMMON.LOADING' | translate }}
-            </span>
-
-          }
-
-          @else {
-
-            <span>
-              {{'CHECKOUT.PLACE_ORDER' | translate }}
-            </span>
-
-            <span class="button-arrow">
-              →
-            </span>
-
-          }
-
-        </button>
-
-
-
-        <!-- ================================= -->
-        <!-- SECURITY NOTE -->
-        <!-- ================================= -->
-
-        <div class="secure-note">
-
           <span>
-            🔒
-          </span>
-
-          <span>
-            
-            {{'CHECKOUT.INFO' |translate}}
+            {{ 'CHECKOUT.SECURE_ORDER_DESCRIPTION' | translate }}
           </span>
 
         </div>
 
-      }
+      </div>
+
 
     </aside>
 
+
   </div>
+
+</main>
+
+}
 
 </div>

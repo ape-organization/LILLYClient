@@ -27,9 +27,7 @@ import {
   CategoryService
 } from '../../../services/category.service';
 
-import {
-  BrandService
-} from '../../../services/brand.service';
+
 
 import {
   CartService
@@ -39,9 +37,7 @@ import {
   Category
 } from '../../../models/category.model';
 
-import {
-  Brand
-} from '../../../models/brand.model';
+
 
 import {
   LanguageService
@@ -82,8 +78,7 @@ export class HeaderComponent implements OnInit {
   private readonly categoryService =
     inject(CategoryService);
 
-  private readonly brandService =
-    inject(BrandService);
+
 
   private readonly cartService =
     inject(CartService);
@@ -118,8 +113,7 @@ export class HeaderComponent implements OnInit {
   categoryMenuOpen =
     signal(false);
 
-  brandMenuOpen =
-    signal(false);
+
 
   expandedCategoryId =
     signal<number | null>(null);
@@ -142,19 +136,6 @@ export class HeaderComponent implements OnInit {
     signal<string | null>(null);
 
 
-  // ==========================================================
-  // BRANDS
-  // ==========================================================
-
-  brands =
-    signal<Brand[]>([]);
-
-  isLoadingBrands =
-    signal(false);
-
-  brandError =
-    signal<string | null>(null);
-
 
   // ==========================================================
   // INIT
@@ -164,7 +145,6 @@ export class HeaderComponent implements OnInit {
 
     this.loadCategories();
 
-    this.loadBrands();
 
     this.loadCartCount();
 
@@ -262,47 +242,6 @@ export class HeaderComponent implements OnInit {
   }
 
 
-  getSubCategoryName(
-    subCategory: any
-  ): string {
-
-    if (
-      this.languageService.isArabic()
-    ) {
-
-      return subCategory.nameAr?.trim()
-        ? subCategory.nameAr
-        : subCategory.nameEn;
-
-    }
-
-    return subCategory.nameEn?.trim()
-      ? subCategory.nameEn
-      : subCategory.nameAr;
-
-  }
-
-
-  getBrandName(
-    brand: Brand
-  ): string {
-
-    if (
-      this.languageService.isArabic()
-    ) {
-
-      return brand.nameAr?.trim()
-        ? brand.nameAr
-        : brand.nameEn;
-
-    }
-
-    return brand.nameEn?.trim()
-      ? brand.nameEn
-      : brand.nameAr;
-
-  }
-
 
   // ==========================================================
   // CART
@@ -328,7 +267,7 @@ export class HeaderComponent implements OnInit {
 
     this.categoryMenuOpen.set(true);
 
-    this.brandMenuOpen.set(false);
+
 
   }
 
@@ -346,7 +285,7 @@ export class HeaderComponent implements OnInit {
 
     this.categoryMenuOpen.set(open);
 
-    this.brandMenuOpen.set(false);
+  
 
     if (!open) {
 
@@ -356,41 +295,6 @@ export class HeaderComponent implements OnInit {
 
   }
 
-
-  // ==========================================================
-  // BRAND MENU
-  // ==========================================================
-
-  openBrandMenu(): void {
-
-    this.brandMenuOpen.set(true);
-
-    this.categoryMenuOpen.set(false);
-
-    this.expandedCategoryId.set(null);
-
-  }
-
-
-  closeBrandMenu(): void {
-
-    this.brandMenuOpen.set(false);
-
-  }
-
-
-  toggleBrandMenu(): void {
-
-    const open =
-      !this.brandMenuOpen();
-
-    this.brandMenuOpen.set(open);
-
-    this.categoryMenuOpen.set(false);
-
-    this.expandedCategoryId.set(null);
-
-  }
 
 
   // ==========================================================
@@ -445,56 +349,6 @@ export class HeaderComponent implements OnInit {
   }
 
 
-  // ==========================================================
-  // LOAD BRANDS
-  // ==========================================================
-
-  loadBrands(): void {
-
-    this.isLoadingBrands.set(true);
-
-    this.brandError.set(null);
-
-    this.brandService
-      .getBrands()
-      .subscribe({
-
-        next: (response: any) => {
-
-          const data =
-            response?.data ??
-            response ??
-            [];
-
-          this.brands.set(
-            (data ?? []).filter(
-              (brand: Brand) =>
-                !!brand
-            )
-          );
-
-          this.isLoadingBrands.set(false);
-
-        },
-
-        error: error => {
-
-          console.error(
-            'Error loading brands:',
-            error
-          );
-
-          this.brandError.set(
-            'Unable to load brands.'
-          );
-
-          this.isLoadingBrands.set(false);
-
-        }
-
-      });
-
-  }
 
 
   // ==========================================================
@@ -520,7 +374,14 @@ export class HeaderComponent implements OnInit {
     this.expandedCategoryId.set(
       categoryId
     );
-
+this.router.navigate(
+      ['/products'],
+      {
+        queryParams: {
+          category: categoryId
+        }
+      }
+    );
   }
 
 
@@ -590,27 +451,7 @@ export class HeaderComponent implements OnInit {
   }
 
 
-  // ==========================================================
-  // BRAND
-  // ==========================================================
-
-  selectBrand(
-    brandId: number
-  ): void {
-
-    this.closeAllMenus();
-
-    this.router.navigate(
-      ['/products'],
-      {
-        queryParams: {
-          brand: brandId
-        }
-      }
-    );
-
-  }
-
+ 
 
   // ==========================================================
   // MOBILE MENU
@@ -629,7 +470,6 @@ export class HeaderComponent implements OnInit {
 
     this.categoryMenuOpen.set(false);
 
-    this.brandMenuOpen.set(false);
 
     this.expandedCategoryId.set(null);
 
@@ -644,7 +484,6 @@ export class HeaderComponent implements OnInit {
 
     this.categoryMenuOpen.set(false);
 
-    this.brandMenuOpen.set(false);
 
     this.expandedCategoryId.set(null);
 

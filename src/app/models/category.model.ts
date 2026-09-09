@@ -12,5 +12,4 @@ export interface CategoryFilter {
   id: number;
   nameEn: string;
   nameAr: string;
-  subCategories: SubCategoryFilter[];
 }

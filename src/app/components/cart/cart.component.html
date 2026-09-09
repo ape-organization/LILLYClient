@@ -1,187 +1,347 @@
-<main class="cart-container">
+
+<div class="cart-page">
+
+  <!-- ====================================================== -->
+  <!-- HEADER -->
+  <!-- ====================================================== -->
+
+  <header class="cart-header">
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="back()"
+      aria-label="Back"
+    >
+      <mat-icon>
+        arrow_back
+      </mat-icon>
+    </button>
 
 
-  <!-- =====================================================
-       HEADER
-       ===================================================== -->
+    <div class="header-content">
 
-  <div class="cart-header">
-
-    <div>
-
-      <span class="cart-label">
-        {{ 'CART.YOUR_CART' | translate }}
+      <span class="header-icon">
+        <mat-icon>
+          shopping_bag
+        </mat-icon>
       </span>
 
-      <h1 class="cart-title">
-        {{ 'CART.TITLE' | translate }}
-      </h1>
+      <div>
+
+        <h1>
+          {{ 'CART.TITLE' | translate }}
+        </h1>
+
+        <p>
+          {{ 'CART.SUBTITLE' | translate }}
+        </p>
+
+      </div>
 
     </div>
 
+  </header>
 
-    <div class="cart-count">
 
-      {{ cartItems.length }}
+  <!-- ====================================================== -->
+  <!-- LOADING -->
+  <!-- ====================================================== -->
 
-      <span>
-        {{ 'CART.PRODUCTS' | translate }}
-      </span>
+  <div
+    class="cart-loading"
+    *ngIf="isLoading"
+  >
 
-    </div>
+    <div class="loading-spinner"></div>
+
+    <p>
+      {{ 'CART.LOADING' | translate }}
+    </p>
 
   </div>
 
 
-  <!-- =====================================================
-       CART
-       ===================================================== -->
+  <!-- ====================================================== -->
+  <!-- EMPTY CART -->
+  <!-- ====================================================== -->
 
-  <div
-    class="cart-content"
-    *ngIf="cartItems.length > 0; else emptyCart"
+  <section
+    class="empty-cart"
+    *ngIf="!isLoading && cartItems.length === 0"
   >
 
+    <div class="empty-cart-icon">
 
-    <!-- ===================================================
-         PRODUCTS
-         =================================================== -->
+      <mat-icon>
+        shopping_bag
+      </mat-icon>
 
-    <div class="cart-items">
-
-
-      <div
-        *ngFor="let item of cartItems"
-        class="cart-item"
-      >
+    </div>
 
 
-        <!-- IMAGE -->
+    <h2>
+      {{ 'CART.EMPTY_TITLE' | translate }}
+    </h2>
 
-        <div class="product-image">
 
-          <img
-            [src]="getImageUrl(item.product.imageUrl)"
-            [alt]="getProductName(item.product)"
-          />
+    <p>
+      {{ 'CART.EMPTY_MESSAGE' | translate }}
+    </p>
+
+
+    <button
+      type="button"
+      class="continue-shopping-btn"
+      (click)="back()"
+    >
+
+      <mat-icon>
+        arrow_back
+      </mat-icon>
+
+      <span>
+        {{ 'CART.CONTINUE_SHOPPING' | translate }}
+      </span>
+
+    </button>
+
+  </section>
+
+
+  <!-- ====================================================== -->
+  <!-- CART CONTENT -->
+  <!-- ====================================================== -->
+
+  <section
+    class="cart-content"
+    *ngIf="!isLoading && cartItems.length > 0"
+  >
+
+    <!-- ==================================================== -->
+    <!-- CART ITEMS -->
+    <!-- ==================================================== -->
+
+    <div class="cart-items-section">
+
+
+      <!-- -------------------------------------------------- -->
+      <!-- ITEMS HEADER -->
+      <!-- -------------------------------------------------- -->
+
+      <div class="items-header">
+
+        <div>
+
+          <h2>
+            {{ 'CART.YOUR_ITEMS' | translate }}
+          </h2>
+
+          <span>
+            {{ cartItems.length }}
+            {{ 'CART.ITEMS' | translate }}
+          </span>
 
         </div>
 
 
-        <!-- PRODUCT INFORMATION -->
+        <button
+          type="button"
+          class="clear-cart-btn"
+          (click)="clearCart()"
+        >
 
-        <div class="product-info">
+          <mat-icon>
+            delete_sweep
+          </mat-icon>
 
-
-          <!-- BRAND -->
-
-          <span class="product-brand">
-
-            {{ getBrandName(item.product) }}
-
+          <span>
+            {{ 'CART.CLEAR_CART' | translate }}
           </span>
 
+        </button>
 
-          <!-- NAME -->
+      </div>
 
-          <h2 class="product-name">
+
+      <!-- -------------------------------------------------- -->
+      <!-- CART ITEM -->
+      <!-- -------------------------------------------------- -->
+
+      <article
+        class="cart-item"
+        *ngFor="
+          let item of cartItems;
+          trackBy: trackByCartItem
+        "
+      >
+
+        <!-- ================================================ -->
+        <!-- PRODUCT IMAGE -->
+        <!-- ================================================ -->
+
+        <div class="product-image-wrapper">
+
+          <img
+            class="product-image"
+            [src]="
+              getImageUrl(
+                getFirstImage(item.product)
+              )
+            "
+            [alt]="getProductName(item.product)"
+          />
+
+
+          <!-- Discount -->
+
+          <span
+            class="discount-badge"
+            *ngIf="hasDiscount(item.product)"
+          >
+            -{{ getDiscountPercentage(item.product) }}%
+          </span>
+
+        </div>
+
+
+        <!-- ================================================ -->
+        <!-- PRODUCT DETAILS -->
+        <!-- ================================================ -->
+
+        <div class="product-details">
+
+          <!-- Remove -->
+
+          <button
+            type="button"
+            class="remove-item-btn"
+            (click)="removeFromCart(item)"
+            [attr.aria-label]="'CART.REMOVE' | translate"
+          >
+
+            <mat-icon>
+              close
+            </mat-icon>
+
+          </button>
+
+
+          <!-- Product name -->
+
+          <h3 class="product-name">
 
             {{ getProductName(item.product) }}
 
-          </h2>
+          </h3>
 
 
-          <!-- CATEGORY / SUBCATEGORY -->
+          <!-- Product description -->
 
-          <div class="product-category">
+          <p
+            class="product-description"
+            *ngIf="getProductDescription(item.product)"
+          >
 
-            <span>
+            {{ getProductDescription(item.product) }}
 
-              {{ getCategoryName(item.product) }}
+          </p>
+
+
+          <!-- ============================================== -->
+          <!-- SELECTED VARIANT -->
+          <!-- ============================================== -->
+
+          <div
+            class="product-variants"
+            *ngIf="hasVariant(item)"
+          >
+
+            <span class="variant-title">
+              {{ 'CART.SELECTED_OPTIONS' | translate }}
+            </span>
+
+
+            <div class="variant-chips">
+
+              <!-- SIZE -->
+
+              <span
+                class="variant-chip"
+                *ngIf="hasSize(item)"
+              >
+
+                <span class="variant-chip-label">
+                  {{ 'CART.SIZE' | translate }}
+                </span>
+
+                <strong>
+                  {{ getSizeName(item.variant) }}
+                </strong>
+
+              </span>
+
+
+              <!-- HEEL SIZE -->
+
+              <span
+                class="variant-chip"
+                *ngIf="hasHeelSize(item)"
+              >
+
+                <span class="variant-chip-label">
+                  {{ 'CART.HEEL_SIZE' | translate }}
+                </span>
+
+                <strong>
+                  {{ getHeelSizeName(item.variant) }}
+                </strong>
+
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- ============================================== -->
+          <!-- PRICE -->
+          <!-- ============================================== -->
+
+          <div class="product-price">
+
+            <span class="current-price">
+
+              {{ getNewPrice(item.product) | number:'1.2-2' }}
+
+              <span class="currency">
+                {{ 'COMMON.EGP' | translate }}
+              </span>
 
             </span>
 
-            <span class="separator">
-              /
-            </span>
 
-            <span>
+            <span
+              class="old-price"
+              *ngIf="hasDiscount(item.product)"
+            >
 
-              {{ getSubCategoryName(item.product) }}
+              {{ getOldPrice(item.product) | number:'1.2-2' }}
+
+              <span class="currency">
+                {{ 'COMMON.EGP' | translate }}
+              </span>
 
             </span>
 
           </div>
 
-
         </div>
 
 
-        <!-- PRICE -->
-
-        <div class="price-section">
-
-
-          <!-- DISCOUNTED -->
-
-          <ng-container
-            *ngIf="
-              getDiscountPercentage(item.product) > 0;
-              else normalPrice
-            "
-          >
-
-            <div class="new-price">
-
-              {{ getNewPrice(item.product) | number:'1.0-2' }}
-
-              <span>
-                {{ 'COMMON.EGP' | translate }}
-              </span>
-
-            </div>
-
-
-            <div class="old-price">
-
-              {{ getOldPrice(item.product) | number:'1.0-2' }}
-
-              <span>
-                {{ 'COMMON.EGP' | translate }}
-              </span>
-
-            </div>
-
-
-            <div class="discount">
-
-              -{{ getDiscountPercentage(item.product) }}%
-
-            </div>
-
-          </ng-container>
-
-
-          <!-- NO DISCOUNT -->
-
-          <ng-template #normalPrice>
-
-            <div class="new-price">
-
-              {{ getOldPrice(item.product) | number:'1.0-2' }}
-
-              <span>
-                {{ 'COMMON.EGP' | translate }}
-              </span>
-
-            </div>
-
-          </ng-template>
-
-        </div>
-
-
+        <!-- ================================================ -->
         <!-- QUANTITY -->
+        <!-- ================================================ -->
 
         <div class="quantity-section">
 
@@ -192,78 +352,142 @@
 
           <div class="quantity-control">
 
-
             <button
               type="button"
               class="quantity-btn"
-
-              (click)="updateQuantity(
-                item.product.id,
-                item.quantity - 1
-              )"
-
+              (click)="decreaseQuantity(item)"
               [disabled]="item.quantity <= 1"
+              aria-label="Decrease quantity"
             >
-
               −
-
             </button>
 
 
             <input
               type="number"
-
-              [(ngModel)]="item.quantity"
-
-              (change)="updateQuantity(
-                item.product.id,
-                item.quantity
-              )"
-
               min="1"
-
-              class="quantity-input"
+              [value]="item.quantity"
+              (change)="
+                updateQuantity(
+                  item,
+                  +$any($event.target).value
+                )
+              "
+              aria-label="Quantity"
             />
 
 
             <button
               type="button"
               class="quantity-btn"
-
-              (click)="updateQuantity(
-                item.product.id,
-                item.quantity + 1
-              )"
+              (click)="increaseQuantity(item)"
+              [disabled]="
+                item.variant &&
+                item.quantity >= item.variant.stockQuantity
+              "
+              aria-label="Increase quantity"
             >
-
               +
-
             </button>
 
           </div>
 
+
+
         </div>
 
 
+        <!-- ================================================ -->
         <!-- SUBTOTAL -->
+        <!-- ================================================ -->
 
-        <div class="subtotal-section">
+        <div class="item-subtotal">
 
           <span class="subtotal-label">
-
             {{ 'CART.SUBTOTAL' | translate }}
-
           </span>
 
 
-          <strong class="subtotal">
+          <strong>
 
-            {{
-              getItemSubtotal(item)
-              | number:'1.0-2'
-            }}
+            {{ getItemSubtotal(item) | number:'1.2-2' }}
 
-            <span>
+            <span class="currency">
+              {{ 'COMMON.EGP' | translate }}
+            </span>
+
+          </strong>
+
+        </div>
+
+      </article>
+
+    </div>
+
+
+    <!-- ==================================================== -->
+    <!-- CART SUMMARY -->
+    <!-- ==================================================== -->
+
+    <aside class="cart-summary">
+
+      <div class="summary-header">
+
+        <h2>
+          {{ 'CART.ORDER_SUMMARY' | translate }}
+        </h2>
+
+      </div>
+
+
+      <div class="summary-content">
+
+        <!-- Number of cart lines -->
+
+        <div class="summary-row">
+
+          <span>
+            {{ 'CART.ITEMS' | translate }}
+          </span>
+
+          <span>
+            {{ cartItems.length }}
+          </span>
+
+        </div>
+
+
+        <!-- Total quantity -->
+
+        <div class="summary-row">
+
+          <span>
+            {{ 'CART.QUANTITY' | translate }}
+          </span>
+
+          <span>
+            {{ getTotalQuantity() }}
+          </span>
+
+        </div>
+
+
+        <div class="summary-divider"></div>
+
+
+        <!-- Total -->
+
+        <div class="summary-total">
+
+          <span>
+            {{ 'CART.TOTAL' | translate }}
+          </span>
+
+          <strong>
+
+            {{ getCartTotal() | number:'1.2-2' }}
+
+            <span class="currency">
               {{ 'COMMON.EGP' | translate }}
             </span>
 
@@ -272,70 +496,30 @@
         </div>
 
 
-        <!-- DELETE -->
+        <!-- Checkout -->
 
         <button
           type="button"
-          class="remove-btn"
-
-          (click)="removeFromCart(item.product.id)"
-
-          [attr.aria-label]="
-            'CART.REMOVE_PRODUCT' | translate
-          "
+          class="checkout-btn"
+          (click)="checkout()"
         >
 
+          <span>
+            {{ 'CART.PROCEED_TO_CHECKOUT' | translate }}
+          </span>
+
           <mat-icon>
-            delete_outline
+            arrow_forward
           </mat-icon>
 
         </button>
 
 
-      </div>
-
-    </div>
-
-
-    <!-- ===================================================
-         SUMMARY
-         =================================================== -->
-
-    <div class="cart-summary">
-
-
-      <!-- TOTAL -->
-
-      <div class="summary-total">
-
-        <span>
-          {{ 'CART.TOTAL' | translate }}
-        </span>
-
-
-        <strong>
-
-          {{ getCartTotal() | number:'1.0-2' }}
-
-          <small>
-            {{ 'COMMON.EGP' | translate }}
-          </small>
-
-        </strong>
-
-      </div>
-
-
-      <!-- ACTIONS -->
-
-      <div class="cart-actions">
-
-
-        <!-- CONTINUE SHOPPING -->
+        <!-- Continue shopping -->
 
         <button
           type="button"
-          class="continue-shopping"
+          class="continue-shopping-link"
           (click)="back()"
         >
 
@@ -343,115 +527,16 @@
             arrow_back
           </mat-icon>
 
-
           <span>
             {{ 'CART.CONTINUE_SHOPPING' | translate }}
           </span>
 
         </button>
 
-
-        <!-- PURCHASE -->
-
-        <div class="purchase-actions">
-
-
-          <!-- CHECKOUT -->
-
-          <button
-           
-            type="button"
-            class="checkout-btn"
-            (click)="goToCheckout()"
-          >
-
-            <mat-icon>
-              shopping_bag
-            </mat-icon>
-
-            <span>
-              {{ 'CHECKOUT.TITLE' | translate }}
-            </span>
-
-          </button>
-
-
-          <!-- CLEAR -->
-
-          <button
-            mat-button
-            type="button"
-            class="clear-btn"
-            (click)="clearCart()"
-          >
-
-            <mat-icon>
-              delete_outline
-            </mat-icon>
-
-            <span>
-              {{ 'CART.CLEAR_CART' | translate }}
-            </span>
-
-          </button>
-
-        </div>
-
       </div>
 
-    </div>
+    </aside>
 
-  </div>
+  </section>
 
-
-  <!-- =====================================================
-       EMPTY CART
-       ===================================================== -->
-
-  <ng-template #emptyCart>
-
-    <div class="empty-cart">
-
-
-      <div class="empty-icon">
-
-        <mat-icon>
-          shopping_bag
-        </mat-icon>
-
-      </div>
-
-
-      <h2>
-        {{ 'CART.EMPTY' | translate }}
-      </h2>
-
-
-      <p class="empty-message">
-
-        {{ 'CART.EMPTY_MESSAGE' | translate }}
-
-      </p>
-
-
-      <button
-        type="button"
-        class="continue-shopping empty-shopping"
-        (click)="back()"
-      >
-
-        <mat-icon>
-          shopping_bag
-        </mat-icon>
-
-        {{ 'CART.CONTINUE_SHOPPING' | translate }}
-
-      </button>
-
-
-    </div>
-
-  </ng-template>
-
-
-</main>
+</div>

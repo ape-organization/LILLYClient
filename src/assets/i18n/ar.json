@@ -1,6 +1,6 @@
 {
 "HEADER": {
-  "TITLE":"PINKY AURA",
+  "TITLE":"LILLY",
 "HOME": "الرئيسية",
 "PRODUCTS": "المتجر",
 "CART": "السلة",
@@ -51,6 +51,12 @@
 },
 
 "PRODUCT": {
+  "OPTIONS": "الخيارات",
+   "CHOOSE_OPTIONS": "اختر الخيارات المناسبة لك",
+   "SIZE": "المقاس", "HEEL_SIZE": "ارتفاع الكعب",
+    "REQUIRED": "مطلوب", 
+     "SELECTED_OPTIONS": "الاختيار", 
+  "SELECTED": "محدد",
 "Show_All_Products":"كل المنتجات",
 "TITLE": "المنتجات",
 "PRODUCT": "المنتج",
@@ -127,67 +133,90 @@
 },
 
 "CART": {
-  "CLEAR_CART_CONFIRM":"تاكيد افراغ السله",
+    "TITLE": "سلة التسوق",
+    "SUBTITLE": "راجع المنتجات المختارة قبل إتمام الطلب",
+    "LOADING": "جاري تحميل السلة...",
+    "EMPTY_TITLE": "السلة فارغة",
+    "EMPTY_MESSAGE": "لم تقم بإضافة أي منتجات إلى سلة التسوق بعد.",
+    "CONTINUE_SHOPPING": "متابعة التسوق",
+    "YOUR_ITEMS": "منتجاتك",
+    "ITEMS": "منتجات",
+    "CLEAR_CART": "إفراغ السلة",
+    "SELECTED_OPTIONS": "الخيارات المختارة",
+    "SIZE": "المقاس",
+    "HEEL_SIZE": "ارتفاع الكعب",
+    "QUANTITY": "الكمية",
+    "SUBTOTAL": "الإجمالي الفرعي",
+    "REMOVE": "إزالة",
+    "ORDER_SUMMARY": "ملخص الطلب",
+    "TOTAL": "الإجمالي",
+    "PROCEED_TO_CHECKOUT": "المتابعة إلى إتمام الطلب"
+  },
 
-"TITLE": "سلة التسوق",
-"YOUR_CART": "سلة التسوق الخاصة بك",
-"EMPTY": "السلة فارغة",
-"EMPTY_MESSAGE": "لا توجد منتجات في سلة التسوق.",
-"CONTINUE_SHOPPING": "متابعة التسوق",
-"PRODUCT": "المنتج",
-"PRODUCTS": "المنتجات",
-"QUANTITY": "الكمية",
-"Subtotal":"السعر",
-"PRICE": "السعر",
-"TOTAL": "الإجمالي",
-"SUBTOTAL": "المجموع الفرعي",
-"GRAND_TOTAL": "الإجمالي الكلي",
-"REMOVE": "إزالة",
-"REMOVE_ITEM": "إزالة المنتج",
-"CLEAR_CART": "إفراغ السلة",
-"UPDATE_QUANTITY": "تحديث الكمية",
-"PROCEED_TO_CHECKOUT": "الانتقال إلى الدفع",
-"ITEM": "منتج",
-"ITEMS": "منتجات"
-},
+  "CHECKOUT": {
+    "BACK_TO_CART": "العودة إلى السلة",
+    "TITLE": "إتمام الطلب",
+    "SUBTITLE": "أكمل بيانات طلبك وقم بتأكيد الطلب",
 
-"CHECKOUT": {
-"TITLE": "إتمام الطلب",
-"Complete_your_order":"اكمل طلبك",
-"CUSTOMER_INFORMATION": "بيانات العميل",
-"ORDER_INFORMATION": "بيانات الطلب",
-"DELIVERY_INFORMATION": "بيانات التوصيل",
-"FULL_NAME": "الاسم بالكامل",
-"PHONE": "رقم الهاتف",
-"EMAIL": "البريد الإلكتروني",
-"ADDRESS": "العنوان",
-"CITY": "المدينة",
-"NOTES": "ملاحظات",
-"OPTIONAL": "اختياري",
-"PAYMENT_METHOD": "طريقة الدفع",
-"CASH_ON_DELIVERY": "الدفع عند الاستلام",
-"CASH_ON_DELIVERY_DESCRIPTION": "ادفع عند استلام طلبك.",
-"PLACE_ORDER": "تأكيد الطلب",
-"CONFIRM_ORDER": "تأكيد الطلب",
-"ORDER_TOTAL": "إجمالي الطلب",
-"ORDER_SUMMARY": "ملخص الطلب",
-"DELIVERY_FEE": "رسوم التوصيل",
-"FREE": "مجاناً",
-"REQUIRED": "هذا الحقل مطلوب",
-"INVALID_NAME":"يرجى ادخال الاسم بالكامل ",
-"INVALID_PHONE": "يرجى إدخال رقم هاتف صحيح",
-"INVALID_EMAIL": "يرجى إدخال بريد إلكتروني صحيح",
-"INVALID_ADDRESS":"يرجي ادخال العنوان ",
-"Qty":"الكمية",
-"YOUR_ORDER":"طلبك",
-"Order_Summary":"معلومات الطلب",
-"ORDER_SUCCESS": "تم تسجيل طلبك بنجاح!",
-"ORDER_FAILED": "حدث خطأ أثناء تسجيل الطلب.",
-"THANK_YOU": "شكراً لطلبك!",
-"ORDER_NUMBER": "رقم الطلب",
-"INFO":"معلوماتك تخضع للخصوصيه ",
-"Back_to_Cart":"العودة الي السلة"
-},
+    "EMPTY_CART": "السلة فارغة",
+    "EMPTY_CART_MESSAGE": "لا توجد منتجات في سلة التسوق. أضف بعض المنتجات قبل المتابعة لإتمام الطلب.",
+
+    "CUSTOMER_INFORMATION": "بيانات العميل",
+    "CUSTOMER_INFORMATION_SUBTITLE": "يرجى إدخال بيانات التواصل الخاصة بك",
+
+    "PHONE": "رقم الهاتف",
+    "PHONE_PLACEHOLDER": "أدخل رقم الهاتف",
+    "PHONE_REQUIRED": "رقم الهاتف مطلوب",
+    "PHONE_INVALID": "يرجى إدخال رقم هاتف صحيح",
+
+    "CLIENT_FOUND": "تم العثور على بيانات العميل",
+
+    "FULL_NAME": "الاسم بالكامل",
+    "FULL_NAME_PLACEHOLDER": "أدخل اسمك بالكامل",
+    "FULL_NAME_REQUIRED": "الاسم بالكامل مطلوب",
+    "FULL_NAME_INVALID": "يرجى إدخال 3 أحرف على الأقل",
+
+    "EMAIL": "البريد الإلكتروني",
+    "EMAIL_PLACEHOLDER": "أدخل بريدك الإلكتروني",
+    "EMAIL_INVALID": "يرجى إدخال بريد إلكتروني صحيح",
+    "OPTIONAL": "اختياري",
+
+    "DELIVERY_INFORMATION": "بيانات التوصيل",
+    "DELIVERY_INFORMATION_SUBTITLE": "أين تريد توصيل طلبك؟",
+
+    "ADDRESS": "عنوان التوصيل",
+    "ADDRESS_PLACEHOLDER": "أدخل عنوان التوصيل بالكامل",
+    "ADDRESS_REQUIRED": "عنوان التوصيل مطلوب",
+    "ADDRESS_INVALID": "يرجى إدخال عنوان أكثر تفصيلاً",
+
+    "PAYMENT": "طريقة الدفع",
+    "PAYMENT_SUBTITLE": "اختر طريقة الدفع المناسبة لك",
+
+    "CASH_ON_DELIVERY": "الدفع عند الاستلام",
+    "CASH_ON_DELIVERY_DESCRIPTION": "ادفع نقدًا عند استلام طلبك",
+
+    "PLACING_ORDER": "جاري تأكيد الطلب...",
+    "PLACE_ORDER": "تأكيد الطلب",
+
+    "ORDER_SUMMARY": "ملخص الطلب",
+    "ITEMS": "منتجات",
+    "QTY": "الكمية",
+
+    "DECREASE_QUANTITY": "تقليل الكمية",
+    "INCREASE_QUANTITY": "زيادة الكمية",
+
+    "REMOVE_ITEM": "إزالة المنتج",
+
+    "SUBTOTAL": "الإجمالي الفرعي",
+    "DELIVERY": "التوصيل",
+    "FREE": "مجانًا",
+
+    "TOTAL": "الإجمالي",
+    "INCLUDING_DELIVERY": "شامل التوصيل",
+
+    "SECURE_ORDER": "طلب آمن",
+    "SECURE_ORDER_DESCRIPTION": "يتم التعامل مع بيانات طلبك بأمان"
+  },
 
 "ORDER": {
     "SUCCESS":"تم بنجاح",

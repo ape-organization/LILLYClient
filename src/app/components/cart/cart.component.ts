@@ -1,70 +1,21 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  OnDestroy
-} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 
-import {
-  CommonModule
-} from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 
-import {
-  FormsModule
-} from '@angular/forms';
-
-import {
-  MatButtonModule
-} from '@angular/material/button';
-
-import {
-  MatIconModule
-} from '@angular/material/icon';
-
-import {
-  MatDialog
-} from '@angular/material/dialog';
-
-import {
-  Subject,
-  takeUntil
-} from 'rxjs';
-
-import {
-  CartService,
-  CartItem
-} from '../../services/cart.service';
-
-import {
-  ConfirmDialogComponent
-} from '../shared/confirm-dialog/confirm-dialog.component';
-
-import {
-  Router
-} from '@angular/router';
-
-import {
-  Product
-} from '../../models/product.model';
-
-import {
-  environment
-} from '../../../environments/environment';
-
-import {
-  TranslatePipe
-} from '@ngx-translate/core';
-
-import {
-  LanguageService
-} from '../../services/language.service';
-
+import { CartItem, CartService } from '../../services/cart.service';
+import { Product, ProductVariant } from '../../models/product.model';
+import { LanguageService } from '../../services/language.service';
+import { environment } from '../../../environments/environment';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
-
   standalone: true,
-
   imports: [
     CommonModule,
     FormsModule,
@@ -72,549 +23,483 @@ import {
     MatIconModule,
     TranslatePipe
   ],
-
   templateUrl: './cart.component.html',
-
-  styleUrl: './cart.component.css'
+  styleUrls: ['./cart.component.css']
 })
-export class CartComponent
-  implements OnInit, OnDestroy {
-
-
-  // ==========================================================
-  // CART
-  // ==========================================================
+export class CartComponent implements OnInit, OnDestroy {
 
   cartItems: CartItem[] = [];
-
   cartTotal = 0;
 
+  api = environment.imageApiBaseUrl;
 
-  // ==========================================================
-  // API
-  // ==========================================================
+  isLoading = false;
 
-  api =
-    environment.imageApiBaseUrl;
-
-
-  // ==========================================================
-  // DESTROY
-  // ==========================================================
-
-  private readonly destroy$ =
-    new Subject<void>();
-
-
-  // ==========================================================
-  // CONSTRUCTOR
-  // ==========================================================
+  private destroy$ = new Subject<void>();
 
   constructor(
-
+    private router:Router,
     private cartService: CartService,
-
-    private dialog: MatDialog,
-
-    private cdr: ChangeDetectorRef,
-
-    private router: Router,
-
     public languageService: LanguageService
-
   ) {}
 
-
-  // ==========================================================
-  // INIT
-  // ==========================================================
+  // ============================================================
+  // LIFECYCLE
+  // ============================================================
 
   ngOnInit(): void {
 
-    this.cartService
-      .cartItems$
-
-      .pipe(
-        takeUntil(
-          this.destroy$
-        )
-      )
-
+    this.cartService.cartItems$
+      .pipe(takeUntil(this.destroy$))
       .subscribe(items => {
 
-        this.cartItems =
-          items;
+        this.cartItems = items;
 
         this.calculateCartTotal();
-
-        this.cdr.detectChanges();
-
       });
 
+    this.cartService.cartLoading$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(loading => {
+
+        this.isLoading = loading;
+      });
   }
-
-
-  // ==========================================================
-  // DESTROY
-  // ==========================================================
 
   ngOnDestroy(): void {
 
     this.destroy$.next();
-
     this.destroy$.complete();
-
   }
 
+  // ============================================================
+  // PRODUCT
+  // ============================================================
 
-  // ==========================================================
-  // PRODUCT NAME
-  // ==========================================================
+  getProductName(product: Product): string {
 
-  getProductName(
-    product: Product
-  ): string {
+    if (!product) {
+      return '';
+    }
 
-    if (
-      this.languageService.isArabic()
-    ) {
+    if (this.languageService.isArabic()) {
 
       return (
-        product?.nameAr?.trim() ||
-        product?.nameEn ||
-        'Product'
+        product.nameAr?.trim() ||
+        product.nameEn?.trim() ||
+        ''
       );
-
     }
 
     return (
-      product?.nameEn?.trim() ||
-      product?.nameAr ||
-      'Product'
+      product.nameEn?.trim() ||
+      product.nameAr?.trim() ||
+      ''
     );
-
   }
 
+  getProductDescription(product: Product): string {
 
-  // ==========================================================
-  // ORIGINAL PRICE
-  // ==========================================================
+    if (!product) {
+      return '';
+    }
 
-  getOldPrice(
-    product: Product
-  ): number {
+    if (this.languageService.isArabic()) {
 
-    return Number(
-      product.price ?? 0
-    );
-
-  }
-
-
-  // ==========================================================
-  // DISCOUNT
-  // ==========================================================
-
-  getDiscountPercentage(
-    product: Product
-  ): number {
-
-    return Number(
-      product.discountPercentage ?? 0
-    );
-
-  }
-
-
-  // ==========================================================
-  // NEW PRICE
-  // ==========================================================
-
-  getNewPrice(
-    product: Product
-  ): number {
-
-    return this.cartService
-      .getFinalPrice(product);
-
-  }
-
-
-  // ==========================================================
-  // ITEM SUBTOTAL
-  // ==========================================================
-
-  getItemSubtotal(
-    item: CartItem
-  ): number {
-
-    return this.getNewPrice(
-      item.product
-    ) * Number(
-      item.quantity ?? 0
-    );
-
-  }
-
-
-  // ==========================================================
-  // CALCULATE TOTAL
-  // ==========================================================
-
-  calculateCartTotal(): void {
-
-    this.cartTotal =
-      this.cartItems.reduce(
-        (
-          total,
-          item
-        ) => {
-
-          return total +
-            this.getItemSubtotal(
-              item
-            );
-
-        },
-        0
+      return (
+        product.descriptionAr?.trim() ||
+        product.descriptionEn?.trim() ||
+        ''
       );
+    }
 
+    return (
+      product.descriptionEn?.trim() ||
+      product.descriptionAr?.trim() ||
+      ''
+    );
   }
 
+  // ============================================================
+  // VARIANT
+  // ============================================================
 
-  // ==========================================================
-  // BRAND
-  // ==========================================================
+  /**
+   * Returns the selected variant.
+   *
+   * The cart contains ONE exact variant.
+   * Example:
+   *
+   * Size: 38
+   * Heel: 3 cm
+   *
+   * We never display all available variants here.
+   */
+  getVariant(item: CartItem): ProductVariant | undefined {
 
-  getBrandName(
-    product: Product
-  ): string {
+    return item?.variant;
+  }
 
-    const brand =
-      product?.brand;
+  /**
+   * Get size name.
+   *
+   * Supports both:
+   *
+   * 1. Nested:
+   *    variant.size.name
+   *
+   * 2. Flattened:
+   *    variant.sizeName
+   *
+   * Also supports:
+   *
+   *    size.nameAr
+   *    size.nameEn
+   */
+  getSizeName(variant?: ProductVariant): string {
 
-    if (brand) {
+    if (!variant) {
+      return '';
+    }
 
-      if (
-        this.languageService.isArabic()
-      ) {
+    const v = variant as any;
 
-        return (
-          brand.nameAr?.trim() ||
-          brand.nameEn ||
-          'BEAUTY'
-        );
+    // ----------------------------------------------------------
+    // Nested object
+    // ----------------------------------------------------------
 
+    const nestedSize = v.size;
+
+    if (nestedSize) {
+
+      if (this.languageService.isArabic()) {
+
+        const arabicName =
+          nestedSize.nameAr?.toString().trim();
+
+        if (arabicName) {
+          return arabicName;
+        }
       }
 
-      return (
-        brand.nameEn?.trim() ||
-        brand.nameAr ||
-        'BEAUTY'
-      );
+      const englishName =
+        nestedSize.nameEn?.toString().trim();
 
+      if (englishName) {
+        return englishName;
+      }
+
+      const normalName =
+        nestedSize.name?.toString().trim();
+
+      if (normalName) {
+        return normalName;
+      }
     }
 
+    // ----------------------------------------------------------
+    // Flattened property
+    // ----------------------------------------------------------
 
-    if (
-      this.languageService.isArabic()
-    ) {
+    const sizeName =
+      v.sizeName?.toString().trim();
 
-      return (
-        product?.brand?.nameAr?.trim() ||
-        product?.brand?.nameEn ||
-        'BEAUTY'
-      );
-
+    if (sizeName) {
+      return sizeName;
     }
 
-    return (
-      product?.brand?.nameAr.trim() ||
-      product?.brand?.nameEn ||
-      'BEAUTY'
+    // ----------------------------------------------------------
+    // Other possible API naming
+    // ----------------------------------------------------------
+
+    const sizeValue =
+      v.sizeValue?.toString().trim();
+
+    if (sizeValue) {
+      return sizeValue;
+    }
+
+    return '';
+  }
+
+  /**
+   * Get heel size name.
+   *
+   * Supports both:
+   *
+   * 1. Nested:
+   *    variant.heelSize.name
+   *
+   * 2. Flattened:
+   *    variant.heelSizeName
+   */
+  getHeelSizeName(variant?: ProductVariant): string {
+
+    if (!variant) {
+      return '';
+    }
+
+    const v = variant as any;
+
+    // ----------------------------------------------------------
+    // Nested object
+    // ----------------------------------------------------------
+
+    const nestedHeelSize = v.heelSize;
+
+    if (nestedHeelSize) {
+
+      if (this.languageService.isArabic()) {
+
+        const arabicName =
+          nestedHeelSize.nameAr?.toString().trim();
+
+        if (arabicName) {
+          return arabicName;
+        }
+      }
+
+      const englishName =
+        nestedHeelSize.nameEn?.toString().trim();
+
+      if (englishName) {
+        return englishName;
+      }
+
+      const normalName =
+        nestedHeelSize.name?.toString().trim();
+
+      if (normalName) {
+        return normalName;
+      }
+    }
+
+    // ----------------------------------------------------------
+    // Flattened property
+    // ----------------------------------------------------------
+
+    const heelSizeName =
+      v.heelSizeName?.toString().trim();
+
+    if (heelSizeName) {
+      return heelSizeName;
+    }
+
+    // ----------------------------------------------------------
+    // Other possible API naming
+    // ----------------------------------------------------------
+
+    const heelValue =
+      v.heelSizeValue?.toString().trim();
+
+    if (heelValue) {
+      return heelValue;
+    }
+
+    return '';
+  }
+
+  hasVariant(item: CartItem): boolean {
+
+    return !!item?.variant;
+  }
+
+  hasSize(item: CartItem): boolean {
+
+    return this.getSizeName(item?.variant).length > 0;
+  }
+
+  hasHeelSize(item: CartItem): boolean {
+
+    return this.getHeelSizeName(item?.variant).length > 0;
+  }
+
+  // ============================================================
+  // PRICE
+  // ============================================================
+
+  getOldPrice(product: Product): number {
+
+    return Number(product?.price ?? 0);
+  }
+
+  getDiscountPercentage(product: Product): number {
+
+    return Number(product?.discountPercentage ?? 0);
+  }
+
+  hasDiscount(product: Product): boolean {
+
+    return this.getDiscountPercentage(product) > 0;
+  }
+
+  getNewPrice(product: Product): number {
+
+    return this.cartService.getFinalPrice(product);
+  }
+
+  getItemSubtotal(item: CartItem): number {
+
+    return this.cartService.getItemTotal(item);
+  }
+
+  // ============================================================
+  // QUANTITY
+  // ============================================================
+
+  getTotalQuantity(): number {
+
+    return this.cartItems.reduce(
+      (total, item) => total + item.quantity,
+      0
     );
-
   }
-
-
-  // ==========================================================
-  // CATEGORY
-  // ==========================================================
-
-  getCategoryName(
-    product: Product
-  ): string {
-
-    const subCategory =
-      product?.subCategories?.[0];
-
-    if (!subCategory) {
-
-      return 'BEAUTY';
-
-    }
-
-
-    if (
-      this.languageService.isArabic()
-    ) {
-
-      return (
-        subCategory.categoryNameAr?.trim() ||
-        subCategory.categoryNameEn ||
-        'BEAUTY'
-      );
-
-    }
-
-    return (
-      subCategory.categoryNameEn?.trim() ||
-      subCategory.categoryNameAr ||
-      'BEAUTY'
-    );
-
-  }
-
-
-  // ==========================================================
-  // SUBCATEGORY
-  // ==========================================================
-
-  getSubCategoryName(
-    product: Product
-  ): string {
-
-    const subCategory =
-      product?.subCategories?.[0];
-
-    if (!subCategory) {
-
-      return 'Collection';
-
-    }
-
-
-    if (
-      this.languageService.isArabic()
-    ) {
-
-      return (
-        subCategory.nameAr?.trim() ||
-        subCategory.nameEn ||
-        'Collection'
-      );
-
-    }
-
-    return (
-      subCategory.nameEn?.trim() ||
-      subCategory.nameAr ||
-      'Collection'
-    );
-
-  }
-
-
-  // ==========================================================
-  // REMOVE
-  // ==========================================================
-
-  removeFromCart(
-    productId: number
-  ): void {
-
-    this.cartService
-      .removeFromCart(
-        productId
-      );
-
-  }
-
-
-  // ==========================================================
-  // UPDATE QUANTITY
-  // ==========================================================
 
   updateQuantity(
-    productId: number,
+    item: CartItem,
     quantity: number
   ): void {
 
-    quantity =
-      Number(quantity);
-
-
-    if (
-      !Number.isFinite(quantity)
-    ) {
-
+    if (!item) {
       return;
-
     }
 
+    quantity = Number(quantity);
 
-    quantity =
-      Math.floor(quantity);
-
-
-    if (
-      quantity <= 0
-    ) {
-
-      this.cartService
-        .removeFromCart(
-          productId
-        );
-
+    if (!Number.isFinite(quantity)) {
       return;
-
     }
 
+    quantity = Math.floor(quantity);
 
-    this.cartService
-      .updateQuantity(
-        productId,
-        quantity
-      );
+    if (quantity < 1) {
+      quantity = 1;
+    }
 
+    this.cartService.updateQuantity(
+      item.product.id,
+      quantity,
+      item.variant?.id
+    );
   }
 
+  increaseQuantity(item: CartItem): void {
 
-  // ==========================================================
-  // CLEAR CART
-  // ==========================================================
+    if (!item) {
+      return;
+    }
+
+    this.cartService.increaseQuantity(
+      item.product.id,
+      item.variant?.id
+    );
+  }
+
+  decreaseQuantity(item: CartItem): void {
+
+    if (!item || item.quantity <= 1) {
+      return;
+    }
+
+    this.cartService.decreaseQuantity(
+      item.product.id,
+      item.variant?.id
+    );
+  }
+
+  // ============================================================
+  // CART
+  // ============================================================
+
+  removeFromCart(item: CartItem): void {
+
+    if (!item) {
+      return;
+    }
+
+    this.cartService.removeFromCart(
+      item.product.id,
+      item.variant?.id
+    );
+  }
 
   clearCart(): void {
 
-    const dialogRef =
-      this.dialog.open(
-        ConfirmDialogComponent,
-        {
-
-          width: '400px',
-
-          data: {
-
-            title:
-              'CART.CLEAR_CART',
-
-            message:
-              'CART.CLEAR_CART_CONFIRM'
-
-          }
-
-        }
-      );
-
-
-    dialogRef
-      .afterClosed()
-
-      .subscribe(result => {
-
-        if (!result) {
-
-          return;
-
-        }
-
-
-        this.cartService
-          .clearCart();
-
-
-        this.cartTotal =
-          0;
-
-
-        this.cdr.detectChanges();
-
-      });
-
+    this.cartService.clearCart();
   }
 
+  calculateCartTotal(): void {
 
-  // ==========================================================
-  // CHECKOUT
-  // ==========================================================
-
-  goToCheckout(): void {
-
-    if (
-      this.cartItems.length === 0
-    ) {
-
-      return;
-
-    }
-
-
-    this.router.navigate([
-      '/checkout'
-    ]);
-
+    this.cartTotal = this.cartService.getCartTotal();
   }
 
+  getCartTotal(): number {
 
-  // ==========================================================
-  // BACK
-  // ==========================================================
+    return this.cartTotal;
+  }
+
+  // ============================================================
+  // CHECKOUT / NAVIGATION
+  // ============================================================
+
+ checkout(): void {
+
+  if (!this.cartItems.length) {
+    return;
+  }
+
+  this.router.navigate(['/checkout']);
+}
 
   back(): void {
 
-    this.router.navigate([
-      '/products'
-    ]);
-
+    window.history.back();
   }
 
+  // ============================================================
+  // IMAGE
+  // ============================================================
 
-  // ==========================================================
-  // IMAGE URL
-  // ==========================================================
+  getFirstImage(product: Product): string | null {
 
-  getImageUrl(
-    imageUrl?: string | null
-  ): string {
+    const images = [...(product?.images ?? [])]
+      .filter(image => !!image?.imageUrl)
+      .sort(
+        (a, b) =>
+          Number(a.sortOrder ?? 0) -
+          Number(b.sortOrder ?? 0)
+      );
+
+    return images[0]?.imageUrl ?? null;
+  }
+
+  getImageUrl(imageUrl?: string | null): string {
 
     if (!imageUrl) {
 
       return 'assets/images/product-placeholder.png';
-
     }
 
-
     if (
-
-      imageUrl.startsWith(
-        'http://'
-      ) ||
-
-      imageUrl.startsWith(
-        'https://'
-      )
-
+      imageUrl.startsWith('http://') ||
+      imageUrl.startsWith('https://')
     ) {
 
       return imageUrl;
-
     }
 
-
     return `${this.api}${imageUrl}`;
-
   }
 
+  // ============================================================
+  // TRACK BY
+  // ============================================================
 
-  // ==========================================================
-  // CART TOTAL
-  // ==========================================================
+  trackByCartItem(
+    index: number,
+    item: CartItem
+  ): string {
 
-  getCartTotal(): number {
-
-    return this.cartService
-      .getCartTotal();
-
+    return `${item.product.id}-${item.variant?.id ?? 'default'}`;
   }
-
 }

@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 import { Categories } from '../categories/categories';
-import { Brands } from '../brands/brands';
 import { BestSellers } from '../best-sellers.component/best-sellers.component';
 
 import { SliderService } from '../../../services/slider.service';
@@ -39,7 +38,7 @@ interface HomeSlide {
     CommonModule,
     MatIconModule,
     Categories,
-    Brands,
+    
     TranslatePipe,
     BestSellers
   ],

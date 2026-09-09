@@ -1,7 +1,7 @@
 {
 "HEADER": {
 
-  "TITLE":"PINKY AURA",
+  "TITLE":"LILLY",
 "HOME": "Home",
 "PRODUCTS": "products",
 "CART": "Cart",
@@ -52,6 +52,14 @@
 },
 
 "PRODUCT": {
+
+  "OPTIONS": "Options", 
+  "CHOOSE_OPTIONS": "Choose your preferred options", 
+  "SIZE": "Size", 
+  "HEEL_SIZE": "Heel Height", "REQUIRED": "Required", 
+  "SELECTED_OPTIONS": "Selected",
+
+  "SELECTED": "Selected",
 "Show_All_Products":"Show_All_Products",
 "TITLE": "Products",
 "PRODUCT": "Product",
@@ -127,68 +135,90 @@
 "RESET": "Reset",
 "SEARCH": "Search"
 },
-
 "CART": {
-"TITLE": "Shopping Cart",
-"YOUR_CART": "Your Cart",
-"CLEAR_CART_CONFIRM":"Confirm clearing cart",
-"EMPTY": "Your cart is empty",
-"EMPTY_MESSAGE": "There are no products in your cart.",
-"CONTINUE_SHOPPING": "Continue Shopping",
-"PRODUCT": "Product",
-"PRODUCTS": "Products",
-"QUANTITY": "Quantity",
-"PRICE": "Price",
-"TOTAL": "Total",
-"Subtotal":"Subtotal",
-"SUBTOTAL": "Subtotal",
-"GRAND_TOTAL": "Grand Total",
-"REMOVE": "Remove",
-"REMOVE_ITEM": "Remove Item",
-"CLEAR_CART": "Clear Cart",
-"UPDATE_QUANTITY": "Update Quantity",
-"PROCEED_TO_CHECKOUT": "Proceed to Checkout",
-"ITEM": "item",
-"ITEMS": "items"
-},
+    "TITLE": "Shopping Cart",
+    "SUBTITLE": "Review your selected items before checkout",
+    "LOADING": "Loading your cart...",
+    "EMPTY_TITLE": "Your cart is empty",
+    "EMPTY_MESSAGE": "You haven't added any products to your cart yet.",
+    "CONTINUE_SHOPPING": "Continue Shopping",
+    "YOUR_ITEMS": "Your Items",
+    "ITEMS": "Items",
+    "CLEAR_CART": "Clear Cart",
+    "SELECTED_OPTIONS": "Selected Options",
+    "SIZE": "Size",
+    "HEEL_SIZE": "Heel",
+    "QUANTITY": "Quantity",
+    "SUBTOTAL": "Subtotal",
+    "REMOVE": "Remove",
+    "ORDER_SUMMARY": "Order Summary",
+    "TOTAL": "Total",
+    "PROCEED_TO_CHECKOUT": "Proceed to Checkout"
+  },
+ "CHECKOUT": {
+    "BACK_TO_CART": "Back to Cart",
+    "TITLE": "Checkout",
+    "SUBTITLE": "Complete your order details and place your order",
 
-"CHECKOUT": {
-"TITLE": "Checkout",
-"Complete_your_order":"Complete your order",
-"CUSTOMER_INFORMATION": "Customer Information",
-"ORDER_INFORMATION": "Order Information",
-"DELIVERY_INFORMATION": "Delivery Information",
-"FULL_NAME": "Full Name",
-"PHONE": "Phone Number",
-"EMAIL": "Email",
-"ADDRESS": "Address",
-"CITY": "City",
-"NOTES": "Notes",
-"OPTIONAL": "Optional",
-"Qty":"Qty",
-"PAYMENT_METHOD": "Payment Method",
-"CASH_ON_DELIVERY": "Cash on Delivery",
-"CASH_ON_DELIVERY_DESCRIPTION": "Pay when your order is delivered.",
-"PLACE_ORDER": "Place Order",
-"Order_Summary":"Order Summary",
-"YOUR_ORDER":"YOUR ORDER",
-"CONFIRM_ORDER": "Confirm Order",
-"ORDER_TOTAL": "Order Total",
-"ORDER_SUMMARY": "Order Summary",
-"DELIVERY_FEE": "Delivery Fee",
-"FREE": "Free",
-"REQUIRED": "This field is required",
-"INVALID_PHONE": "Please enter a valid phone number",
-"INVALID_NAME":"Please enter your full name",
-"INVALID_EMAIL": "Please enter a valid email address",
-"INVALID_ADDRESS":"Please enter your Delivery address",
-"ORDER_SUCCESS": "Your order has been placed successfully!",
-"ORDER_FAILED": "Something went wrong while placing your order.",
-"THANK_YOU": "Thank you for your order!",
-"INFO":"Your information is secure and private",
-"ORDER_NUMBER": "Order Number",
-"Back_to_Cart":"Back to Cart"
-},
+    "EMPTY_CART": "Your cart is empty",
+    "EMPTY_CART_MESSAGE": "There are no products in your cart. Add some products before proceeding to checkout.",
+
+    "CUSTOMER_INFORMATION": "Customer Information",
+    "CUSTOMER_INFORMATION_SUBTITLE": "Please provide your contact details",
+
+    "PHONE": "Phone Number",
+    "PHONE_PLACEHOLDER": "Enter your phone number",
+    "PHONE_REQUIRED": "Phone number is required",
+    "PHONE_INVALID": "Please enter a valid phone number",
+
+    "CLIENT_FOUND": "Customer information found",
+
+    "FULL_NAME": "Full Name",
+    "FULL_NAME_PLACEHOLDER": "Enter your full name",
+    "FULL_NAME_REQUIRED": "Full name is required",
+    "FULL_NAME_INVALID": "Please enter at least 3 characters",
+
+    "EMAIL": "Email Address",
+    "EMAIL_PLACEHOLDER": "Enter your email address",
+    "EMAIL_INVALID": "Please enter a valid email address",
+    "OPTIONAL": "Optional",
+
+    "DELIVERY_INFORMATION": "Delivery Information",
+    "DELIVERY_INFORMATION_SUBTITLE": "Where should we deliver your order?",
+
+    "ADDRESS": "Delivery Address",
+    "ADDRESS_PLACEHOLDER": "Enter your complete delivery address",
+    "ADDRESS_REQUIRED": "Delivery address is required",
+    "ADDRESS_INVALID": "Please enter a more complete address",
+
+    "PAYMENT": "Payment Method",
+    "PAYMENT_SUBTITLE": "Choose how you would like to pay",
+
+    "CASH_ON_DELIVERY": "Cash on Delivery",
+    "CASH_ON_DELIVERY_DESCRIPTION": "Pay in cash when your order is delivered",
+
+    "PLACING_ORDER": "Placing Order...",
+    "PLACE_ORDER": "Place Order",
+
+    "ORDER_SUMMARY": "Order Summary",
+    "ITEMS": "Items",
+    "QTY": "Qty",
+
+    "DECREASE_QUANTITY": "Decrease quantity",
+    "INCREASE_QUANTITY": "Increase quantity",
+
+    "REMOVE_ITEM": "Remove item",
+
+    "SUBTOTAL": "Subtotal",
+    "DELIVERY": "Delivery",
+    "FREE": "Free",
+
+    "TOTAL": "Total",
+    "INCLUDING_DELIVERY": "Including delivery",
+
+    "SECURE_ORDER": "Secure Order",
+    "SECURE_ORDER_DESCRIPTION": "Your order information is securely handled"
+  },
 
 "ORDER": {
   "SUCCESS":"Success",

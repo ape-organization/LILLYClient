@@ -16,9 +16,7 @@ import { MaterialModule } from '../../../shared/AngularMaterial';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { CategoryFilter } from '../../../models/category.model';
-import { SubCategoryFilter } from '../../../models/subCategory.model';
-import { BrandFilter } from '../../../models/brand.model';
-import { ProductFilterValue } from '../../../models/product.model';
+
 
 import { LanguageService } from '../../../services/language.service';
 
@@ -52,20 +50,11 @@ export class ProductFiltersComponent
   @Input()
   categories: CategoryFilter[] = [];
 
-  @Input()
-  subCategories: SubCategoryFilter[] = [];
-
-  @Input()
-  brands: BrandFilter[] = [];
 
   @Input()
   selectedCategoryId: number | null = null;
 
-  @Input()
-  selectedSubCategoryId: number | null = null;
-
-  @Input()
-  selectedBrandId: number | null = null;
+ 
 
   @Input()
   showOffers = false;
@@ -77,7 +66,7 @@ export class ProductFiltersComponent
 
   @Output()
   filterApplied =
-    new EventEmitter<ProductFilterValue>();
+    new EventEmitter<any>();
 
   @Output()
   clearFiltersEvent =
@@ -90,9 +79,7 @@ export class ProductFiltersComponent
 
   tempCategoryId: number | null = null;
 
-  tempSubCategoryId: number | null = null;
 
-  tempBrandId: number | null = null;
 
   tempOffers = false;
 
@@ -104,7 +91,9 @@ export class ProductFiltersComponent
   constructor(
     public languageService: LanguageService
   ) {}
-
+//=====================================
+onCategoryChange()
+{}
 
   // ========================================================
   // INIT
@@ -127,8 +116,7 @@ export class ProductFiltersComponent
 
     if (
       changes['selectedCategoryId'] ||
-      changes['selectedSubCategoryId'] ||
-      changes['selectedBrandId'] ||
+
       changes['showOffers']
     ) {
 
@@ -148,11 +136,7 @@ export class ProductFiltersComponent
     this.tempCategoryId =
       this.selectedCategoryId;
 
-    this.tempSubCategoryId =
-      this.selectedSubCategoryId;
-
-    this.tempBrandId =
-      this.selectedBrandId;
+   
 
     this.tempOffers =
       this.showOffers;
@@ -160,15 +144,7 @@ export class ProductFiltersComponent
   }
 
 
-  // ========================================================
-  // CATEGORY CHANGE
-  // ========================================================
-
-  onCategoryChange(): void {
-
-    this.tempSubCategoryId = null;
-
-  }
+ 
 
 
   // ========================================================
@@ -182,11 +158,9 @@ export class ProductFiltersComponent
       categoryId:
         this.tempCategoryId,
 
-      subCategoryId:
-        this.tempSubCategoryId,
+    
 
-      brandId:
-        this.tempBrandId,
+    
 
       offers:
         this.tempOffers
@@ -204,9 +178,7 @@ export class ProductFiltersComponent
 
     this.tempCategoryId = null;
 
-    this.tempSubCategoryId = null;
-
-    this.tempBrandId = null;
+  
 
     this.tempOffers = false;
 
@@ -215,31 +187,6 @@ export class ProductFiltersComponent
   }
 
 
-  // ========================================================
-  // AVAILABLE SUBCATEGORIES
-  // ========================================================
-
-  get availableSubCategories():
-    SubCategoryFilter[] {
-
-    if (
-      this.tempCategoryId === null
-    ) {
-
-      return this.subCategories;
-
-    }
-
-    const category =
-      this.categories.find(
-        category =>
-          Number(category.id) ===
-          Number(this.tempCategoryId)
-      );
-
-    return category?.subCategories ?? [];
-
-  }
 
 
   // ========================================================
@@ -271,61 +218,5 @@ export class ProductFiltersComponent
   }
 
 
-  // ========================================================
-  // SUBCATEGORY NAME
-  // ========================================================
-
-  getSubCategoryName(
-    subCategory: SubCategoryFilter
-  ): string {
-
-    if (
-      this.languageService.isArabic()
-    ) {
-
-      return (
-        subCategory.nameAr?.trim() ||
-        subCategory.nameEn?.trim() ||
-        ''
-      );
-
-    }
-
-    return (
-      subCategory.nameEn?.trim() ||
-      subCategory.nameAr?.trim() ||
-      ''
-    );
-
-  }
-
-
-  // ========================================================
-  // BRAND NAME
-  // ========================================================
-
-  getBrandName(
-    brand: BrandFilter
-  ): string {
-
-    if (
-      this.languageService.isArabic()
-    ) {
-
-      return (
-        brand.nameAr?.trim() ||
-        brand.nameEn?.trim() ||
-        ''
-      );
-
-    }
-
-    return (
-      brand.nameEn?.trim() ||
-      brand.nameAr?.trim() ||
-      ''
-    );
-
-  }
 
 }

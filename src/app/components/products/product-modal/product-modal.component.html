@@ -1,367 +1,634 @@
+
 <div class="container">
-<div class="dialog-content" *ngIf="product() as product">
 
-  <!-- =====================================================
-       PRODUCT IMAGE
-       ===================================================== -->
+  <div
+    class="dialog-content"
+    *ngIf="product() as product"
+  >
 
-  <div class="product-image">
+    <!-- =====================================================
+         PRODUCT IMAGE
+         ===================================================== -->
 
-    <div
-      class="image-frame"
-      [class.out-of-stock-image]="isOutOfStock"
-    >
-
-      <img
-        [src]="getImageUrl(product.imageUrl)"
-        [alt]="getProductName()"
-      />
-
-      <!-- OUT OF STOCK OVERLAY -->
+    <div class="product-image">
 
       <div
-        class="out-of-stock-overlay"
-        *ngIf="isOutOfStock"
+        class="image-frame"
+        [class.out-of-stock-image]="isOutOfStock"
       >
 
-        <span>
-          {{ 'PRODUCT.OUT_OF_STOCK' | translate }}
-        </span>
-
-      </div>
-
-    </div>
+        <img
+          [src]="currentImageUrl"
+          [alt]="getProductName()"
+        />
 
 
-    <!-- CATEGORY -->
+        <!-- Previous -->
 
-    <div class="image-label">
+        <button
+          type="button"
+          class="image-nav previous"
+          *ngIf="images.length > 1"
+          (click)="previousImage()"
+          aria-label="Previous image"
+        >
 
-      <span>
-        ✦
-      </span>
+          <mat-icon>
+            chevron_left
+          </mat-icon>
 
-      {{ getCategoryName() }}
-
-    </div>
-
-
-    <!-- DISCOUNT -->
-
-    <div
-      class="discount-badge"
-      *ngIf="hasDiscount && !isOutOfStock"
-    >
-
-      -{{ product.discountPercentage }}%
-
-    </div>
+        </button>
 
 
-    <!-- STOCK -->
+        <!-- Next -->
 
-    <div
-      class="stock-badge"
-      *ngIf="isOutOfStock"
-    >
+        <button
+          type="button"
+          class="image-nav next"
+          *ngIf="images.length > 1"
+          (click)="nextImage()"
+          aria-label="Next image"
+        >
 
-      {{ 'PRODUCT.OUT_OF_STOCK' | translate }}
+          <mat-icon>
+            chevron_right
+          </mat-icon>
 
-    </div>
-
-  </div>
-
-
-
-  <!-- =====================================================
-       PRODUCT DETAILS
-       ===================================================== -->
-
-  <div class="product-details">
-
-    <!-- ===================================================
-         HEADER
-         =================================================== -->
-
-    <div class="details-header">
-
-      <!-- BRAND -->
-
-      <span class="product-brand">
-
-        {{ getBrandName() }}
-
-      </span>
+        </button>
 
 
-      <!-- NAME -->
+        <!-- Out of stock -->
 
-      <h2 class="product-name">
+        <div
+          class="out-of-stock-overlay"
+          *ngIf="isOutOfStock"
+        >
 
-        {{ getProductName() }}
+          <span class="out-of-stock-text">
+            {{ 'PRODUCT.OUT_OF_STOCK' | translate }}
+          </span>
 
-      </h2>
+        </div>
 
 
-      <!-- CATEGORY / SUBCATEGORIES -->
+        <!-- Category -->
 
-      <div class="product-location">
+        <div class="image-label">
 
-        <span class="category-name">
+          <span class="category-symbol">
+            ✦
+          </span>
 
           {{ getCategoryName() }}
 
-        </span>
+        </div>
 
 
-        <ng-container
-          *ngIf="product.subCategories.length"
+        <!-- Discount -->
+
+        <div
+          class="discount-badge"
+          *ngIf="hasDiscount && !isOutOfStock"
         >
 
-          <span class="separator">
-            /
-          </span>
+          -{{ product.discountPercentage }}%
 
-          <span
-            class="subcategory-name"
-            *ngFor="
-              let sub of product.subCategories;
-              let last = last
-            "
-          >
-
-            {{ getSubCategoryName(sub) }}
-
-            <span *ngIf="!last">
-              ,
-            </span>
-
-          </span>
-
-        </ng-container>
+        </div>
 
       </div>
 
 
-      <div class="title-line"></div>
-
-    </div>
-
-
-
-    <!-- ===================================================
-         DESCRIPTION
-         =================================================== -->
-
-    <p
-      class="product-description"
-      *ngIf="getProductDescription()"
-    >
-
-      {{ getProductDescription() }}
-
-    </p>
-
-
-
-    <!-- ===================================================
-         OFFER
-         =================================================== -->
-
-    <div
-      class="offer-box"
-      *ngIf="hasDiscount"
-    >
-
-      <div class="offer-icon">
-        %
-      </div>
-
-
-      <div class="offer-content">
-
-        <span class="offer-title">
-          {{ 'PRODUCT.SPECIAL_OFFER' | translate }}
-        </span>
-
-
-        <span class="offer-text">
-
-          {{ product.discountPercentage }}% OFF
-
-        </span>
-
-      </div>
-
-    </div>
-
-
-
-    <!-- ===================================================
-         PRICE
-         =================================================== -->
-
-    <div class="price-section">
-
-      <div class="current-price-wrapper">
-
-        <span class="price">
-
-          {{ newPrice | number:'1.0-2' }}
-
-        </span>
-
-        <span class="currency">
-          {{ 'COMMON.EGP' | translate }}
-        </span>
-
-      </div>
-
+      <!-- Stock badge -->
 
       <div
-        class="old-price-wrapper"
+        class="stock-badge"
+        *ngIf="isOutOfStock"
+      >
+
+        {{ 'PRODUCT.OUT_OF_STOCK' | translate }}
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PRODUCT DETAILS
+         ===================================================== -->
+
+    <div class="product-details">
+
+
+      <!-- HEADER -->
+
+      <div class="details-header">
+
+        <span class="product-brand">
+          {{ getCategoryName() }}
+        </span>
+
+
+        <h2 class="product-name">
+          {{ getProductName() }}
+        </h2>
+
+
+        <div class="product-location">
+
+          <span class="category-name">
+            {{ getCategoryName() }}
+          </span>
+
+        </div>
+
+
+        <div class="title-line"></div>
+
+      </div>
+
+
+      <!-- DESCRIPTION -->
+
+      <p
+        class="product-description"
+        *ngIf="getProductDescription()"
+      >
+
+        {{ getProductDescription() }}
+
+      </p>
+
+
+      <!-- OFFER -->
+
+      <div
+        class="offer-box"
         *ngIf="hasDiscount"
       >
 
-        <span class="old-price">
+        <div class="offer-icon">
+          %
+        </div>
 
-          {{ oldPrice | number:'1.0-2' }}
 
+        <div class="offer-content">
+
+          <span class="offer-title">
+            {{ 'PRODUCT.SPECIAL_OFFER' | translate }}
+          </span>
+
+
+          <span class="offer-text">
+            {{ product.discountPercentage }}% OFF
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- PRICE -->
+
+      <div class="price-section">
+
+        <div class="current-price-wrapper">
+
+          <span class="price">
+            {{ newPrice | number:'1.0-2' }}
+          </span>
+
+          <span class="currency">
+            {{ 'COMMON.EGP' | translate }}
+          </span>
+
+        </div>
+
+
+        <div
+          class="old-price-wrapper"
+          *ngIf="hasDiscount"
+        >
+
+          <span class="old-price">
+            {{ oldPrice | number:'1.0-2' }}
+          </span>
+
+          <span class="old-currency">
+            {{ 'COMMON.EGP' | translate }}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           OPTIONS
+           ===================================================== -->
+
+      <div
+        class="variant-section"
+        *ngIf="hasVariants"
+      >
+
+        <!-- OPTION HEADER -->
+
+        <div class="variant-header">
+
+          <div>
+
+            <label>
+              {{ 'PRODUCT.OPTIONS' | translate }}
+            </label>
+
+            <span class="variant-subtitle">
+              {{ 'PRODUCT.CHOOSE_OPTIONS' | translate }}
+            </span>
+
+          </div>
+
+
+          <!-- SELECTED -->
+
+          <span
+            class="selected-option"
+            *ngIf="selectedVariant"
+          >
+
+            ✓ {{ selectedVariantLabel }}
+
+          </span>
+
+        </div>
+
+
+        <!-- ===================================================
+             SIZE
+             =================================================== -->
+
+        <div
+          class="option-group"
+          *ngIf="hasSizes"
+        >
+
+          <div class="option-group-header">
+
+            <span class="option-title">
+              {{ 'PRODUCT.SIZE' | translate }}
+            </span>
+
+            <span
+              class="option-required"
+              *ngIf="selectedSizeId() == null"
+            >
+              {{ 'PRODUCT.REQUIRED' | translate }}
+            </span>
+
+          </div>
+
+
+          <div class="option-list">
+
+            <button
+              type="button"
+              class="option-button"
+
+              *ngFor="let variant of availableSizes"
+
+              [class.selected]="
+                isSizeSelected(variant.sizeId!)
+              "
+
+              [class.disabled]="
+                !isSizeAvailable(variant.sizeId!)
+              "
+
+              [disabled]="
+                !isSizeAvailable(variant.sizeId!)
+              "
+
+              (click)="
+                selectSize(variant.sizeId!)
+              "
+            >
+
+              <span>
+                {{ variant.sizeName }}
+              </span>
+
+              <mat-icon
+                *ngIf="
+                  isSizeSelected(variant.sizeId!)
+                "
+              >
+                check
+              </mat-icon>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================================
+             HEEL HEIGHT
+             =================================================== -->
+
+        <div
+          class="option-group"
+          *ngIf="hasHeelSizes"
+        >
+
+          <div class="option-group-header">
+
+            <span class="option-title">
+              {{ 'PRODUCT.HEEL_SIZE' | translate }}
+            </span>
+
+            <span
+              class="option-required"
+              *ngIf="selectedHeelSizeId() == null"
+            >
+              {{ 'PRODUCT.REQUIRED' | translate }}
+            </span>
+
+          </div>
+
+
+          <div class="option-list">
+
+            <button
+              type="button"
+              class="option-button"
+
+              *ngFor="let variant of availableHeelSizes"
+
+              [class.selected]="
+                isHeelSelected(variant.heelSizeId!)
+              "
+
+              [class.disabled]="
+                !isHeelAvailable(variant.heelSizeId!)
+              "
+
+              [disabled]="
+                !isHeelAvailable(variant.heelSizeId!)
+              "
+
+              (click)="
+                selectHeelSize(
+                  variant.heelSizeId!
+                )
+              "
+            >
+
+              <span>
+                {{ variant.heelSizeName }}
+              </span>
+
+              <mat-icon
+                *ngIf="
+                  isHeelSelected(
+                    variant.heelSizeId!
+                  )
+                "
+              >
+                check
+              </mat-icon>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================================
+             SELECTION MESSAGE
+             =================================================== -->
+
+        <div
+          class="variant-required"
+          *ngIf="requiresVariantSelection"
+        >
+
+          <mat-icon>
+            info
+          </mat-icon>
+
+          <span>
+            {{ 'PRODUCT.SELECT_OPTIONS' | translate }}
+          </span>
+
+        </div>
+
+
+        <!-- ===================================================
+             SELECTED COMBINATION
+             =================================================== -->
+
+        <div
+          class="selected-combination"
+          *ngIf="selectedVariant"
+        >
+
+          <div class="selected-combination-icon">
+
+            <mat-icon>
+              check
+            </mat-icon>
+
+          </div>
+
+
+          <div class="selected-combination-content">
+
+            <span class="selected-combination-label">
+              {{ 'PRODUCT.SELECTED_OPTIONS' | translate }}
+            </span>
+
+            <strong>
+              {{ selectedVariantLabel }}
+            </strong>
+
+          </div>
+
+
+         
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           PRODUCT OUT OF STOCK
+           ===================================================== -->
+
+      <div
+        class="out-of-stock-message"
+        *ngIf="
+          isOutOfStock &&
+          !hasVariants
+        "
+      >
+
+        <mat-icon>
+          inventory_2
+        </mat-icon>
+
+        <span>
+          {{ 'PRODUCT.PRODUCT_OUT' | translate }}
         </span>
 
-        <span class="old-currency">
-          {{ 'COMMON.EGP' | translate }}
-        </span>
+      </div>
+
+
+      <!-- =====================================================
+           QUANTITY
+           ===================================================== -->
+
+      <div
+        class="quantity-section"
+        *ngIf="
+          !isOutOfStock &&
+          !requiresVariantSelection
+        "
+      >
+
+        <label for="quantity">
+          {{ 'PRODUCT.QUANTITY' | translate }}
+        </label>
+
+
+        <div class="quantity-control">
+
+          <!-- Minus -->
+
+          <button
+            type="button"
+            class="quantity-btn"
+
+            (click)="
+              setQuantity(
+                quantity() - 1
+              )
+            "
+
+            [disabled]="
+              quantity() <= 1
+            "
+          >
+
+            −
+
+          </button>
+
+
+          <!-- Input -->
+
+          <input
+            id="quantity"
+            type="number"
+
+            [ngModel]="quantity()"
+
+            (ngModelChange)="
+              setQuantity($event)
+            "
+
+            [ngModelOptions]="{
+              standalone: true
+            }"
+
+            min="1"
+
+            [max]="stock || null"
+
+            step="1"
+
+            class="quantity-input"
+          />
+
+
+          <!-- Plus -->
+
+          <button
+            type="button"
+            class="quantity-btn"
+
+            (click)="
+              setQuantity(
+                quantity() + 1
+              )
+            "
+
+            [disabled]="
+              stock <= 0 ||
+              quantity() >= stock
+            "
+          >
+
+            +
+
+          </button>
+
+        </div>
+
+
+      </div>
+
+
+      <!-- =====================================================
+           ACTIONS
+           ===================================================== -->
+
+      <div class="dialog-actions">
+
+        <button
+          mat-raised-button
+          type="button"
+          class="add-btn"
+
+          [disabled]="!canAddToCart"
+
+          (click)="addToCart()"
+        >
+
+          <mat-icon>
+            add_shopping_cart
+          </mat-icon>
+
+          <span>
+            {{ 'PRODUCT.ADD_TO_CART' | translate }}
+          </span>
+
+        </button>
+
+
+        <button
+          mat-raised-button
+          type="button"
+          class="back-btn"
+
+          (click)="goBack()"
+        >
+
+          <mat-icon>
+            arrow_back
+          </mat-icon>
+
+          <span>
+            {{ 'COMMON.BACK' | translate }}
+          </span>
+
+        </button>
 
       </div>
 
     </div>
 
-
-
-    <!-- ===================================================
-         OUT OF STOCK
-         =================================================== -->
-
-    <div
-      class="out-of-stock-message"
-      *ngIf="isOutOfStock"
-    >
-
-      <mat-icon>
-        inventory_2
-      </mat-icon>
-
-      <span>
-        {{ 'PRODUCT.PRODUCT_OUT' | translate }}
-      </span>
-
-    </div>
-
-
-
-    <!-- ===================================================
-         QUANTITY
-         =================================================== -->
-
-<div
-  class="quantity-section"
-  *ngIf="!isOutOfStock"
->
-
-  <label for="quantity">
-    {{ 'PRODUCT.QUANTITY' | translate }}
-  </label>
-
-  <div class="quantity-control">
-
-    <button
-      type="button"
-      class="quantity-btn"
-      (click)="setQuantity(quantity() - 1)"
-      [disabled]="quantity() <= 1"
-    >
-      −
-    </button>
-
-    <input
-      id="quantity"
-      type="number"
-      [ngModel]="quantity()"
-      (ngModelChange)="setQuantity($event)"
-      [ngModelOptions]="{ standalone: true }"
-      min="1"
-      [max]="stock || null"
-      step="1"
-      class="quantity-input"
-      aria-label="Quantity"
-    />
-
-    <button
-      type="button"
-      class="quantity-btn"
-      (click)="setQuantity(quantity() + 1)"
-     
-    >
-      +
-    </button>
-
   </div>
 
-</div>
-    
-
-
-
-    <!-- ===================================================
-         ACTIONS
-         =================================================== -->
-
-    <div class="dialog-actions">
-
-      <!-- ADD TO CART -->
-
-      <button
-        mat-raised-button
-        type="button"
-        class="add-btn"
-        [disabled]="!canAddToCart"
-        (click)="addToCart()"
-      >
-
-        <mat-icon>
-          add_shopping_cart
-        </mat-icon>
-
-        <span>
-          {{ 'PRODUCT.ADD_TO_CART' | translate }}
-        </span>
-
-      </button>
-
-
-      <!-- BACK -->
-
-      <button
-         mat-raised-button
-        type="button"
-        class="back-btn"
-        (click)="goBack()"
-      >
-
-        <mat-icon>
-          arrow_back
-        </mat-icon>
-
-        <span>
-          {{ 'COMMON.BACK' | translate }}
-        </span>
-
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
 </div>

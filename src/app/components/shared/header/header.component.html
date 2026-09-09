@@ -8,7 +8,7 @@
     <!-- LOGO -->
     <a routerLink="/" class="logo">
       <span class="logo-symbol">
-<img src="../../../../assets/images/pinkylogo.png" />
+<img src="../../../../assets/images/lilly.png" />
 
       </span>
 
@@ -215,55 +215,12 @@
                           {{ getCategoryName(category) }}
                         </span>
 
-                        @if (
-                          (category.subCategories?.length ?? 0) > 0
-                        ) {
-
-                          <mat-icon>
-                            {{
-                              expandedCategoryId() === category.id
-                                ? 'keyboard_arrow_up'
-                                : 'keyboard_arrow_down'
-                            }}
-                          </mat-icon>
-
-                        }
+                        
 
                       </button>
 
 
-                      @if (
-                        expandedCategoryId() === category.id &&
-                        (category.subCategories?.length ?? 0) > 0
-                      ) {
-
-                        <div class="subcategory-list">
-
-                          @for (
-                            subCategory of category.subCategories;
-                            track subCategory.id
-                          ) {
-
-                            <button
-                              type="button"
-                              class="subcategory-button"
-                              (click)="selectSubCategory(subCategory.id)">
-
-                              <span class="subcategory-dot">
-                                •
-                              </span>
-
-                              <span>
-                                {{ getSubCategoryName(subCategory) }}
-                              </span>
-
-                            </button>
-
-                          }
-
-                        </div>
-
-                      }
+                      
 
                     </div>
 
@@ -289,128 +246,7 @@
         </div>
 
 
-        <!-- BRANDS -->
-        <div
-          class="navbarnd-dropdown"
-          (mouseenter)="openBrandMenu()"
-          (mouseleave)="closeBrandMenu()">
-
-          <button
-            type="button"
-            class="nav-link dropdown-trigger"
-            (click)="toggleBrandMenu()">
-
-            <span>
-              {{ 'HEADER.BRANDS' | translate }}
-            </span>
-
-            <mat-icon>
-              {{
-                brandMenuOpen()
-                  ? 'keyboard_arrow_up'
-                  : 'keyboard_arrow_down'
-              }}
-            </mat-icon>
-
-          </button>
-
-
-          @if (brandMenuOpen()) {
-
-            <div
-              class="dropdown-menu brand-dropdown"
-              (click)="$event.stopPropagation()">
-
-              <div class="dropdown-header">
-
-                <div>
-
-                  <span class="dropdown-title">
-                    {{ 'HEADER.BRANDS' | translate }}
-                  </span>
-
-                  <small>
-                    {{ 'HEADER.Shop_your_favorite_brands' | translate }}
-                  </small>
-
-                </div>
-
-                <mat-icon>
-                  sell
-                </mat-icon>
-
-              </div>
-
-
-              @if (isLoadingBrands()) {
-
-                <div class="menu-loading">
-
-                  <mat-icon class="loading-icon">
-                    sync
-                  </mat-icon>
-
-                  <span>
-                    {{ 'COMMON.LOADING' | translate }}
-                  </span>
-
-                </div>
-
-              }
-
-
-              @if (brandError()) {
-
-                <div class="menu-error">
-                  {{ brandError() }}
-                </div>
-
-              }
-
-
-              @if (
-                !isLoadingBrands() &&
-                !brandError()
-              ) {
-
-                <div class="brand-list">
-
-                  @for (
-                    brand of brands();
-                    track brand.id
-                  ) {
-
-                    <button
-                      type="button"
-                      class="brand-button"
-                      (click)="selectBrand(brand.id)">
-
-                      <span>
-                        {{ getBrandName(brand) }}
-                      </span>
-
-                    </button>
-
-                  }
-
-
-                  @if (brands().length === 0) {
-
-                    <div class="menu-empty">
-                      {{ 'BRAND.No_brands_available' | translate }}
-                    </div>
-
-                  }
-
-                </div>
-
-              }
-
-            </div>
-
-          }
-
-        </div>
+     
 
       </nav>
 
@@ -487,7 +323,7 @@
       class="logo">
 
      <span class="logo-symbol">
-<img src="../../../../assets/images/pinkylogo.png" />
+<img src="../../../../assets/images/lilly.png" />
 
       </span>
 
@@ -626,7 +462,7 @@
       <div class="sidebar-logo">
 
          <span class="logo-symbol">
-<img src="../../../../assets/images/pinkylogo.png" />
+<img src="../../../../assets/images/lilly.png" />
 
       </span>
 
@@ -780,57 +616,11 @@
                     {{ getCategoryName(category) }}
                   </span>
 
-                  @if (
-                    (category.subCategories?.length ?? 0) > 0
-                  ) {
-
-                    <mat-icon>
-                      {{
-                        expandedCategoryId() === category.id
-                          ? 'remove'
-                          : 'add'
-                      }}
-                    </mat-icon>
-
-                  }
+                  
 
                 </button>
 
 
-                <!-- SUBCATEGORIES -->
-                @if (
-                  expandedCategoryId() === category.id &&
-                  (category.subCategories?.length ?? 0) > 0
-                ) {
-
-                  <div class="mobile-subcategories">
-
-                    @for (
-                      subCategory of category.subCategories;
-                      track subCategory.id
-                    ) {
-
-                      <button
-                        type="button"
-                        class="mobile-subcategory"
-                        (click)="selectSubCategory(subCategory.id)">
-
-                        <span>
-                          •
-                        </span>
-
-                        <span>
-                          {{ getSubCategoryName(subCategory) }}
-                        </span>
-
-                      </button>
-
-                    }
-
-                  </div>
-
-                }
-
               </div>
 
             }
@@ -842,103 +632,6 @@
       }
 
 
-      <!-- BRANDS -->
-      <button
-        type="button"
-        class="mobile-nav-link"
-        (click)="toggleBrandMenu()">
-
-        <div class="mobile-link-content">
-
-          <mat-icon>
-            sell
-          </mat-icon>
-
-          <span>
-            {{ 'HEADER.BRANDS' | translate }}
-          </span>
-
-        </div>
-
-        <mat-icon>
-          {{
-            brandMenuOpen()
-              ? 'keyboard_arrow_up'
-              : 'keyboard_arrow_down'
-          }}
-        </mat-icon>
-
-      </button>
-
-
-      <!-- MOBILE BRANDS -->
-      @if (brandMenuOpen()) {
-
-        <div class="mobile-dropdown">
-
-          @if (isLoadingBrands()) {
-
-            <div class="mobile-loading">
-
-              <mat-icon class="loading-icon">
-                sync
-              </mat-icon>
-
-              <span>
-                {{ 'COMMON.LOADING' | translate }}
-              </span>
-
-            </div>
-
-          }
-
-
-          @if (brandError()) {
-
-            <div class="mobile-error">
-              {{ brandError() }}
-            </div>
-
-          }
-
-
-          @if (
-            !isLoadingBrands() &&
-            !brandError()
-          ) {
-
-            @for (
-              brand of brands();
-              track brand.id
-            ) {
-
-              <button
-                type="button"
-                class="mobile-brand"
-                (click)="selectBrand(brand.id)">
-
-                <span>
-                  {{ getBrandName(brand) }}
-                </span>
-
-              </button>
-
-            }
-
-
-            @if (brands().length === 0) {
-
-              <div class="menu-empty">
-                {{ 'BRAND.No_brands_available' | translate }}
-              </div>
-
-            }
-
-          }
-
-        </div>
-
-      }
 
 
       <!-- CART -->

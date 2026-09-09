@@ -119,7 +119,7 @@ body {
   border-radius: 20px;
   background: transparent;
   color: var(--color-primary);
-  font-family: inherit;
+ // font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -144,15 +144,13 @@ body {
    GLOBAL FONT
    ============================================================ */
 
-html,
+ html,
 body {
     //==============================================
   // font family 
   //==============================================
- //font-family: 'Montserrat', sans-serif;
- // font-family: 'Playfair Display', serif;
-   font-family: Cursive, sans-serif; 
- //font-family: 'Cairo Play', sans-serif;
+font-family: "Brush Script MT", cursive;
+ //  font-family: Cursive, sans-serif; 
 }
 
 h1,
@@ -172,7 +170,7 @@ input,
 textarea,
 select {
   font-family: inherit;
-}
+} 
 //=================================
 // ios problem
 //================================

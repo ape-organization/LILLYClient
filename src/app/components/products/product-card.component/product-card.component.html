@@ -3,18 +3,36 @@
   (click)="openDetails()"
 >
 
+  <!-- ====================================================== -->
   <!-- IMAGE -->
+  <!-- ====================================================== -->
 
   <div class="product-image">
 
+    <!-- FIRST IMAGE -->
+
     <img
-      [src]="getImageUrl(product.imageUrl)"
+      class="product-image-main"
+      [src]="getImageUrl(getFirstImage())"
       [alt]="getProductName()"
       loading="lazy"
     />
 
 
+    <!-- SECOND IMAGE -->
+
+    <img
+      *ngIf="getSecondImage()"
+      class="product-image-hover"
+      [src]="getImageUrl(getSecondImage())"
+      [alt]="getProductName()"
+      loading="lazy"
+    />
+
+
+    <!-- ================================================== -->
     <!-- DISCOUNT -->
+    <!-- ================================================== -->
 
     <span
       class="discount-badge"
@@ -24,7 +42,9 @@
     </span>
 
 
+    <!-- ================================================== -->
     <!-- OUT OF STOCK -->
+    <!-- ================================================== -->
 
     <span
       class="stock-badge out-of-stock"
@@ -34,58 +54,64 @@
     </span>
 
 
+    <!-- ================================================== -->
     <!-- ADD TO CART -->
+    <!-- ================================================== -->
 
-<!--     <div class="cart-action">
- -->
-     
-<!-- ADD TO CART -->
+    <button
+      type="button"
+      class="add-cart-button"
 
-<button
-  type="button"
-  class="add-cart-button"
-  [class.added]="showAddedCheck"
-  [disabled]="!product.isInStock || showAddedCheck"
-  (click)="addToCart($event)"
-  [attr.aria-label]="
-    showAddedCheck
-      ? ('PRODUCT.ADDED_TO_CART' | translate)
-      : ('PRODUCT.ADD_TO_CART' | translate)
-  "
->
+      [class.added]="showAddedCheck"
 
-  @if (showAddedCheck) {
+      [disabled]="
+        !product.isInStock ||
+        showAddedCheck
+      "
 
-    <mat-icon class="added-check-icon">
-      check
-    </mat-icon>
+      (click)="addToCart($event)"
 
-  } @else {
+      [attr.aria-label]="
+        showAddedCheck
+          ? ('PRODUCT.ADDED_TO_CART' | translate)
+          : ('PRODUCT.ADD_TO_CART' | translate)
+      "
+    >
 
-    <mat-icon>
-      shopping_cart
-    </mat-icon>
+      @if (showAddedCheck) {
 
-  }
+        <mat-icon class="added-check-icon">
+          check
+        </mat-icon>
 
-</button>
+      } @else {
+
+        <mat-icon>
+          shopping_cart
+        </mat-icon>
+
+      }
+
+    </button>
 
 
-      <!-- ALREADY IN CART MESSAGE -->
+    <!-- ================================================== -->
+    <!-- ALREADY IN CART -->
+    <!-- ================================================== -->
 
-      <span
-        class="already-in-cart-message"
-        *ngIf="showAlreadyInCartMessage"
-      >
-        {{ 'PRODUCT.ALREADY_IN_CART' | translate }}
-      </span>
-
-   <!--  </div> -->
+    <span
+      class="already-in-cart-message"
+      *ngIf="showAlreadyInCartMessage"
+    >
+      {{ 'PRODUCT.ALREADY_IN_CART' | translate }}
+    </span>
 
   </div>
 
 
+  <!-- ====================================================== -->
   <!-- CONTENT -->
+  <!-- ====================================================== -->
 
   <div class="product-content">
 
@@ -94,7 +120,9 @@
     </h3>
 
 
+    <!-- ================================================== -->
     <!-- PRICE -->
+    <!-- ================================================== -->
 
     <div class="product-price">
 
@@ -102,7 +130,7 @@
         class="old-price"
         *ngIf="hasDiscount()"
       >
-        {{ product.price | number:'1.2-2' }}
+        {{ product.actualPrice | number:'1.2-2' }}
       </span>
 
 

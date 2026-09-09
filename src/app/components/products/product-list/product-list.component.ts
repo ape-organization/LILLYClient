@@ -1,3 +1,4 @@
+
 import {
   Component,
   DestroyRef,
@@ -29,12 +30,10 @@ import {
 import { ProductService } from '../../../services/product.service';
 import { CartService } from '../../../services/cart.service';
 import { CategoryService } from '../../../services/category.service';
-import { BrandService } from '../../../services/brand.service';
 import { LanguageService } from '../../../services/language.service';
 
 import {
-  Product,
-  ProductFilterValue
+  Product
 } from '../../../models/product.model';
 
 import { ProductModalComponent } from '../product-modal/product-modal.component';
@@ -54,9 +53,10 @@ import {
 } from '../product-filters.component/product-filters.component';
 
 import { CategoryFilter } from '../../../models/category.model';
-import { SubCategoryFilter } from '../../../models/subCategory.model';
-import { BrandFilter } from '../../../models/brand.model';
-import { ProductPageResponse } from '../../../models/pagination.model';
+
+import {
+  ProductPageResponse
+} from '../../../models/pagination.model';
 
 
 @Component({
@@ -86,82 +86,68 @@ export class ProductListComponent implements OnInit {
   // DEPENDENCIES
   // ========================================================
 
-  private readonly productService = inject(ProductService);
-  private readonly cartService = inject(CartService);
-  private readonly categoryService = inject(CategoryService);
-  private readonly brandService = inject(BrandService);
-  private readonly dialog = inject(MatDialog);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-private readonly destroyRef = inject(DestroyRef);
+  private readonly productService =
+    inject(ProductService);
+
+  private readonly cartService =
+    inject(CartService);
+
+  private readonly categoryService =
+    inject(CategoryService);
+
+  private readonly dialog =
+    inject(MatDialog);
+
+  private readonly route =
+    inject(ActivatedRoute);
+
+  private readonly router =
+    inject(Router);
+
+  private readonly destroyRef =
+    inject(DestroyRef);
+
 
   // ========================================================
   // SERVICES USED BY TEMPLATE
   // ========================================================
 
-  public readonly languageService = inject(LanguageService);
+  public readonly languageService =
+    inject(LanguageService);
+
 
   // ========================================================
   // PRODUCTS
   // ========================================================
 
-  /**
-   * Normal catalog products already loaded from the API.
-   *
-   * This is used as the local cache for the normal catalog.
-   */
   readonly allLoadedProducts =
     signal<Product[]>([]);
 
-  /**
-   * Products returned by /products/by-name.
-   *
-   * While a search is active, all filters are applied
-   * locally against this array.
-   */
   readonly searchResults =
     signal<Product[]>([]);
 
-  /**
-   * Current product source.
-   */
   readonly products =
     signal<Product[]>([]);
 
-  /**
-   * Final products displayed after local filtering.
-   */
   readonly filteredProducts =
     signal<Product[]>([]);
 
-  /**
-   * Total number of products in the normal,
-   * unfiltered catalog.
-   */
   readonly unfilteredTotalCount =
     signal<number>(0);
+
 
   // ========================================================
   // SEARCH
   // ========================================================
 
-  /**
-   * Current search term.
-   *
-   * This is populated from the URL:
-   *
-   * /products?search=lipstick
-   */
   readonly searchName =
     signal<string>('');
 
-  /**
-   * Whether the current page is in search mode.
-   */
   readonly hasSearch =
     computed(() =>
       this.searchName().trim().length > 0
     );
+
 
   // ========================================================
   // PAGINATION
@@ -175,12 +161,14 @@ private readonly destroyRef = inject(DestroyRef);
   readonly isLoadingMore =
     signal<boolean>(false);
 
+
   // ========================================================
   // QUANTITIES
   // ========================================================
 
   readonly quantities =
     signal<Record<number, number>>({});
+
 
   // ========================================================
   // IMAGE API
@@ -189,6 +177,7 @@ private readonly destroyRef = inject(DestroyRef);
   readonly api =
     environment.imageApiBaseUrl;
 
+
   // ========================================================
   // CATEGORIES
   // ========================================================
@@ -196,28 +185,14 @@ private readonly destroyRef = inject(DestroyRef);
   readonly categories =
     signal<CategoryFilter[]>([]);
 
-  readonly subCategories =
-    signal<SubCategoryFilter[]>([]);
 
   // ========================================================
-  // BRANDS
-  // ========================================================
-
-  readonly brands =
-    signal<BrandFilter[]>([]);
-
-  // ========================================================
-  // SELECTED FILTERS
+  // SELECTED CATEGORY
   // ========================================================
 
   readonly selectedCategoryId =
     signal<number | null>(null);
 
-  readonly selectedSubCategoryId =
-    signal<number | null>(null);
-
-  readonly selectedBrandId =
-    signal<number | null>(null);
 
   // ========================================================
   // OFFERS
@@ -225,36 +200,43 @@ private readonly destroyRef = inject(DestroyRef);
 
   readonly showOffers =
     signal<boolean>(false);
-// ========================================================
-// CART SUCCESS
-// ========================================================
-readonly addedToCartProductId =
-  signal<number | null>(null);
 
-private addedToCartTimer?:
-  ReturnType<typeof setTimeout>;
+
   // ========================================================
-  // NORMAL API FILTERS ACTIVE
+  // CART SUCCESS
   // ========================================================
 
-  /**
-   * These filters are still used by the normal catalog.
-   *
-   * IMPORTANT:
-   *
-   * When search is active, these filters are NOT sent
-   * to the API. They are applied locally to searchResults.
-   */
+  readonly addedToCartProductId =
+    signal<number | null>(null);
+
+  private addedToCartTimer?:
+    ReturnType<typeof setTimeout>;
+
+
+  // ========================================================
+  // ALREADY IN CART
+  // ========================================================
+
+  readonly alreadyInCartProductId =
+    signal<number | null>(null);
+
+  private alreadyInCartMessageTimer?:
+    ReturnType<typeof setTimeout>;
+
+
+  // ========================================================
+  // API FILTERS
+  // ========================================================
+
   readonly hasApiFilters =
     computed(() =>
       this.selectedCategoryId() !== null ||
-      this.selectedSubCategoryId() !== null ||
-      this.selectedBrandId() !== null ||
       this.showOffers()
     );
 
+
   // ========================================================
-  // ALL NORMAL PRODUCTS LOADED
+  // ALL PRODUCTS LOADED
   // ========================================================
 
   readonly allUnfilteredProductsLoaded =
@@ -273,6 +255,7 @@ private addedToCartTimer?:
       return loaded >= total;
     });
 
+
   // ========================================================
   // ACTIVE FILTER COUNT
   // ========================================================
@@ -284,18 +267,6 @@ private addedToCartTimer?:
 
       if (
         this.selectedCategoryId() !== null
-      ) {
-        count++;
-      }
-
-      if (
-        this.selectedSubCategoryId() !== null
-      ) {
-        count++;
-      }
-
-      if (
-        this.selectedBrandId() !== null
       ) {
         count++;
       }
@@ -315,6 +286,7 @@ private addedToCartTimer?:
       return count;
     });
 
+
   // ========================================================
   // LOADING
   // ========================================================
@@ -325,41 +297,13 @@ private addedToCartTimer?:
   readonly isLoadingCategories =
     signal<boolean>(true);
 
-  readonly isLoadingBrands =
-    signal<boolean>(true);
 
   // ========================================================
   // REQUEST VERSION
   // ========================================================
 
-  /**
-   * Prevents an old response from replacing newer data.
-   *
-   * Example:
-   *
-   * Search "cream"
-   * Search "lipstick"
-   * Clear search
-   *
-   * An old "cream" response will be ignored.
-   */
   private requestVersion = 0;
 
-  // ========================================================
-  // CART MESSAGE
-  // ========================================================
-
-  readonly alreadyInCartProductId =
-    signal<number | null>(null);
-
-  private alreadyInCartMessageTimer?:
-    ReturnType<typeof setTimeout>;
-
-  // ========================================================
-  // CONSTRUCTOR
-  // ========================================================
-
-  constructor() {}
 
   // ========================================================
   // INIT
@@ -369,11 +313,11 @@ private addedToCartTimer?:
 
     this.loadCategories();
 
-    this.loadBrands();
-
     this.route.queryParams
       .pipe(
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
       .subscribe(params => {
 
@@ -385,8 +329,9 @@ private addedToCartTimer?:
         const previousSearch =
           this.searchName().trim();
 
+
         // --------------------------------------------------
-        // READ FILTERS FROM URL
+        // CATEGORY
         // --------------------------------------------------
 
         this.selectedCategoryId.set(
@@ -395,31 +340,24 @@ private addedToCartTimer?:
           )
         );
 
-        this.selectedSubCategoryId.set(
-          this.parseId(
-            params['subcategory']
-          )
-        );
 
-        this.selectedBrandId.set(
-          this.parseId(
-            params['brand']
-          )
-        );
+        // --------------------------------------------------
+        // OFFERS
+        // --------------------------------------------------
 
         this.showOffers.set(
           params['offers'] === 'true'
         );
 
+
         // --------------------------------------------------
-        // READ SEARCH FROM URL
+        // SEARCH
         // --------------------------------------------------
 
         this.searchName.set(
           newSearch
         );
 
-        this.updateSubCategories();
 
         // --------------------------------------------------
         // SEARCH CHANGED
@@ -434,17 +372,9 @@ private addedToCartTimer?:
           return;
         }
 
+
         // --------------------------------------------------
-        // SEARCH IS ACTIVE BUT ONLY FILTER CHANGED
-        // --------------------------------------------------
-        //
-        // IMPORTANT:
-        //
-        // No API call here.
-        //
-        // The already downloaded searchResults are filtered
-        // locally.
-        //
+        // SEARCH ACTIVE
         // --------------------------------------------------
 
         if (
@@ -456,13 +386,16 @@ private addedToCartTimer?:
           return;
         }
 
+
         // --------------------------------------------------
-        // NORMAL PRODUCT MODE
+        // NORMAL MODE
         // --------------------------------------------------
 
         this.loadProducts();
+
       });
   }
+
 
   // ========================================================
   // CATEGORY NAME
@@ -490,57 +423,6 @@ private addedToCartTimer?:
     );
   }
 
-  // ========================================================
-  // SUBCATEGORY NAME
-  // ========================================================
-
-  getSubCategoryName(
-    subCategory: SubCategoryFilter
-  ): string {
-
-    if (
-      this.languageService.isArabic()
-    ) {
-
-      return (
-        subCategory.nameAr?.trim() ||
-        subCategory.nameEn ||
-        ''
-      );
-    }
-
-    return (
-      subCategory.nameEn?.trim() ||
-      subCategory.nameAr ||
-      ''
-    );
-  }
-
-  // ========================================================
-  // BRAND NAME
-  // ========================================================
-
-  getBrandName(
-    brand: BrandFilter
-  ): string {
-
-    if (
-      this.languageService.isArabic()
-    ) {
-
-      return (
-        brand.nameAr?.trim() ||
-        brand.nameEn ||
-        ''
-      );
-    }
-
-    return (
-      brand.nameEn?.trim() ||
-      brand.nameAr ||
-      ''
-    );
-  }
 
   // ========================================================
   // PARSE ID
@@ -566,18 +448,23 @@ private addedToCartTimer?:
       : id;
   }
 
+
   // ========================================================
   // LOAD CATEGORIES
   // ========================================================
 
   private loadCategories(): void {
 
-    this.isLoadingCategories.set(true);
+    this.isLoadingCategories.set(
+      true
+    );
 
     this.categoryService
       .getCategoriesMenu()
       .pipe(
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
       .subscribe({
 
@@ -593,39 +480,6 @@ private addedToCartTimer?:
             (data as any[]).map(
               (category: any) => {
 
-                const subCategories:
-                  SubCategoryFilter[] =
-                  (
-                    category.subCategories ??
-                    category.subcategories ??
-                    []
-                  ).map(
-                    (subCategory: any) => ({
-
-                      id:
-                        Number(
-                          subCategory.id
-                        ),
-
-                      nameEn:
-                        subCategory.nameEn ??
-                        '',
-
-                      nameAr:
-                        subCategory.nameAr ??
-                        '',
-
-                      categoryId:
-                        subCategory.categoryId != null
-                          ? Number(
-                              subCategory.categoryId
-                            )
-                          : Number(
-                              category.id
-                            )
-                    })
-                  );
-
                 return {
 
                   id:
@@ -639,10 +493,9 @@ private addedToCartTimer?:
 
                   nameAr:
                     category.nameAr ??
-                    '',
-
-                  subCategories
+                    ''
                 };
+
               }
             );
 
@@ -650,94 +503,23 @@ private addedToCartTimer?:
             mappedCategories
           );
 
-          this.updateSubCategories();
-
           this.isLoadingCategories.set(
             false
           );
         },
 
-        error: error => {
-
-       
+        error: () => {
 
           this.categories.set([]);
 
-          this.subCategories.set([]);
-
           this.isLoadingCategories.set(
             false
           );
         }
+
       });
   }
 
-  // ========================================================
-  // LOAD BRANDS
-  // ========================================================
-
-  private loadBrands(): void {
-
-    this.isLoadingBrands.set(true);
-
-    this.brandService
-      .getBrands()
-      .pipe(
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-
-        next: (response: any) => {
-
-          const data =
-            response?.data ??
-            response ??
-            [];
-
-          const mappedBrands:
-            BrandFilter[] =
-            (data as any[]).map(
-              (brand: any) => ({
-
-                id:
-                  Number(
-                    brand.id
-                  ),
-
-                nameEn:
-                  brand.nameEn ??
-                  '',
-
-                nameAr:
-                  brand.nameAr ??
-                  '',
-
-                imageUrl:
-                  brand.imageUrl ??
-                  null
-              })
-            );
-
-          this.brands.set(
-            mappedBrands
-          );
-
-          this.isLoadingBrands.set(
-            false
-          );
-        },
-
-        error: error => {
-
-       
-          this.brands.set([]);
-
-          this.isLoadingBrands.set(
-            false
-          );
-        }
-      });
-  }
 
   // ========================================================
   // LOAD PRODUCTS
@@ -751,19 +533,12 @@ private addedToCartTimer?:
     const search =
       this.searchName().trim();
 
+
     // ======================================================
     // SEARCH MODE
     // ======================================================
-    //
-    // ONE API CALL.
-    //
-    // Filters are applied locally after the response.
-    //
-    // ======================================================
 
-    if (
-      search
-    ) {
+    if (search) {
 
       this.loadSearchResults(
         search,
@@ -773,14 +548,16 @@ private addedToCartTimer?:
       return;
     }
 
+
     // ======================================================
     // NORMAL MODE
     // ======================================================
 
     this.searchResults.set([]);
 
+
     // ------------------------------------------------------
-    // FILTER ACTIVE + ALL NORMAL PRODUCTS LOADED
+    // FILTER ACTIVE + ALL PRODUCTS LOADED
     // ------------------------------------------------------
 
     if (
@@ -795,8 +572,9 @@ private addedToCartTimer?:
       return;
     }
 
+
     // ------------------------------------------------------
-    // FILTER ACTIVE + NOT ALL PRODUCTS LOADED
+    // FILTER ACTIVE
     // ------------------------------------------------------
 
     if (
@@ -810,8 +588,9 @@ private addedToCartTimer?:
       return;
     }
 
+
     // ------------------------------------------------------
-    // NO FILTERS + CACHE EXISTS
+    // CACHE EXISTS
     // ------------------------------------------------------
 
     if (
@@ -838,6 +617,7 @@ private addedToCartTimer?:
       return;
     }
 
+
     // ------------------------------------------------------
     // FIRST LOAD
     // ------------------------------------------------------
@@ -846,6 +626,7 @@ private addedToCartTimer?:
       requestVersion
     );
   }
+
 
   // ========================================================
   // LOAD SEARCH RESULTS
@@ -863,11 +644,15 @@ private addedToCartTimer?:
     this.productService
       .getProductsByName(search)
       .pipe(
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
       .subscribe({
 
-        next: (response: Product[]) => {
+        next: (
+          response: Product[]
+        ) => {
 
           if (
             requestVersion !==
@@ -879,25 +664,15 @@ private addedToCartTimer?:
           const results =
             response ?? [];
 
-          // ------------------------------------------------
-          // STORE SEARCH RESULTS
-          // ------------------------------------------------
-
           this.searchResults.set(
             results
           );
 
-          // ------------------------------------------------
-          // SEARCH DOES NOT USE PAGINATION
-          // ------------------------------------------------
-
-          this.hasMoreProducts.set(false);
+          this.hasMoreProducts.set(
+            false
+          );
 
           this.currentPage = 0;
-
-          // ------------------------------------------------
-          // APPLY CATEGORY / BRAND / OFFERS LOCALLY
-          // ------------------------------------------------
 
           this.applyCurrentLocalFilters();
 
@@ -905,7 +680,7 @@ private addedToCartTimer?:
 
         },
 
-        error: error => {
+        error: () => {
 
           if (
             requestVersion !==
@@ -914,7 +689,6 @@ private addedToCartTimer?:
             return;
           }
 
-       
           this.searchResults.set([]);
 
           this.products.set([]);
@@ -929,8 +703,10 @@ private addedToCartTimer?:
 
           this.isLoadingMore.set(false);
         }
+
       });
   }
+
 
   // ========================================================
   // LOAD FIRST PAGE
@@ -950,12 +726,12 @@ private addedToCartTimer?:
       .getProducts(
         1,
         null,
-        null,
-        null,
         false
       )
       .pipe(
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
       .subscribe({
 
@@ -1004,7 +780,7 @@ private addedToCartTimer?:
           this.isLoading.set(false);
         },
 
-        error: error => {
+        error: () => {
 
           if (
             requestVersion !==
@@ -1013,7 +789,6 @@ private addedToCartTimer?:
             return;
           }
 
-        
           this.products.set([]);
 
           this.filteredProducts.set([]);
@@ -1030,18 +805,16 @@ private addedToCartTimer?:
 
           this.isLoadingMore.set(false);
         }
+
       });
   }
+
 
   // ========================================================
   // LOAD NEXT PAGE
   // ========================================================
 
   private loadNextPage(): void {
-
-    // ------------------------------------------------------
-    // SEARCH RESULTS DO NOT USE NORMAL PAGINATION
-    // ------------------------------------------------------
 
     if (
       this.hasSearch()
@@ -1056,10 +829,6 @@ private addedToCartTimer?:
     ) {
       return;
     }
-
-    // ------------------------------------------------------
-    // FILTERED RESULTS DON'T USE NORMAL INFINITE SCROLL
-    // ------------------------------------------------------
 
     if (
       this.hasApiFilters()
@@ -1076,12 +845,12 @@ private addedToCartTimer?:
       .getProducts(
         nextPage,
         null,
-        null,
-        null,
         false
       )
       .pipe(
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
       .subscribe({
 
@@ -1111,6 +880,7 @@ private addedToCartTimer?:
                 )
             );
 
+
           if (
             uniqueProducts.length > 0
           ) {
@@ -1137,6 +907,7 @@ private addedToCartTimer?:
             );
           }
 
+
           this.currentPage =
             response.page ??
             nextPage;
@@ -1153,16 +924,17 @@ private addedToCartTimer?:
           this.isLoadingMore.set(false);
         },
 
-        error: error => {
+        error: () => {
 
-         
           this.isLoadingMore.set(false);
         }
+
       });
   }
 
+
   // ========================================================
-  // LOAD FILTERED PRODUCTS FROM API
+  // LOAD FILTERED PRODUCTS
   // ========================================================
 
   private loadFilteredProductsFromApi(
@@ -1177,12 +949,12 @@ private addedToCartTimer?:
       .getProducts(
         1,
         this.selectedCategoryId(),
-        this.selectedSubCategoryId(),
-        this.selectedBrandId(),
         this.showOffers()
       )
       .pipe(
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
       .subscribe({
 
@@ -1215,7 +987,7 @@ private addedToCartTimer?:
           this.isLoading.set(false);
         },
 
-        error: error => {
+        error: () => {
 
           if (
             requestVersion !==
@@ -1223,8 +995,6 @@ private addedToCartTimer?:
           ) {
             return;
           }
-
-        
 
           this.products.set([]);
 
@@ -1236,11 +1006,13 @@ private addedToCartTimer?:
 
           this.isLoadingMore.set(false);
         }
+
       });
   }
 
+
   // ========================================================
-  // APPLY LOCAL FILTERS TO NORMAL PRODUCTS
+  // APPLY LOCAL API FILTERS
   // ========================================================
 
   private applyLocalApiFilters(): void {
@@ -1265,22 +1037,11 @@ private addedToCartTimer?:
     this.isLoading.set(false);
   }
 
+
   // ========================================================
-  // APPLY LOCAL FILTERS TO SEARCH RESULTS
+  // APPLY SEARCH FILTERS
   // ========================================================
 
-  /**
-   * This is the important part of the new architecture.
-   *
-   * Once /by-name has returned:
-   *
-   * Category
-   * Subcategory
-   * Brand
-   * Offers
-   *
-   * are all handled here without another API request.
-   */
   private applyCurrentLocalFilters(): void {
 
     const source =
@@ -1306,8 +1067,9 @@ private addedToCartTimer?:
     this.isLoading.set(false);
   }
 
+
   // ========================================================
-  // SHARED LOCAL FILTER LOGIC
+  // LOCAL FILTER LOGIC
   // ========================================================
 
   private filterProducts(
@@ -1316,12 +1078,6 @@ private addedToCartTimer?:
 
     const categoryId =
       this.selectedCategoryId();
-
-    const subCategoryId =
-      this.selectedSubCategoryId();
-
-    const brandId =
-      this.selectedBrandId();
 
     const offers =
       this.showOffers();
@@ -1334,48 +1090,26 @@ private addedToCartTimer?:
         // --------------------------------------------------
 
         if (
-          categoryId !== null &&
-          !product.subCategories?.some(
-            subCategory =>
-              Number(
-                subCategory.categoryId
-              ) === categoryId
-          )
+          categoryId !== null
         ) {
 
-          return false;
+          // Keep your actual category
+          // relation/property here.
+
+          const productCategoryId =
+            Number(
+              (product as any).categoryId
+            );
+
+          if (
+            productCategoryId !==
+            categoryId
+          ) {
+
+            return false;
+          }
         }
 
-        // --------------------------------------------------
-        // SUBCATEGORY
-        // --------------------------------------------------
-
-        if (
-          subCategoryId !== null &&
-          !product.subCategories?.some(
-            subCategory =>
-              Number(
-                subCategory.id
-              ) === subCategoryId
-          )
-        ) {
-
-          return false;
-        }
-
-        // --------------------------------------------------
-        // BRAND
-        // --------------------------------------------------
-
-        if (
-          brandId !== null &&
-          Number(
-            product.brandId
-          ) !== brandId
-        ) {
-
-          return false;
-        }
 
         // --------------------------------------------------
         // OFFERS
@@ -1396,48 +1130,26 @@ private addedToCartTimer?:
     );
   }
 
+
   // ========================================================
   // FILTER APPLIED
   // ========================================================
 
   onFilterApplied(
-    filters: ProductFilterValue
+    filters: any
   ): void {
 
     this.selectedCategoryId.set(
       filters.categoryId
     );
 
-    this.selectedSubCategoryId.set(
-      filters.subCategoryId
-    );
-
-    this.selectedBrandId.set(
-      filters.brandId
-    );
-
     this.showOffers.set(
       filters.offers
     );
 
-    this.updateSubCategories();
-
-    // ------------------------------------------------------
-    // IMPORTANT
-    // ------------------------------------------------------
-    //
-    // Navigation keeps the URL synchronized.
-    //
-    // If search is active, the query-param subscription
-    // detects that the search term did not change and
-    // applies the filters locally.
-    //
-    // NO SEARCH API CALL.
-    //
-    // ------------------------------------------------------
-
     this.navigateWithCurrentFilters();
   }
+
 
   // ========================================================
   // MOBILE FILTER DIALOG
@@ -1464,25 +1176,14 @@ private addedToCartTimer?:
     component.categories =
       this.categories();
 
-    component.subCategories =
-      this.subCategories();
-
-    component.brands =
-      this.brands();
-
     component.selectedCategoryId =
       this.selectedCategoryId();
-
-    component.selectedSubCategoryId =
-      this.selectedSubCategoryId();
-
-    component.selectedBrandId =
-      this.selectedBrandId();
 
     component.showOffers =
       this.showOffers();
 
     component.syncInputs();
+
 
     const filterSubscription =
       component.filterApplied.subscribe(
@@ -1496,6 +1197,7 @@ private addedToCartTimer?:
         }
       );
 
+
     const clearSubscription =
       component.clearFiltersEvent.subscribe(
         () => {
@@ -1506,9 +1208,12 @@ private addedToCartTimer?:
         }
       );
 
+
     dialogRef.afterClosed()
       .pipe(
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(
+          this.destroyRef
+        )
       )
       .subscribe(() => {
 
@@ -1518,6 +1223,7 @@ private addedToCartTimer?:
       });
   }
 
+
   // ========================================================
   // CLEAR CATEGORY
   // ========================================================
@@ -1526,36 +1232,9 @@ private addedToCartTimer?:
 
     this.selectedCategoryId.set(null);
 
-    this.selectedSubCategoryId.set(null);
-
-    this.updateSubCategories();
-
     this.navigateWithCurrentFilters();
   }
 
-  // ========================================================
-  // CLEAR SUBCATEGORY
-  // ========================================================
-
-  clearSubCategory(): void {
-
-    this.selectedSubCategoryId.set(null);
-
-    this.updateSubCategories();
-
-    this.navigateWithCurrentFilters();
-  }
-
-  // ========================================================
-  // CLEAR BRAND
-  // ========================================================
-
-  clearBrand(): void {
-
-    this.selectedBrandId.set(null);
-
-    this.navigateWithCurrentFilters();
-  }
 
   // ========================================================
   // CLEAR OFFERS
@@ -1568,18 +1247,11 @@ private addedToCartTimer?:
     this.navigateWithCurrentFilters();
   }
 
+
   // ========================================================
   // CLEAR SEARCH
   // ========================================================
 
-  /**
-   * Removes only the search term.
-   *
-   * Existing category / brand / offer filters remain.
-   *
-   * After the URL changes, the component leaves search mode
-   * and returns to the normal product API flow.
-   */
   clearSearch(): void {
 
     this.searchName.set('');
@@ -1589,6 +1261,7 @@ private addedToCartTimer?:
     this.navigateWithCurrentFilters();
   }
 
+
   // ========================================================
   // INFINITE SCROLL
   // ========================================================
@@ -1596,29 +1269,17 @@ private addedToCartTimer?:
   @HostListener('window:scroll')
   onWindowScroll(): void {
 
-    // ------------------------------------------------------
-    // SEARCH MODE
-    // ------------------------------------------------------
-
     if (
       this.hasSearch()
     ) {
       return;
     }
 
-    // ------------------------------------------------------
-    // FILTERED MODE
-    // ------------------------------------------------------
-
     if (
       this.hasApiFilters()
     ) {
       return;
     }
-
-    // ------------------------------------------------------
-    // LOADING
-    // ------------------------------------------------------
 
     if (
       this.isLoading() ||
@@ -1644,6 +1305,7 @@ private addedToCartTimer?:
     }
   }
 
+
   // ========================================================
   // QUANTITIES
   // ========================================================
@@ -1661,6 +1323,7 @@ private addedToCartTimer?:
         quantityMap[
           product.id
         ] = 0;
+
       }
     );
 
@@ -1668,6 +1331,7 @@ private addedToCartTimer?:
       quantityMap
     );
   }
+
 
   // ========================================================
   // ADD QUANTITIES
@@ -1696,7 +1360,9 @@ private addedToCartTimer?:
               updated[
                 product.id
               ] = 0;
+
             }
+
           }
         );
 
@@ -1705,100 +1371,6 @@ private addedToCartTimer?:
     );
   }
 
-  // ========================================================
-  // SUBCATEGORIES
-  // ========================================================
-
-  private updateSubCategories(): void {
-
-    const categoryId =
-      this.selectedCategoryId();
-
-    const subCategoryId =
-      this.selectedSubCategoryId();
-
-    // ------------------------------------------------------
-    // NO CATEGORY
-    // ------------------------------------------------------
-
-    if (
-      categoryId === null
-    ) {
-
-      if (
-        subCategoryId !== null
-      ) {
-
-        for (
-          const category of
-          this.categories()
-        ) {
-
-          const found =
-            category.subCategories.some(
-              subCategory =>
-                Number(
-                  subCategory.id
-                ) === subCategoryId
-            );
-
-          if (
-            found
-          ) {
-
-            this.subCategories.set(
-              category.subCategories
-            );
-
-            return;
-          }
-        }
-      }
-
-      this.subCategories.set([]);
-
-      return;
-    }
-
-    // ------------------------------------------------------
-    // CATEGORY SELECTED
-    // ------------------------------------------------------
-
-    const selectedCategory =
-      this.categories().find(
-        category =>
-          Number(
-            category.id
-          ) === categoryId
-      );
-
-    const availableSubCategories =
-      selectedCategory?.subCategories ??
-      [];
-
-    this.subCategories.set(
-      availableSubCategories
-    );
-
-    // ------------------------------------------------------
-    // INVALID SUBCATEGORY
-    // ------------------------------------------------------
-
-    if (
-      subCategoryId !== null &&
-      !availableSubCategories.some(
-        subCategory =>
-          Number(
-            subCategory.id
-          ) === subCategoryId
-      )
-    ) {
-
-      this.selectedSubCategoryId.set(
-        null
-      );
-    }
-  }
 
   // ========================================================
   // NAVIGATION
@@ -1809,6 +1381,7 @@ private addedToCartTimer?:
     const queryParams:
       Record<string, string> = {};
 
+
     // ------------------------------------------------------
     // SEARCH
     // ------------------------------------------------------
@@ -1816,13 +1389,12 @@ private addedToCartTimer?:
     const search =
       this.searchName().trim();
 
-    if (
-      search
-    ) {
+    if (search) {
 
       queryParams['search'] =
         search;
     }
+
 
     // ------------------------------------------------------
     // CATEGORY
@@ -1839,35 +1411,6 @@ private addedToCartTimer?:
         String(categoryId);
     }
 
-    // ------------------------------------------------------
-    // SUBCATEGORY
-    // ------------------------------------------------------
-
-    const subCategoryId =
-      this.selectedSubCategoryId();
-
-    if (
-      subCategoryId !== null
-    ) {
-
-      queryParams['subcategory'] =
-        String(subCategoryId);
-    }
-
-    // ------------------------------------------------------
-    // BRAND
-    // ------------------------------------------------------
-
-    const brandId =
-      this.selectedBrandId();
-
-    if (
-      brandId !== null
-    ) {
-
-      queryParams['brand'] =
-        String(brandId);
-    }
 
     // ------------------------------------------------------
     // OFFERS
@@ -1881,6 +1424,7 @@ private addedToCartTimer?:
         'true';
     }
 
+
     this.router.navigate(
       ['/products'],
       {
@@ -1890,36 +1434,24 @@ private addedToCartTimer?:
     );
   }
 
+
   // ========================================================
-  // CLEAR ALL FILTERS + SEARCH
+  // CLEAR ALL FILTERS
   // ========================================================
 
   clearFilters(): void {
 
-    this.selectedCategoryId.set(
-      null
-    );
+    this.selectedCategoryId.set(null);
 
-    this.selectedSubCategoryId.set(
-      null
-    );
-
-    this.selectedBrandId.set(
-      null
-    );
-
-    this.showOffers.set(
-      false
-    );
+    this.showOffers.set(false);
 
     this.searchName.set('');
 
     this.searchResults.set([]);
 
-    this.subCategories.set([]);
 
     // ------------------------------------------------------
-    // SHOW NORMAL CACHE IMMEDIATELY
+    // SHOW CACHE IMMEDIATELY
     // ------------------------------------------------------
 
     if (
@@ -1944,8 +1476,9 @@ private addedToCartTimer?:
       this.isLoading.set(false);
     }
 
+
     // ------------------------------------------------------
-    // REMOVE ALL QUERY PARAMETERS
+    // REMOVE QUERY PARAMETERS
     // ------------------------------------------------------
 
     this.router.navigate(
@@ -1956,6 +1489,7 @@ private addedToCartTimer?:
       }
     );
   }
+
 
   // ========================================================
   // SELECTED CATEGORY NAME
@@ -1981,9 +1515,7 @@ private addedToCartTimer?:
           ) === id
       );
 
-    if (
-      !category
-    ) {
+    if (!category) {
 
       return '';
     }
@@ -1993,83 +1525,6 @@ private addedToCartTimer?:
     );
   }
 
-  // ========================================================
-  // SELECTED SUBCATEGORY NAME
-  // ========================================================
-
-  get selectedSubCategoryName(): string {
-
-    const id =
-      this.selectedSubCategoryId();
-
-    if (
-      id === null
-    ) {
-
-      return '';
-    }
-
-    for (
-      const category of
-      this.categories()
-    ) {
-
-      const subCategory =
-        category.subCategories.find(
-          sub =>
-            Number(
-              sub.id
-            ) === id
-        );
-
-      if (
-        subCategory
-      ) {
-
-        return this.getSubCategoryName(
-          subCategory
-        );
-      }
-    }
-
-    return '';
-  }
-
-  // ========================================================
-  // SELECTED BRAND NAME
-  // ========================================================
-
-  get selectedBrandName(): string {
-
-    const id =
-      this.selectedBrandId();
-
-    if (
-      id === null
-    ) {
-
-      return '';
-    }
-
-    const brand =
-      this.brands().find(
-        brand =>
-          Number(
-            brand.id
-          ) === id
-      );
-
-    if (
-      !brand
-    ) {
-
-      return '';
-    }
-
-    return this.getBrandName(
-      brand
-    );
-  }
 
   // ========================================================
   // DISCOUNTED PRICE
@@ -2107,6 +1562,7 @@ private addedToCartTimer?:
     );
   }
 
+
   // ========================================================
   // HAS DISCOUNT
   // ========================================================
@@ -2119,6 +1575,7 @@ private addedToCartTimer?:
       product.discountPercentage ?? 0
     ) > 0;
   }
+
 
   // ========================================================
   // QUANTITY
@@ -2150,9 +1607,11 @@ private addedToCartTimer?:
 
         [productId]:
           quantity
+
       })
     );
   }
+
 
   // ========================================================
   // GET QUANTITY
@@ -2168,86 +1627,286 @@ private addedToCartTimer?:
     );
   }
 
+
   // ========================================================
-  // CART
+  // ADD TO CART
   // ========================================================
 
-// ========================================================
-// CART
-// ========================================================
+  addToCart(
+    product: Product
+  ): void {
 
-addToCart(
-  product: Product
-): void {
+    // ======================================================
+    // CHECK PRODUCT VARIANTS
+    // ======================================================
 
-  const alreadyExists =
-    this.cartService.addToCart(
+    const hasSizes =
+      Array.isArray(
+        (product as any).sizes
+      ) &&
+      (product as any).sizes.length > 0;
+
+
+    const hasHeelSizes =
+      Array.isArray(
+        (product as any).heelSizes
+      ) &&
+      (product as any).heelSizes.length > 0;
+
+
+    // ======================================================
+    // NO SIZE + NO HEEL SIZE
+    // → ADD DIRECTLY
+    // ======================================================
+
+    if (
+      !hasSizes &&
+      !hasHeelSizes
+    ) {
+
+      this.addProductDirectlyToCart(
+        product
+      );
+
+      return;
+    }
+
+
+    // ======================================================
+    // HAS SIZE OR HEEL SIZE
+    // → OPEN MODAL
+    // ======================================================
+
+    this.openProductModal(
       product
     );
+  }
 
-  // ------------------------------------------------------
-  // PRODUCT ALREADY EXISTS
-  // ------------------------------------------------------
-  if (!alreadyExists) {
 
-    this.addedToCartProductId.set(null);
+  // ========================================================
+  // DIRECT CART ADD
+  // ========================================================
 
-    this.showAlreadyInCartMessage(
+  private addProductDirectlyToCart(
+    product: Product
+  ): void {
+
+    const alreadyExists =
+      this.cartService.addToCart(
+        product
+      );
+
+
+    // ------------------------------------------------------
+    // ALREADY EXISTS
+    // ------------------------------------------------------
+
+    if (!alreadyExists) {
+
+      this.addedToCartProductId.set(
+        null
+      );
+
+      this.showAlreadyInCartMessage(
+        product.id
+      );
+
+      return;
+    }
+
+
+    // ------------------------------------------------------
+    // SUCCESS
+    // ------------------------------------------------------
+
+    this.alreadyInCartProductId.set(
+      null
+    );
+
+    this.showAddedToCartSuccess(
       product.id
     );
-
-    return;
   }
 
-  // ------------------------------------------------------
-  // PRODUCT SUCCESSFULLY ADDED
-  // ------------------------------------------------------
 
-  this.alreadyInCartProductId.set(null);
+  // ========================================================
+  // OPEN PRODUCT MODAL
+  // ========================================================
 
-  this.showAddedToCartSuccess(
-    product.id
-  );
-}
+  private openProductModal(
+    product: Product
+  ): void {
+
+    const dialogRef =
+      this.dialog.open(
+        ProductModalComponent,
+        {
+
+          width: '800px',
+
+          maxWidth: '95vw',
+
+          maxHeight: '90vh',
+
+          data: product,
+
+          disableClose: false
+
+        }
+      );
 
 
-// ========================================================
-// ADDED TO CART SUCCESS
-// ========================================================
+    // ======================================================
+    // MODAL CLOSED
+    // ======================================================
 
-private showAddedToCartSuccess(
-  productId: number
-): void {
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+      )
+      .subscribe(
+        result => {
 
-  // Clear previous timer
-  if (this.addedToCartTimer) {
+          // User closed modal
+          // without adding anything.
 
-    clearTimeout(
-      this.addedToCartTimer
+          if (!result) {
+            return;
+          }
+
+
+          // ------------------------------------------------
+          // MODAL RETURNS PRODUCT
+          // ------------------------------------------------
+
+          this.addSelectedProductToCart(
+            result
+          );
+
+        }
+      );
+  }
+
+
+  // ========================================================
+  // ADD SELECTED VARIANT
+  // ========================================================
+
+  private addSelectedProductToCart(
+    result: any
+  ): void {
+
+    /*
+     * The modal can return either:
+     *
+     * 1. Product directly
+     *
+     * OR
+     *
+     * 2. {
+     *      product: product,
+     *      size: selectedSize,
+     *      heelSize: selectedHeelSize
+     *    }
+     *
+     * We support both.
+     */
+
+    const product =
+      result.product ??
+      result;
+
+
+    if (!product) {
+      return;
+    }
+
+
+    // ------------------------------------------------------
+    // Add selected product/variant
+    // ------------------------------------------------------
+
+    const alreadyExists =
+      this.cartService.addToCart(
+        result.product
+          ? result
+          : product
+      );
+
+
+    // ------------------------------------------------------
+    // ALREADY IN CART
+    // ------------------------------------------------------
+
+    if (!alreadyExists) {
+
+      this.addedToCartProductId.set(
+        null
+      );
+
+      this.showAlreadyInCartMessage(
+        product.id
+      );
+
+      return;
+    }
+
+
+    // ------------------------------------------------------
+    // SUCCESS
+    // ------------------------------------------------------
+
+    this.alreadyInCartProductId.set(
+      null
+    );
+
+    this.showAddedToCartSuccess(
+      product.id
     );
   }
 
-  // Only THIS product shows the check
-  this.addedToCartProductId.set(
-    productId
-  );
 
-  // Return to shopping-cart icon
-  this.addedToCartTimer =
-    setTimeout(() => {
+  // ========================================================
+  // SUCCESS MESSAGE
+  // ========================================================
 
-      if (
-        this.addedToCartProductId() ===
-        productId
-      ) {
+  private showAddedToCartSuccess(
+    productId: number
+  ): void {
 
-        this.addedToCartProductId.set(
-          null
-        );
-      }
+    if (
+      this.addedToCartTimer
+    ) {
 
-    }, 1500);
-}
+      clearTimeout(
+        this.addedToCartTimer
+      );
+    }
+
+
+    this.addedToCartProductId.set(
+      productId
+    );
+
+
+    this.addedToCartTimer =
+      setTimeout(() => {
+
+        if (
+          this.addedToCartProductId() ===
+          productId
+        ) {
+
+          this.addedToCartProductId.set(
+            null
+          );
+        }
+
+      }, 1500);
+  }
+
 
   // ========================================================
   // ALREADY IN CART MESSAGE
@@ -2261,6 +1920,7 @@ private showAddedToCartSuccess(
       productId
     );
 
+
     if (
       this.alreadyInCartMessageTimer
     ) {
@@ -2269,6 +1929,7 @@ private showAddedToCartSuccess(
         this.alreadyInCartMessageTimer
       );
     }
+
 
     this.alreadyInCartMessageTimer =
       setTimeout(() => {
@@ -2286,32 +1947,24 @@ private showAddedToCartSuccess(
       }, 3000);
   }
 
+
   // ========================================================
   // PRODUCT DETAILS
   // ========================================================
 
- /*  openProductDetails(
+  openProductDetails(
     product: Product
   ): void {
 
-    this.dialog.open(
-      ProductModalComponent,
-      {
-
-        width: '800px',
-
-        maxWidth: '95vw',
-
-        data: product,
-
-        disableClose: false
-      }
+    this.router.navigate(
+      [
+        '/product',
+        product.id
+      ]
     );
-  } */
+  }
 
-    openProductDetails(product: Product): void {
-  this.router.navigate(['/product', product.id]);
-}
+
   // ========================================================
   // IMAGE URL
   // ========================================================
@@ -2320,12 +1973,11 @@ private showAddedToCartSuccess(
     imageUrl?: string | null
   ): string {
 
-    if (
-      !imageUrl
-    ) {
+    if (!imageUrl) {
 
       return 'assets/images/product-placeholder.png';
     }
+
 
     if (
       imageUrl.startsWith('http://') ||
@@ -2335,6 +1987,8 @@ private showAddedToCartSuccess(
       return imageUrl;
     }
 
+
     return `${this.api}${imageUrl}`;
   }
+
 }

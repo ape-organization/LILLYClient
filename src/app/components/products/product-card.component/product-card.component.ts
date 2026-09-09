@@ -2,8 +2,7 @@ import {
   Component,
   EventEmitter,
   Input,
-  Output,
-  signal
+  Output
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -42,6 +41,13 @@ export class ProductCardComponent {
   @Input()
   imageApi = '';
 
+  @Input()
+  showAlreadyInCartMessage = false;
+
+  @Input()
+  showAddedCheck = false;
+
+
   @Output()
   productClicked =
     new EventEmitter<Product>();
@@ -50,15 +56,11 @@ export class ProductCardComponent {
   addToCartClicked =
     new EventEmitter<Product>();
 
-@Input()
-showAlreadyInCartMessage = false;
+
   constructor(
     public languageService: LanguageService
   ) {}
-  @Input()
-cartAddedSuccessfully = false;
-@Input()
-showAddedCheck = false;
+
 
   // ========================================================
   // PRODUCT NAME
@@ -80,6 +82,40 @@ showAddedCheck = false;
       this.product?.nameAr ||
       'Product'
     );
+  }
+
+
+  // ========================================================
+  // PRODUCT IMAGES
+  // ========================================================
+
+  getSortedImages() {
+
+    if (!this.product?.images?.length) {
+      return [];
+    }
+
+    return [...this.product.images]
+      .filter(image => !!image?.imageUrl)
+      .sort(
+        (a, b) => a.sortOrder - b.sortOrder
+      );
+  }
+
+
+  getFirstImage(): string | null {
+
+    const images = this.getSortedImages();
+
+    return images[0]?.imageUrl ?? null;
+  }
+
+
+  getSecondImage(): string | null {
+
+    const images = this.getSortedImages();
+
+    return images[1]?.imageUrl ?? null;
   }
 
 
@@ -115,7 +151,7 @@ showAddedCheck = false;
   hasDiscount(): boolean {
 
     return Number(
-      this.product.discountPercentage ?? 0
+      this.product?.discountPercentage ?? 0
     ) > 0;
   }
 
@@ -123,11 +159,11 @@ showAddedCheck = false;
   getDiscountedPrice(): number {
 
     const price =
-      Number(this.product.price ?? 0);
+      Number(this.product?.price ?? 0);
 
     const discount =
       Number(
-        this.product.discountPercentage ?? 0
+        this.product?.discountPercentage ?? 0
       );
 
     if (discount <= 0) {
@@ -165,8 +201,11 @@ showAddedCheck = false;
 
     event.stopPropagation();
 
-    if (!this.product.isInStock) {
+    if (!this.product?.isInStock) {
+      return;
+    }
 
+    if (this.showAddedCheck) {
       return;
     }
 

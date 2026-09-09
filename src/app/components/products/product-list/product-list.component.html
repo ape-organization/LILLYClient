@@ -11,12 +11,10 @@
 
       <app-product-filters
         [categories]="categories()"
-        [subCategories]="subCategories()"
-        [brands]="brands()"
+    
 
         [selectedCategoryId]="selectedCategoryId()"
-        [selectedSubCategoryId]="selectedSubCategoryId()"
-        [selectedBrandId]="selectedBrandId()"
+  
 
         [showOffers]="showOffers()"
 
@@ -72,8 +70,7 @@
         *ngIf="
           hasSearch() ||
           selectedCategoryId() !== null ||
-          selectedSubCategoryId() !== null ||
-          selectedBrandId() !== null ||
+      
           showOffers()
         ">
 
@@ -152,67 +149,6 @@
             </button>
 
           </div>
-
-
-          <!-- ==================================================
-               SUBCATEGORY
-               ================================================== -->
-
-          <div
-            class="filter-chip"
-            *ngIf="selectedSubCategoryId() !== null">
-
-            <span>
-              {{ 'FILTER.SUBCATEGORY' | translate }}
-            </span>
-
-            <strong>
-              {{ selectedSubCategoryName }}
-            </strong>
-
-            <button
-              type="button"
-              class="remove-filter"
-              (click)="clearSubCategory()">
-
-              <mat-icon>
-                close
-              </mat-icon>
-
-            </button>
-
-          </div>
-
-
-          <!-- ==================================================
-               BRAND
-               ================================================== -->
-
-          <div
-            class="filter-chip"
-            *ngIf="selectedBrandId() !== null">
-
-            <span>
-              {{ 'FILTER.BRAND' | translate }}
-            </span>
-
-            <strong>
-              {{ selectedBrandName }}
-            </strong>
-
-            <button
-              type="button"
-              class="remove-filter"
-              (click)="clearBrand()">
-
-              <mat-icon>
-                close
-              </mat-icon>
-
-            </button>
-
-          </div>
-
 
           <!-- ==================================================
                OFFERS
