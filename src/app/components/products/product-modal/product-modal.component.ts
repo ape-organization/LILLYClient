@@ -51,6 +51,7 @@ import { ProductService } from '../../../services/product.service';
 export class ProductModalComponent
   implements OnInit, OnDestroy {
 
+
   // =====================================================
   // SERVICES
   // =====================================================
@@ -423,15 +424,17 @@ export class ProductModalComponent
     if (
       this.selectedSizeId() === sizeId
     ) {
+
       this.selectedSizeId.set(null);
+
     } else {
 
       this.selectedSizeId.set(sizeId);
 
       /*
        * If the currently selected heel
-       * does not work with this size,
-       * remove the heel selection.
+       * does not have a matching variant
+       * with this size, clear the heel.
        */
       const heelId =
         this.selectedHeelSizeId();
@@ -465,7 +468,9 @@ export class ProductModalComponent
     if (
       this.selectedHeelSizeId() === heelSizeId
     ) {
+
       this.selectedHeelSizeId.set(null);
+
     } else {
 
       this.selectedHeelSizeId.set(
@@ -502,10 +507,13 @@ export class ProductModalComponent
 
 
   // =====================================================
-  // CHECK IF SIZE IS AVAILABLE
+  // CHECK SIZE IS AVAILABLE
   //
-  // A size is disabled when it has no available
-  // combination with the currently selected heel.
+  // IMPORTANT:
+  // NO STOCK CHECK HERE.
+  //
+  // A size is available when at least one
+  // active variant exists for that size.
   // =====================================================
 
   isSizeAvailable(
@@ -513,42 +521,22 @@ export class ProductModalComponent
   ): boolean {
 
     return this.activeVariants.some(
-      variant => {
-
-        if (
-          variant.sizeId !== sizeId
-        ) {
-          return false;
-        }
-
-        if (
-          Number(
-            variant.stockQuantity ?? 0
-          ) <= 0
-        ) {
-          return false;
-        }
-
-        const selectedHeel =
-          this.selectedHeelSizeId();
-
-        if (selectedHeel == null) {
-          return true;
-        }
-
-        return (
-          variant.heelSizeId === selectedHeel
-        );
-      }
+      variant =>
+        variant.sizeId === sizeId
     );
   }
 
 
   // =====================================================
-  // CHECK IF HEEL IS AVAILABLE
+  // CHECK HEEL IS AVAILABLE
   //
-  // A heel is disabled when it has no available
-  // combination with the currently selected size.
+  // IMPORTANT:
+  // NO STOCK CHECK HERE.
+  //
+  // A heel is available when at least one
+  // active variant exists for that heel.
+  // If a size is selected, the heel must have
+  // a matching variant with that size.
   // =====================================================
 
   isHeelAvailable(
@@ -564,14 +552,6 @@ export class ProductModalComponent
           return false;
         }
 
-        if (
-          Number(
-            variant.stockQuantity ?? 0
-          ) <= 0
-        ) {
-          return false;
-        }
-
         const selectedSize =
           this.selectedSizeId();
 
@@ -579,9 +559,7 @@ export class ProductModalComponent
           return true;
         }
 
-        return (
-          variant.sizeId === selectedSize
-        );
+        return variant.sizeId === selectedSize;
       }
     );
   }
@@ -590,9 +568,10 @@ export class ProductModalComponent
   // =====================================================
   // SELECTED REAL DATABASE VARIANT
   //
-  // This is the important part:
+  // IMPORTANT:
+  // We only need to find the matching variant.
   //
-  // Size + Heel -> one actual DB variant
+  // STOCK QUANTITY IS NOT CONSIDERED.
   // =====================================================
 
   get selectedVariant(): ProductVariant | null {
@@ -604,9 +583,9 @@ export class ProductModalComponent
       this.selectedHeelSizeId();
 
 
-    /*
-     * Product with size + heel
-     */
+    // ===================================================
+    // SIZE + HEEL
+    // ===================================================
 
     if (
       this.hasSizes &&
@@ -630,9 +609,9 @@ export class ProductModalComponent
     }
 
 
-    /*
-     * Product with size only
-     */
+    // ===================================================
+    // SIZE ONLY
+    // ===================================================
 
     if (this.hasSizes) {
 
@@ -649,9 +628,9 @@ export class ProductModalComponent
     }
 
 
-    /*
-     * Product with heel only
-     */
+    // ===================================================
+    // HEEL ONLY
+    // ===================================================
 
     if (this.hasHeelSizes) {
 
@@ -729,49 +708,30 @@ export class ProductModalComponent
 
   // =====================================================
   // STOCK
+  //
+  // IMPORTANT:
+  // STOCK QUANTITY IS COMPLETELY IGNORED.
+  //
+  // This getter exists only because the HTML may reference
+  // "stock". It returns Infinity so quantity is unlimited.
   // =====================================================
 
   get stock(): number {
-
-    const product =
-      this.product();
-
-    if (!product) {
-      return 0;
-    }
-
-
-    /*
-     * Product without variants
-     */
-
-    if (!this.hasVariants) {
-
-      return Number(
-        product.stockQuantity ?? 0
-      );
-    }
-
-
-    /*
-     * Product with variants
-     */
-
-    const variant =
-      this.selectedVariant;
-
-    if (!variant) {
-      return 0;
-    }
-
-    return Number(
-      variant.stockQuantity ?? 0
-    );
+    return Infinity;
   }
 
 
   // =====================================================
   // OUT OF STOCK
+  //
+  // ONLY product.isInStock matters.
+  //
+  // If true:
+  //   - No variants -> available
+  //   - Variants -> selection required
+  //
+  // If false:
+  //   - Always out of stock
   // =====================================================
 
   get isOutOfStock(): boolean {
@@ -783,43 +743,14 @@ export class ProductModalComponent
       return true;
     }
 
-    if (!product.isInStock) {
-      return true;
-    }
-
-
-    /*
-     * Product with variants
-     */
-
-    if (this.hasVariants) {
-
-      /*
-       * No option selected yet.
-       * Do not show the entire product as
-       * out of stock.
-       */
-
-      if (
-        this.requiresVariantSelection
-      ) {
-        return false;
-      }
-
-      return this.stock <= 0;
-    }
-
-
-    /*
-     * Product without variants
-     */
-
-    return this.stock <= 0;
+    return product.isInStock !== true;
   }
 
 
   // =====================================================
   // CAN ADD TO CART
+  //
+  // NO STOCK QUANTITY CHECK.
   // =====================================================
 
   get canAddToCart(): boolean {
@@ -831,44 +762,46 @@ export class ProductModalComponent
       return false;
     }
 
-    if (!product.isInStock) {
+
+    // ===================================================
+    // Product itself is out of stock
+    // ===================================================
+
+    if (product.isInStock !== true) {
       return false;
     }
 
 
-    /*
-     * Product with variants
-     */
+    // ===================================================
+    // Product has no variants
+    //
+    // No stock quantity check.
+    // Quantity can be any positive number.
+    // ===================================================
 
-    if (this.hasVariants) {
-
-      const variant =
-        this.selectedVariant;
-
-      if (!variant) {
-        return false;
-      }
-
-      const variantStock =
-        Number(
-          variant.stockQuantity ?? 0
-        );
-
-      return (
-        variantStock > 0 &&
-        this.quantity() <= variantStock
-      );
+    if (!this.hasVariants) {
+      return this.quantity() >= 1;
     }
 
 
-    /*
-     * Product without variants
-     */
+    // ===================================================
+    // Product has variants
+    //
+    // User must select all required options.
+    // ===================================================
 
-    return (
-      this.stock > 0 &&
-      this.quantity() <= this.stock
-    );
+    if (this.requiresVariantSelection) {
+      return false;
+    }
+
+
+    // ===================================================
+    // Exact database variant must exist.
+    //
+    // NO stock quantity check.
+    // ===================================================
+
+    return this.selectedVariant !== null;
   }
 
 
@@ -903,20 +836,17 @@ export class ProductModalComponent
 
   // =====================================================
   // QUANTITY
+  //
+  // IMPORTANT:
+  // There is NO maximum based on stock.
   // =====================================================
 
-  setQuantity(
-    value: number
-  ): void {
+  setQuantity(value: number): void {
 
     let newQuantity =
       Number(value);
 
-    if (
-      !Number.isFinite(
-        newQuantity
-      )
-    ) {
+    if (!Number.isFinite(newQuantity)) {
       newQuantity = 1;
     }
 
@@ -927,19 +857,7 @@ export class ProductModalComponent
       newQuantity = 1;
     }
 
-    const maximum =
-      this.stock;
-
-    if (
-      maximum > 0 &&
-      newQuantity > maximum
-    ) {
-      newQuantity = maximum;
-    }
-
-    this.quantity.set(
-      newQuantity
-    );
+    this.quantity.set(newQuantity);
   }
 
 
@@ -964,9 +882,9 @@ export class ProductModalComponent
       this.quantity();
 
 
-    /*
-     * NO VARIANTS
-     */
+    // ===================================================
+    // NO VARIANTS
+    // ===================================================
 
     if (!this.hasVariants) {
 
@@ -986,9 +904,9 @@ export class ProductModalComponent
     }
 
 
-    /*
-     * ONE REAL DATABASE VARIANT
-     */
+    // ===================================================
+    // VARIANT PRODUCT
+    // ===================================================
 
     const variant =
       this.selectedVariant;
@@ -1175,6 +1093,9 @@ export class ProductModalComponent
 
   // =====================================================
   // VARIANT STOCK
+  //
+  // Kept only if the template or another component uses it.
+  // It does NOT participate in availability decisions.
   // =====================================================
 
   getVariantStock(
@@ -1186,3 +1107,4 @@ export class ProductModalComponent
     );
   }
 }
+

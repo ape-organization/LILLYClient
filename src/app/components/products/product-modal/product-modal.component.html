@@ -22,7 +22,6 @@
           [alt]="getProductName()"
         />
 
-
         <!-- Previous -->
 
         <button
@@ -32,11 +31,9 @@
           (click)="previousImage()"
           aria-label="Previous image"
         >
-
           <mat-icon>
             chevron_left
           </mat-icon>
-
         </button>
 
 
@@ -49,11 +46,9 @@
           (click)="nextImage()"
           aria-label="Next image"
         >
-
           <mat-icon>
             chevron_right
           </mat-icon>
-
         </button>
 
 
@@ -90,9 +85,7 @@
           class="discount-badge"
           *ngIf="hasDiscount && !isOutOfStock"
         >
-
           -{{ product.discountPercentage }}%
-
         </div>
 
       </div>
@@ -104,9 +97,7 @@
         class="stock-badge"
         *ngIf="isOutOfStock"
       >
-
         {{ 'PRODUCT.OUT_OF_STOCK' | translate }}
-
       </div>
 
     </div>
@@ -153,9 +144,7 @@
         class="product-description"
         *ngIf="getProductDescription()"
       >
-
         {{ getProductDescription() }}
-
       </p>
 
 
@@ -254,9 +243,7 @@
             class="selected-option"
             *ngIf="selectedVariant"
           >
-
             ✓ {{ selectedVariantLabel }}
-
           </span>
 
         </div>
@@ -454,9 +441,6 @@
 
           </div>
 
-
-         
-
         </div>
 
       </div>
@@ -468,10 +452,7 @@
 
       <div
         class="out-of-stock-message"
-        *ngIf="
-          isOutOfStock &&
-          !hasVariants
-        "
+        *ngIf="isOutOfStock"
       >
 
         <mat-icon>
@@ -520,9 +501,7 @@
               quantity() <= 1
             "
           >
-
             −
-
           </button>
 
 
@@ -544,8 +523,6 @@
 
             min="1"
 
-            [max]="stock || null"
-
             step="1"
 
             class="quantity-input"
@@ -563,19 +540,11 @@
                 quantity() + 1
               )
             "
-
-            [disabled]="
-              stock <= 0 ||
-              quantity() >= stock
-            "
           >
-
             +
-
           </button>
 
         </div>
-
 
       </div>
 
