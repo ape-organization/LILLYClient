@@ -49,43 +49,43 @@ class="mobile-bottom-nav"
     </span>
   </a>
 
-  <!-- ALL PRODUCTS -->
-  <button
-    type="button"
-    class="bottom-nav-item"
-    [class.bottom-active]="isProductsPage()"
-    (click)="selectAllProducts()"
-  >
-    <mat-icon>inventory_2</mat-icon>
+<!-- ALL PRODUCTS -->
+<button
+  type="button"
+  class="bottom-nav-item"
+  [class.bottom-active]="isProductsPage()"
+  (click)="selectAllProducts()"
+>
+  <mat-icon>inventory_2</mat-icon>
 
-    <span>
-      {{ 'HEADER.PRODUCTS' | translate }}
+  <span>
+    {{ 'HEADER.PRODUCTS' | translate }}
+  </span>
+</button>
+
+<!-- OFFERS -->
+<button
+  type="button"
+  class="bottom-nav-item bottom-offers"
+  [class.bottom-active]="isOffersPage()"
+  (click)="selectOffers()"
+>
+  <span class="bottom-offer-icon">
+
+    <mat-icon>
+      local_offer
+    </mat-icon>
+
+    <span class="bottom-sale-dot">
+      !
     </span>
-  </button>
 
-  <!-- OFFERS -->
-  <button
-    type="button"
-    class="bottom-nav-item bottom-offers"
-    (click)="selectOffers()"
-  >
-    <span class="bottom-offer-icon">
+  </span>
 
-      <mat-icon>
-        local_offer
-      </mat-icon>
-
-      <span class="bottom-sale-dot">
-        !
-      </span>
-
-    </span>
-
-    <span>
-      {{ 'HEADER.OFFERS' | translate }}
-    </span>
-  </button>
-
+  <span>
+    {{ 'HEADER.OFFERS' | translate }}
+  </span>
+</button>
 </nav>
 
 }

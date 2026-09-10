@@ -455,7 +455,7 @@
 
   .product-grid {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(3, minmax(0, 1fr));
   }
 
 }
@@ -490,8 +490,12 @@
 
 @media (max-width: 400px) {
 
+ /*  .product-grid {
+    gap: 13px;
+  } */
   .product-grid {
     gap: 13px;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
-
 }

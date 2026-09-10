@@ -93,7 +93,7 @@
 
       <form
         [formGroup]="checkoutForm"
-        (ngSubmit)="placeOrder()"
+       
         novalidate
       >
 
@@ -418,35 +418,7 @@
         </div>
 
 
-        <!-- ============================================== -->
-        <!-- SUBMIT -->
-        <!-- ============================================== -->
-
-        <button
-          type="submit"
-          class="place-order-button"
-          [disabled]="isSubmitting() || checkoutForm.invalid || cartItems.length === 0"
-        >
-
-          @if (isSubmitting()) {
-
-            <mat-spinner diameter="22"></mat-spinner>
-
-            <span>
-              {{ 'CHECKOUT.PLACING_ORDER' | translate }}
-            </span>
-
-          } @else {
-
-            <mat-icon>check_circle</mat-icon>
-
-            <span>
-              {{ 'CHECKOUT.PLACE_ORDER' | translate }}
-            </span>
-
-          }
-
-        </button>
+      
 
 
       </form>
@@ -751,7 +723,36 @@
         </div>
 
       </div>
+  <!-- ============================================== -->
+        <!-- SUBMIT -->
+        <!-- ============================================== -->
 
+        <button
+          type="submit"
+          (click)="placeOrder()"
+          class="place-order-button"
+          [disabled]="isSubmitting() || checkoutForm.invalid || cartItems.length === 0"
+        >
+
+          @if (isSubmitting()) {
+
+            <mat-spinner diameter="22"></mat-spinner>
+
+            <span>
+              {{ 'CHECKOUT.PLACING_ORDER' | translate }}
+            </span>
+
+          } @else {
+
+            <mat-icon>check_circle</mat-icon>
+
+            <span>
+              {{ 'CHECKOUT.PLACE_ORDER' | translate }}
+            </span>
+
+          }
+
+        </button>
 
     </aside>
 

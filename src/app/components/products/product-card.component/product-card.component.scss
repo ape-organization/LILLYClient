@@ -47,7 +47,6 @@
   overflow: hidden;
 
   background: var(--color-background);
-
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -307,7 +306,9 @@
 
   text-align: center;
 
-  white-space: nowrap;
+  /* Allow the box to fit the text and wrap if necessary */
+  white-space: normal;
+  overflow-wrap: break-word;
 
   pointer-events: none;
 }

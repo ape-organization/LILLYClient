@@ -82,7 +82,7 @@
 "SELECT_OPTIONS": "اختر الخيارات",
 "SPECIAL_OFFER": "عرض خاص",
 "OFFER": "عرض",
- "ALREADY_IN_CART": "المنتج موجود بالفعل في السلة",
+ "ALREADY_IN_CART": "المنتج موجود في السلة او بحاجه لاختيار المقاسات",
 "NO_DESCRIPTION": "لا يوجد وصف متاح",
 "No_Products_Found":"لا يوجد منتجات",
 "FILTER_DISMATCH":"لا يوجد منتجات تتوافق مع الفلتر المختار",

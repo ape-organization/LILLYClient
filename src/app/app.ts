@@ -38,42 +38,44 @@ export class App {
   // ==========================================================
   // PRODUCTS
   // ==========================================================
-  isProductsPage(): boolean {
-
-    return this.router.url
-      .split('?')[0]
-      .startsWith('/products');
-
-  }
-  selectAllProducts(): void {
-
-
-    this.router.navigate([
-      '/products'
-    ]);
-
-  }
 
 // ==========================================================
   // OFFERS
   // ==========================================================
 
-  selectOffers(): void {
+isProductsPage(): boolean {
+  const url = this.router.url;
 
-   
-
-    this.router.navigate(
-      ['/products'],
-      {
-        queryParams: {
-          offers: true
-        }
-      }
-    );
-
+  if (!url.split('?')[0].startsWith('/products')) {
+    return false;
   }
 
+  return !url.includes('offers=true');
+}
 
+isOffersPage(): boolean {
+  const url = this.router.url;
+
+  return (
+    url.split('?')[0].startsWith('/products') &&
+    url.includes('offers=true')
+  );
+}
+
+selectAllProducts(): void {
+  this.router.navigate(['/products']);
+}
+
+selectOffers(): void {
+  this.router.navigate(
+    ['/products'],
+    {
+      queryParams: {
+        offers: true
+      }
+    }
+  );
+}
 
 
 
