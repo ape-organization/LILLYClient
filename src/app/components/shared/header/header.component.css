@@ -24,10 +24,9 @@
 }
 
 .main-header {
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 1000;
-
   width: 100%;
   background: var(--color-surface);
   color: var(--color-text);
@@ -1139,7 +1138,7 @@ min-width: 130px;
   }
 
   .main-header {
-    position: sticky;
+    position: fixed;
     top: 0;
   }
   .desktop-header {
@@ -1151,7 +1150,7 @@ min-width: 130px;
   }
 
   .main-header {
-    position: sticky;
+    position: fixed;
     top: 0;
   }
 }

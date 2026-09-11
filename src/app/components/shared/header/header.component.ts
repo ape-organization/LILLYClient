@@ -358,6 +358,7 @@ export class HeaderComponent implements OnInit {
   toggleCategory(
     categoryId: number
   ): void {
+
     if (
       this.expandedCategoryId() ===
       categoryId
@@ -370,6 +371,7 @@ export class HeaderComponent implements OnInit {
       return;
 
     }
+    this.closeAllMenus();
 
     this.expandedCategoryId.set(
       categoryId
