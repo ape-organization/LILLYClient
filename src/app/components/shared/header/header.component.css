@@ -91,7 +91,7 @@
   object-fit: fill;
 }
 .logo-text {
-  font-family: Cursive;
+  font-family: "Brush Script MT", "Segoe Script", cursive;
   font-size: 19px;
   font-weight: 700;
 }
@@ -1209,7 +1209,7 @@ min-width: 130px;
   }
 
   .logo-text {
-      font-family: Cursive;
+      font-family: "Brush Script MT", "Segoe Script", cursive;
 
     font-size: 17px;
   }
