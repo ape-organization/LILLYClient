@@ -13,6 +13,7 @@
    ============================================================ */
 
 .container {
+  margin: 10px;
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -28,7 +29,7 @@
 
   padding: 28px;
 
-  background: var(--color-footer);
+  background: var( --color-surface-soft);
 }
 
 
