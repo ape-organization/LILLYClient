@@ -1,0 +1,47 @@
+<section
+  class="best-sellers"
+  *ngIf="!isLoading() && products().length > 0"
+>
+
+  <div class="section-header">
+
+    <div class="section-title">
+      <span class="title-line"></span>
+
+      <h2>
+        {{ 'HOME.newArrival' | translate }}
+      </h2>
+
+      <span class="title-line"></span>
+    </div>
+
+    <p>
+      {{ 'HOME.newArrival_SUBTITLE' | translate }}
+    </p>
+
+  </div>
+
+
+  <div class="best-sellers-products">
+<app-product-card
+  *ngFor="let product of products()"
+
+  [product]="product"
+  [imageApi]="api"
+
+  [showAlreadyInCartMessage]="
+    alreadyInCartProductId === product.id
+  "
+
+  [showAddedCheck]="
+    addedToCartProductId === product.id
+  "
+
+  (productClicked)="onProductClicked($event)"
+  (addToCartClicked)="onAddToCartClicked($event)"
+>
+</app-product-card>
+
+  </div>
+
+</section>

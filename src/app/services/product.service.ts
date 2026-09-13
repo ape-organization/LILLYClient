@@ -161,6 +161,12 @@ export class ProductService {
       }
     );
   }
+    getProductsbyCatID(id:any,productId:any): Observable<Product[]> {
+
+  return this.http.get<Product[]>(`${environment.apiBaseUrl}/products/byCatID/${id}/${productId}`)
+    
+  
+}
   getBestSellerProducts(
   count: number = 10
 ): Observable<Product[]> {
@@ -172,6 +178,12 @@ export class ProductService {
         count: count.toString()
       }
     }
+  );
+}
+ newArrivalProducts(): Observable<Product[]> {
+
+  return this.http.get<Product[]>(
+    `${environment.apiBaseUrl}/products/new`
   );
 }
 }

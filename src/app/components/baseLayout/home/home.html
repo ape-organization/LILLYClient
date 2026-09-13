@@ -115,4 +115,17 @@
   </app-best-sellers>
 
   </section>
+
+  <section class="best-sellers-section">
+
+    <app-new-arrival-products
+    [addedToCartProductId]="addedToCartProductId()"
+    [alreadyInCartProductId]="alreadyInCartProductId()"
+
+    (productClicked)="openProductDetails($event)"
+    (addToCartClicked)="addToCart($event)">
+  </app-new-arrival-products>
+
+  </section>
+
 </section>

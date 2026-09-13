@@ -5,6 +5,7 @@ import { FooterComponent } from './components/shared/footer/footer.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { routes } from './app.routes';
+import { WebsiteVisitService } from './services/website-visit.service';
 
 
 @Component({
@@ -19,6 +20,11 @@ import { routes } from './app.routes';
 export class App {
   protected readonly title = signal('pharmacy-store');
   private readonly router=inject(Router);
+   private readonly websiteVisitService =inject(WebsiteVisitService);
+
+  constructor() {
+    this.websiteVisitService.trackVisit();
+  }
    sendToWhatsApp() {
     
 

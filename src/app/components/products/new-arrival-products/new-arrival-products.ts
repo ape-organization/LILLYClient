@@ -1,34 +1,18 @@
-import {
-  Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  inject,
-  signal
-} from '@angular/core';
-
-import { CommonModule } from '@angular/common';
-import { TranslatePipe } from '@ngx-translate/core';
-
+import { Component, DestroyRef, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { ProductService } from '../../../services/product.service';
 import { Product } from '../../../models/product.model';
 import { environment } from '../../../../environments/environment';
-import { ProductCardComponent } from '../../products/product-card.component/product-card.component';
+import { ProductCardComponent } from '../product-card.component/product-card.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-best-sellers',
-  standalone: true,
-  imports: [
-    CommonModule,
-    TranslatePipe,
-    ProductCardComponent
-  ],
-  templateUrl: './best-sellers.component.html',
-  styleUrls: ['./best-sellers.component.scss']
+  selector: 'app-new-arrival-products',
+  imports: [ProductCardComponent,CommonModule,TranslatePipe],
+  templateUrl: './new-arrival-products.html',
+  styleUrl: './new-arrival-products.scss',
 })
-export class BestSellers implements OnInit {
+export class NewArrivalProducts {
 
   private readonly productService = inject(ProductService);
   private readonly destroyRef = inject(DestroyRef);
@@ -45,13 +29,13 @@ export class BestSellers implements OnInit {
   api = environment.imageApiBaseUrl;
 
   ngOnInit(): void {
-    this.loadBestSellers();
+    this.newArrivalProducts();
   }
 
-  private loadBestSellers(): void {
+  private newArrivalProducts(): void {
     this.isLoading.set(true);
 
-    this.productService.getBestSellerProducts(10).subscribe({
+    this.productService.newArrivalProducts().subscribe({
       next: (products) => {
         this.products.set(products ?? []);
         this.isLoading.set(false);

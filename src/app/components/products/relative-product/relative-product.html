@@ -1,0 +1,66 @@
+<section
+  class="best-sellers"
+  *ngIf="
+    !isLoading() &&
+    products().length > 0
+  "
+>
+
+  <div class="section-header">
+
+    <div class="section-title">
+
+      <span class="title-line"></span>
+
+      <h2>
+        {{ 'HOME.relative' | translate }}
+      </h2>
+
+      <span class="title-line"></span>
+
+    </div>
+
+    <p>
+      {{ 'HOME.relative_SUBTITLE' | translate }}
+    </p>
+
+  </div>
+
+
+  <div class="best-sellers-products"
+    *ngIf="
+    !isLoading() &&
+    products().length > 0
+  "
+  >
+
+    <app-product-card
+      *ngFor="
+        let product of products();
+        trackBy: trackByProductId
+      "
+
+      [product]="product"
+
+      [imageApi]="api"
+
+      [showAlreadyInCartMessage]="
+        alreadyInCartProductId === product.id
+      "
+
+      [showAddedCheck]="
+        addedToCartProductId === product.id
+      "
+
+      (productClicked)="
+        onProductClicked($event)
+      "
+
+      (addToCartClicked)="
+        onAddToCartClicked($event)
+      "
+    />
+
+  </div>
+
+</section>

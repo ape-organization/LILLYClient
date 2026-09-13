@@ -1,7 +1,7 @@
 {
 "HEADER": {
 
-  "TITLE":"LILLY",
+  "TITLE":"LILY",
 "HOME": "Home",
 "PRODUCTS": "products",
 "CART": "Cart",
@@ -21,8 +21,12 @@
 },
 
 "HOME": {
+   "newArrival": "Our Newest",
+  "newArrival_SUBTITLE": "Our newest loved products",
    "BEST_SELLERS": "Top Picks",
   "BEST_SELLERS_SUBTITLE": "Our most loved products",
+   "relative": "Try ",
+  "relative_SUBTITLE": "Our most loved products",
 "TITLE": "Welcome to our store",
 "SHOP_NOW": "Shop Now",
 "VIEW_PRODUCTS": "View Products",
@@ -210,7 +214,7 @@
     "REMOVE_ITEM": "Remove item",
 
     "SUBTOTAL": "Subtotal",
-    "DELIVERY": "Delivery",
+    "DELIVERY": "Please note that delivery fees are excluded from this calculation.",
     "FREE": "Free",
 
     "TOTAL": "Total",

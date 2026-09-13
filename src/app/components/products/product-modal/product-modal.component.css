@@ -15,8 +15,7 @@
 .container {
   margin: 10px;
   padding: 20px;
-  display: flex;
-  justify-content: center;
+  
 }
 
 .dialog-content {
@@ -26,7 +25,7 @@
   width: 950px;
   max-width: 100%;
   min-height: 430px;
-
+margin: 5px auto;
   padding: 28px;
 
   background: var( --color-surface-soft);
@@ -1054,7 +1053,7 @@
   }
 
   .image-frame {
-    height: 180px;
+    height: 280px;
 
     padding: 12px;
 

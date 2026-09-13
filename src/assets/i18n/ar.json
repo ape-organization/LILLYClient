@@ -1,6 +1,6 @@
 {
 "HEADER": {
-  "TITLE":"LILLY",
+  "TITLE":"LILY",
 "HOME": "الرئيسية",
 "PRODUCTS": "المتجر",
 "CART": "السلة",
@@ -20,8 +20,12 @@
 },
 
 "HOME": {
+   "": "احدث المنتجات",
+  "newArrival_SUBTITLE": "احدث واجدد و اشيك المنتجات",
    "BEST_SELLERS": "الأكثر طلبا",
   "BEST_SELLERS_SUBTITLE": "منتجاتنا الأكثر طلبًا",
+   "relative": "جرب ",
+  "relative_SUBTITLE": "منتجاتنا الاشيك والاجمل ",
 "TITLE": "مرحباً بكم في متجرنا",
 "SHOP_NOW": "تسوق الآن",
 "VIEW_PRODUCTS": "عرض المنتجات",
@@ -208,7 +212,7 @@
     "REMOVE_ITEM": "إزالة المنتج",
 
     "SUBTOTAL": "الإجمالي الفرعي",
-    "DELIVERY": "التوصيل",
+    "DELIVERY": "يرجى ملاحظة أن رسوم التوصيل غير مشمولة في هذا الحساب",
     "FREE": "مجانًا",
 
     "TOTAL": "الإجمالي",

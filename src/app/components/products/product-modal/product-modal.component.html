@@ -1,14 +1,17 @@
-
 <div class="container">
+
+  <!-- ==========================================================
+       PRODUCT
+       ========================================================== -->
 
   <div
     class="dialog-content"
     *ngIf="product() as product"
   >
 
-    <!-- =====================================================
+    <!-- ========================================================
          PRODUCT IMAGE
-         ===================================================== -->
+         ======================================================== -->
 
     <div class="product-image">
 
@@ -36,7 +39,6 @@
           </mat-icon>
         </button>
 
-
         <!-- Next -->
 
         <button
@@ -51,33 +53,29 @@
           </mat-icon>
         </button>
 
-
         <!-- Out of stock -->
 
         <div
           class="out-of-stock-overlay"
           *ngIf="isOutOfStock"
         >
-
           <span class="out-of-stock-text">
             {{ 'PRODUCT.OUT_OF_STOCK' | translate }}
           </span>
-
         </div>
-
 
         <!-- Category -->
 
-        <div class="image-label">
-
+        <div
+          class="image-label"
+          *ngIf="getCategoryName()"
+        >
           <span class="category-symbol">
             ✦
           </span>
 
           {{ getCategoryName() }}
-
         </div>
-
 
         <!-- Discount -->
 
@@ -89,7 +87,6 @@
         </div>
 
       </div>
-
 
       <!-- Stock badge -->
 
@@ -103,42 +100,46 @@
     </div>
 
 
-    <!-- =====================================================
+    <!-- ========================================================
          PRODUCT DETAILS
-         ===================================================== -->
+         ======================================================== -->
 
     <div class="product-details">
 
-
-      <!-- HEADER -->
+      <!-- ======================================================
+           HEADER
+           ====================================================== -->
 
       <div class="details-header">
 
-        <span class="product-brand">
+        <span
+          class="product-brand"
+          *ngIf="getCategoryName()"
+        >
           {{ getCategoryName() }}
         </span>
-
 
         <h2 class="product-name">
           {{ getProductName() }}
         </h2>
 
-
-        <div class="product-location">
-
+        <div
+          class="product-location"
+          *ngIf="getCategoryName()"
+        >
           <span class="category-name">
             {{ getCategoryName() }}
           </span>
-
         </div>
-
 
         <div class="title-line"></div>
 
       </div>
 
 
-      <!-- DESCRIPTION -->
+      <!-- ======================================================
+           DESCRIPTION
+           ====================================================== -->
 
       <p
         class="product-description"
@@ -148,7 +149,9 @@
       </p>
 
 
-      <!-- OFFER -->
+      <!-- ======================================================
+           OFFER
+           ====================================================== -->
 
       <div
         class="offer-box"
@@ -159,13 +162,11 @@
           %
         </div>
 
-
         <div class="offer-content">
 
           <span class="offer-title">
             {{ 'PRODUCT.SPECIAL_OFFER' | translate }}
           </span>
-
 
           <span class="offer-text">
             {{ product.discountPercentage }}% OFF
@@ -176,7 +177,9 @@
       </div>
 
 
-      <!-- PRICE -->
+      <!-- ======================================================
+           PRICE
+           ====================================================== -->
 
       <div class="price-section">
 
@@ -191,7 +194,6 @@
           </span>
 
         </div>
-
 
         <div
           class="old-price-wrapper"
@@ -211,16 +213,16 @@
       </div>
 
 
-      <!-- =====================================================
-           OPTIONS
-           ===================================================== -->
+      <!-- ======================================================
+           VARIANTS
+           ====================================================== -->
 
       <div
         class="variant-section"
         *ngIf="hasVariants"
       >
 
-        <!-- OPTION HEADER -->
+        <!-- Header -->
 
         <div class="variant-header">
 
@@ -236,9 +238,6 @@
 
           </div>
 
-
-          <!-- SELECTED -->
-
           <span
             class="selected-option"
             *ngIf="selectedVariant"
@@ -249,9 +248,9 @@
         </div>
 
 
-        <!-- ===================================================
+        <!-- ====================================================
              SIZE
-             =================================================== -->
+             ==================================================== -->
 
         <div
           class="option-group"
@@ -305,7 +304,9 @@
 
               <mat-icon
                 *ngIf="
-                  isSizeSelected(variant.sizeId!)
+                  isSizeSelected(
+                    variant.sizeId!
+                  )
                 "
               >
                 check
@@ -318,9 +319,9 @@
         </div>
 
 
-        <!-- ===================================================
-             HEEL HEIGHT
-             =================================================== -->
+        <!-- ====================================================
+             HEEL
+             ==================================================== -->
 
         <div
           class="option-group"
@@ -352,15 +353,21 @@
               *ngFor="let variant of availableHeelSizes"
 
               [class.selected]="
-                isHeelSelected(variant.heelSizeId!)
+                isHeelSelected(
+                  variant.heelSizeId!
+                )
               "
 
               [class.disabled]="
-                !isHeelAvailable(variant.heelSizeId!)
+                !isHeelAvailable(
+                  variant.heelSizeId!
+                )
               "
 
               [disabled]="
-                !isHeelAvailable(variant.heelSizeId!)
+                !isHeelAvailable(
+                  variant.heelSizeId!
+                )
               "
 
               (click)="
@@ -391,9 +398,9 @@
         </div>
 
 
-        <!-- ===================================================
-             SELECTION MESSAGE
-             =================================================== -->
+        <!-- ====================================================
+             SELECTION REQUIRED
+             ==================================================== -->
 
         <div
           class="variant-required"
@@ -411,9 +418,9 @@
         </div>
 
 
-        <!-- ===================================================
+        <!-- ====================================================
              SELECTED COMBINATION
-             =================================================== -->
+             ==================================================== -->
 
         <div
           class="selected-combination"
@@ -427,7 +434,6 @@
             </mat-icon>
 
           </div>
-
 
           <div class="selected-combination-content">
 
@@ -446,9 +452,9 @@
       </div>
 
 
-      <!-- =====================================================
-           PRODUCT OUT OF STOCK
-           ===================================================== -->
+      <!-- ======================================================
+           OUT OF STOCK
+           ====================================================== -->
 
       <div
         class="out-of-stock-message"
@@ -466,9 +472,9 @@
       </div>
 
 
-      <!-- =====================================================
+      <!-- ======================================================
            QUANTITY
-           ===================================================== -->
+           ====================================================== -->
 
       <div
         class="quantity-section"
@@ -481,7 +487,6 @@
         <label for="quantity">
           {{ 'PRODUCT.QUANTITY' | translate }}
         </label>
-
 
         <div class="quantity-control">
 
@@ -522,7 +527,6 @@
             }"
 
             min="1"
-
             step="1"
 
             class="quantity-input"
@@ -549,9 +553,9 @@
       </div>
 
 
-      <!-- =====================================================
+      <!-- ======================================================
            ACTIONS
-           ===================================================== -->
+           ====================================================== -->
 
       <div class="dialog-actions">
 
@@ -599,5 +603,59 @@
     </div>
 
   </div>
+
+
+  <!-- ==========================================================
+       RELATIVE / BEST SELLERS
+       ========================================================== -->
+
+  <section
+    class="best-sellers-section"
+    *ngIf="
+      product() as currentProduct;
+      else noProduct
+    "
+  >
+
+    <app-relative-product
+      *ngIf="CategoryId !== null"
+
+      [addedToCartProductId]="
+        addedToCartProductId()
+      "
+
+      [alreadyInCartProductId]="
+        alreadyInCartProductId()
+      "
+
+      [CategoryId]="
+        CategoryId!
+      "
+[ProductId]="
+        ProductId!
+      "
+      (productClicked)="
+        openProductDetails($event)
+      "
+
+      (addToCartClicked)="
+        addRelativeProductToCart($event)
+      "
+    />
+
+  </section>
+
+
+  <!-- ==========================================================
+       NO PRODUCT
+       ========================================================== -->
+
+  <ng-template #noProduct>
+
+    <div class="product-loading">
+      {{ 'COMMON.LOADING' | translate }}
+    </div>
+
+  </ng-template>
 
 </div>

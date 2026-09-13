@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnDestroy,
@@ -12,25 +11,24 @@ import { FormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
 
-import { CartService } from '../../../services/cart.service';
-import { LanguageService } from '../../../services/language.service';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { TranslatePipe } from '@ngx-translate/core';
+
 import { MaterialModule } from '../../../shared/AngularMaterial';
 
 import { environment } from '../../../../environments/environment';
-
-import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   Product,
   ProductVariant
 } from '../../../models/product.model';
 
-import {
-  ActivatedRoute,
-  Router
-} from '@angular/router';
-
+import { CartService } from '../../../services/cart.service';
+import { LanguageService } from '../../../services/language.service';
 import { ProductService } from '../../../services/product.service';
+
+import { RelativeProduct } from '../relative-product/relative-product';
 
 
 @Component({
@@ -38,11 +36,12 @@ import { ProductService } from '../../../services/product.service';
   standalone: true,
 
   imports: [
-    TranslatePipe,
     CommonModule,
     FormsModule,
+    TranslatePipe,
     MatButtonModule,
-    MaterialModule
+    MaterialModule,
+    RelativeProduct
   ],
 
   templateUrl: './product-modal.component.html',
@@ -51,92 +50,108 @@ import { ProductService } from '../../../services/product.service';
 export class ProductModalComponent
   implements OnInit, OnDestroy {
 
-
-  // =====================================================
+  // ============================================================
   // SERVICES
-  // =====================================================
+  // ============================================================
 
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private productService = inject(ProductService);
-  private cartService = inject(CartService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly productService = inject(ProductService);
+  private readonly cartService = inject(CartService);
 
-  public languageService = inject(LanguageService);
+  readonly languageService = inject(LanguageService);
 
-
-  // =====================================================
+  // ============================================================
   // PRODUCT
-  // =====================================================
+  // ============================================================
 
-  product = signal<Product | null>(null);
+  readonly product = signal<Product | null>(null);
 
-
-  // =====================================================
+  // ============================================================
   // QUANTITY
-  // =====================================================
+  // ============================================================
 
-  quantity = signal(1);
+  readonly quantity = signal(1);
 
-
-  // =====================================================
+  // ============================================================
   // IMAGE SLIDER
-  // =====================================================
+  // ============================================================
 
-  selectedImageIndex = signal(0);
+  readonly selectedImageIndex = signal(0);
 
   private imageSliderInterval:
     ReturnType<typeof setInterval> | null = null;
 
+  // ============================================================
+  // VARIANT SELECTION
+  // ============================================================
 
-  // =====================================================
-  // OPTION SELECTION
-  // =====================================================
+  readonly selectedSizeId = signal<number | null>(null);
 
-  selectedSizeId = signal<number | null>(null);
+  readonly selectedHeelSizeId = signal<number | null>(null);
 
-  selectedHeelSizeId = signal<number | null>(null);
+  // ============================================================
+  // RELATIVE PRODUCTS CART FEEDBACK
+  // ============================================================
 
+  readonly addedToCartProductId =
+    signal<number | null>(null);
 
-  // =====================================================
+  readonly alreadyInCartProductId =
+    signal<number | null>(null);
+
+  private addedToCartTimer:
+    ReturnType<typeof setTimeout> | null = null;
+
+  private alreadyInCartMessageTimer:
+    ReturnType<typeof setTimeout> | null = null;
+
+  // ============================================================
   // IMAGE API
-  // =====================================================
+  // ============================================================
 
-  api = environment.imageApiBaseUrl;
+  readonly api = environment.imageApiBaseUrl;
 
-
-  // =====================================================
-  // INIT
-  // =====================================================
+  // ============================================================
+  // LIFECYCLE
+  // ============================================================
 
   ngOnInit(): void {
+  this.route.paramMap.subscribe(params => {
 
-    const productId = Number(
-      this.route.snapshot.paramMap.get('id')
-    );
+    const idParam = params.get('id');
+    const productId = Number(idParam);
 
-    if (!productId) {
+    if (!Number.isInteger(productId) || productId <= 0) {
       this.goBack();
       return;
     }
 
     this.loadProduct(productId);
-  }
+  });
+}
 
-
-  // =====================================================
-  // DESTROY
-  // =====================================================
 
   ngOnDestroy(): void {
+
     this.stopImageSlider();
+
+    if (this.addedToCartTimer) {
+      clearTimeout(this.addedToCartTimer);
+    }
+
+    if (this.alreadyInCartMessageTimer) {
+      clearTimeout(this.alreadyInCartMessageTimer);
+    }
   }
 
-
-  // =====================================================
+  // ============================================================
   // LOAD PRODUCT
-  // =====================================================
+  // ============================================================
 
   private loadProduct(id: number): void {
+
+    this.stopImageSlider();
 
     this.productService.getProduct(id).subscribe({
 
@@ -162,24 +177,21 @@ export class ProductModalComponent
     });
   }
 
-
-  // =====================================================
-  // IMAGE LIST
-  // =====================================================
+  // ============================================================
+  // IMAGES
+  // ============================================================
 
   get images() {
 
     return [...(this.product()?.images ?? [])]
       .filter(image => !!image.imageUrl)
       .sort(
-        (a, b) => a.sortOrder - b.sortOrder
+        (a, b) =>
+          (a.sortOrder ?? 0) -
+          (b.sortOrder ?? 0)
       );
   }
 
-
-  // =====================================================
-  // CURRENT IMAGE
-  // =====================================================
 
   get currentImageUrl(): string {
 
@@ -189,18 +201,16 @@ export class ProductModalComponent
       return 'assets/images/product-placeholder.png';
     }
 
-    const image =
-      images[this.selectedImageIndex()];
+    const index = Math.min(
+      this.selectedImageIndex(),
+      images.length - 1
+    );
 
     return this.getImageUrl(
-      image?.imageUrl
+      images[index]?.imageUrl
     );
   }
 
-
-  // =====================================================
-  // IMAGE SLIDER
-  // =====================================================
 
   private startImageSlider(): void {
 
@@ -221,14 +231,15 @@ export class ProductModalComponent
 
   private stopImageSlider(): void {
 
-    if (this.imageSliderInterval) {
-
-      clearInterval(
-        this.imageSliderInterval
-      );
-
-      this.imageSliderInterval = null;
+    if (!this.imageSliderInterval) {
+      return;
     }
+
+    clearInterval(
+      this.imageSliderInterval
+    );
+
+    this.imageSliderInterval = null;
   }
 
 
@@ -266,11 +277,9 @@ export class ProductModalComponent
       this.selectedImageIndex();
 
     this.selectedImageIndex.set(
-
       current === 0
         ? images.length - 1
         : current - 1
-
     );
 
     if (restartSlider) {
@@ -293,11 +302,9 @@ export class ProductModalComponent
       this.selectedImageIndex();
 
     this.selectedImageIndex.set(
-
       current === images.length - 1
         ? 0
         : current + 1
-
     );
 
     if (restartSlider) {
@@ -305,10 +312,9 @@ export class ProductModalComponent
     }
   }
 
-
-  // =====================================================
-  // VARIANTS
-  // =====================================================
+  // ============================================================
+  // ACTIVE VARIANTS
+  // ============================================================
 
   get activeVariants(): ProductVariant[] {
 
@@ -325,37 +331,31 @@ export class ProductModalComponent
   }
 
 
-  // =====================================================
-  // HAS SIZE
-  // =====================================================
-
   get hasSizes(): boolean {
 
     return this.activeVariants.some(
       variant =>
         variant.sizeId != null &&
-        !!variant.sizeName
+        !!variant.sizeName?.trim()
     );
   }
 
-
-  // =====================================================
-  // HAS HEEL SIZE
-  // =====================================================
 
   get hasHeelSizes(): boolean {
 
     return this.activeVariants.some(
       variant =>
         variant.heelSizeId != null &&
-        !!variant.heelSizeName
+        !!variant.heelSizeName?.trim()
     );
   }
 
-
-  // =====================================================
+  // ============================================================
   // AVAILABLE SIZE OPTIONS
-  // =====================================================
+  //
+  // If a heel is selected, only sizes that actually exist
+  // with that heel are displayed as available.
+  // ============================================================
 
   get availableSizes(): ProductVariant[] {
 
@@ -364,28 +364,39 @@ export class ProductModalComponent
     return this.activeVariants.filter(
       variant => {
 
+        const sizeId =
+          variant.sizeId;
+
         if (
-          variant.sizeId == null ||
-          !variant.sizeName
+          sizeId == null ||
+          !variant.sizeName?.trim()
         ) {
           return false;
         }
 
-        if (seen.has(variant.sizeId)) {
+        if (
+          !this.isSizeAvailable(sizeId)
+        ) {
           return false;
         }
 
-        seen.add(variant.sizeId);
+        if (seen.has(sizeId)) {
+          return false;
+        }
+
+        seen.add(sizeId);
 
         return true;
       }
     );
   }
 
-
-  // =====================================================
+  // ============================================================
   // AVAILABLE HEEL OPTIONS
-  // =====================================================
+  //
+  // If a size is selected, only heels that actually exist
+  // with that size are available.
+  // ============================================================
 
   get availableHeelSizes(): ProductVariant[] {
 
@@ -394,32 +405,42 @@ export class ProductModalComponent
     return this.activeVariants.filter(
       variant => {
 
+        const heelId =
+          variant.heelSizeId;
+
         if (
-          variant.heelSizeId == null ||
-          !variant.heelSizeName
+          heelId == null ||
+          !variant.heelSizeName?.trim()
         ) {
           return false;
         }
 
-        if (seen.has(variant.heelSizeId)) {
+        if (
+          !this.isHeelAvailable(heelId)
+        ) {
           return false;
         }
 
-        seen.add(variant.heelSizeId);
+        if (seen.has(heelId)) {
+          return false;
+        }
+
+        seen.add(heelId);
 
         return true;
       }
     );
   }
 
+  // ============================================================
+  // SIZE SELECTION
+  // ============================================================
 
-  // =====================================================
-  // SELECT SIZE
-  // =====================================================
+  selectSize(sizeId: number): void {
 
-  selectSize(
-    sizeId: number
-  ): void {
+    if (!this.isSizeAvailable(sizeId)) {
+      return;
+    }
 
     if (
       this.selectedSizeId() === sizeId
@@ -430,30 +451,35 @@ export class ProductModalComponent
     } else {
 
       this.selectedSizeId.set(sizeId);
-
-      /*
-       * If the currently selected heel
-       * does not have a matching variant
-       * with this size, clear the heel.
-       */
-      const heelId =
-        this.selectedHeelSizeId();
-
-      if (
-        heelId != null &&
-        !this.isHeelAvailable(heelId)
-      ) {
-        this.selectedHeelSizeId.set(null);
-      }
     }
+
+    this.resetInvalidHeel();
 
     this.setQuantity(1);
   }
 
 
-  // =====================================================
-  // SELECT HEEL
-  // =====================================================
+  private resetInvalidHeel(): void {
+
+    const heelId =
+      this.selectedHeelSizeId();
+
+    if (
+      heelId == null
+    ) {
+      return;
+    }
+
+    if (
+      !this.isHeelAvailable(heelId)
+    ) {
+      this.selectedHeelSizeId.set(null);
+    }
+  }
+
+  // ============================================================
+  // HEEL SELECTION
+  // ============================================================
 
   selectHeelSize(
     heelSizeId: number
@@ -481,10 +507,9 @@ export class ProductModalComponent
     this.setQuantity(1);
   }
 
-
-  // =====================================================
-  // CHECK SIZE SELECTED
-  // =====================================================
+  // ============================================================
+  // SELECTION CHECKS
+  // ============================================================
 
   isSizeSelected(
     sizeId: number
@@ -494,10 +519,6 @@ export class ProductModalComponent
   }
 
 
-  // =====================================================
-  // CHECK HEEL SELECTED
-  // =====================================================
-
   isHeelSelected(
     heelSizeId: number
   ): boolean {
@@ -505,43 +526,54 @@ export class ProductModalComponent
     return this.selectedHeelSizeId() === heelSizeId;
   }
 
-
-  // =====================================================
-  // CHECK SIZE IS AVAILABLE
+  // ============================================================
+  // SIZE AVAILABILITY
   //
-  // IMPORTANT:
-  // NO STOCK CHECK HERE.
-  //
-  // A size is available when at least one
-  // active variant exists for that size.
-  // =====================================================
+  // Stock quantity is intentionally NOT checked.
+  // ============================================================
 
   isSizeAvailable(
     sizeId: number
   ): boolean {
 
+    const selectedHeel =
+      this.selectedHeelSizeId();
+
     return this.activeVariants.some(
-      variant =>
-        variant.sizeId === sizeId
+      variant => {
+
+        if (
+          variant.sizeId !== sizeId
+        ) {
+          return false;
+        }
+
+        if (
+          selectedHeel == null
+        ) {
+          return true;
+        }
+
+        return (
+          variant.heelSizeId ===
+          selectedHeel
+        );
+      }
     );
   }
 
-
-  // =====================================================
-  // CHECK HEEL IS AVAILABLE
+  // ============================================================
+  // HEEL AVAILABILITY
   //
-  // IMPORTANT:
-  // NO STOCK CHECK HERE.
-  //
-  // A heel is available when at least one
-  // active variant exists for that heel.
-  // If a size is selected, the heel must have
-  // a matching variant with that size.
-  // =====================================================
+  // Stock quantity is intentionally NOT checked.
+  // ============================================================
 
   isHeelAvailable(
     heelSizeId: number
   ): boolean {
+
+    const selectedSize =
+      this.selectedSizeId();
 
     return this.activeVariants.some(
       variant => {
@@ -552,27 +584,23 @@ export class ProductModalComponent
           return false;
         }
 
-        const selectedSize =
-          this.selectedSizeId();
-
-        if (selectedSize == null) {
+        if (
+          selectedSize == null
+        ) {
           return true;
         }
 
-        return variant.sizeId === selectedSize;
+        return (
+          variant.sizeId ===
+          selectedSize
+        );
       }
     );
   }
 
-
-  // =====================================================
-  // SELECTED REAL DATABASE VARIANT
-  //
-  // IMPORTANT:
-  // We only need to find the matching variant.
-  //
-  // STOCK QUANTITY IS NOT CONSIDERED.
-  // =====================================================
+  // ============================================================
+  // SELECTED DATABASE VARIANT
+  // ============================================================
 
   get selectedVariant(): ProductVariant | null {
 
@@ -582,10 +610,9 @@ export class ProductModalComponent
     const heelId =
       this.selectedHeelSizeId();
 
-
-    // ===================================================
+    // ----------------------------------------------------------
     // SIZE + HEEL
-    // ===================================================
+    // ----------------------------------------------------------
 
     if (
       this.hasSizes &&
@@ -608,10 +635,9 @@ export class ProductModalComponent
       );
     }
 
-
-    // ===================================================
+    // ----------------------------------------------------------
     // SIZE ONLY
-    // ===================================================
+    // ----------------------------------------------------------
 
     if (this.hasSizes) {
 
@@ -627,10 +653,9 @@ export class ProductModalComponent
       );
     }
 
-
-    // ===================================================
+    // ----------------------------------------------------------
     // HEEL ONLY
-    // ===================================================
+    // ----------------------------------------------------------
 
     if (this.hasHeelSizes) {
 
@@ -646,14 +671,12 @@ export class ProductModalComponent
       );
     }
 
-
     return null;
   }
 
-
-  // =====================================================
+  // ============================================================
   // VARIANT SELECTION REQUIRED
-  // =====================================================
+  // ============================================================
 
   get requiresVariantSelection(): boolean {
 
@@ -678,10 +701,9 @@ export class ProductModalComponent
     return false;
   }
 
-
-  // =====================================================
-  // SELECTED SUMMARY
-  // =====================================================
+  // ============================================================
+  // SELECTED VARIANT LABEL
+  // ============================================================
 
   get selectedVariantLabel(): string {
 
@@ -693,10 +715,10 @@ export class ProductModalComponent
     }
 
     const size =
-      variant.sizeName?.trim() || '';
+      variant.sizeName?.trim() ?? '';
 
     const heel =
-      variant.heelSizeName?.trim() || '';
+      variant.heelSizeName?.trim() ?? '';
 
     if (size && heel) {
       return `${size} · ${heel}`;
@@ -705,34 +727,12 @@ export class ProductModalComponent
     return size || heel;
   }
 
-
-  // =====================================================
-  // STOCK
+  // ============================================================
+  // PRODUCT STOCK
   //
-  // IMPORTANT:
-  // STOCK QUANTITY IS COMPLETELY IGNORED.
-  //
-  // This getter exists only because the HTML may reference
-  // "stock". It returns Infinity so quantity is unlimited.
-  // =====================================================
-
-  get stock(): number {
-    return Infinity;
-  }
-
-
-  // =====================================================
-  // OUT OF STOCK
-  //
-  // ONLY product.isInStock matters.
-  //
-  // If true:
-  //   - No variants -> available
-  //   - Variants -> selection required
-  //
-  // If false:
-  //   - Always out of stock
-  // =====================================================
+  // Business rule:
+  // product.isInStock is the only stock flag.
+  // ============================================================
 
   get isOutOfStock(): boolean {
 
@@ -746,12 +746,9 @@ export class ProductModalComponent
     return product.isInStock !== true;
   }
 
-
-  // =====================================================
+  // ============================================================
   // CAN ADD TO CART
-  //
-  // NO STOCK QUANTITY CHECK.
-  // =====================================================
+  // ============================================================
 
   get canAddToCart(): boolean {
 
@@ -762,58 +759,34 @@ export class ProductModalComponent
       return false;
     }
 
-
-    // ===================================================
-    // Product itself is out of stock
-    // ===================================================
-
-    if (product.isInStock !== true) {
+    if (this.isOutOfStock) {
       return false;
     }
 
+    if (this.quantity() < 1) {
+      return false;
+    }
 
-    // ===================================================
-    // Product has no variants
-    //
-    // No stock quantity check.
-    // Quantity can be any positive number.
-    // ===================================================
-
+    // No variants.
     if (!this.hasVariants) {
-      return this.quantity() >= 1;
+      return true;
     }
 
-
-    // ===================================================
-    // Product has variants
-    //
-    // User must select all required options.
-    // ===================================================
-
-    if (this.requiresVariantSelection) {
-      return false;
-    }
-
-
-    // ===================================================
-    // Exact database variant must exist.
-    //
-    // NO stock quantity check.
-    // ===================================================
-
-    return this.selectedVariant !== null;
+    // Variants exist.
+    return (
+      !this.requiresVariantSelection &&
+      this.selectedVariant !== null
+    );
   }
 
-
-  // =====================================================
+  // ============================================================
   // PRICE
-  // =====================================================
+  // ============================================================
 
   get hasDiscount(): boolean {
 
     return Number(
-      this.product()
-        ?.discountPercentage ?? 0
+      this.product()?.discountPercentage ?? 0
     ) > 0;
   }
 
@@ -826,65 +799,72 @@ export class ProductModalComponent
   }
 
 
-  get newPrice(): number {
+ get newPrice(): number {
+  const product = this.product();
 
-    return Number(
-      this.product()?.actualPrice ?? 0
-    );
+  if (!product) {
+    return 0;
   }
 
+  const price = Number(product.price ?? 0);
+  const discount = Number(product.discountPercentage ?? 0);
 
-  // =====================================================
+  if (discount <= 0) {
+    return price;
+  }
+
+  return price - (price * discount / 100);
+}
+
+  // ============================================================
   // QUANTITY
   //
-  // IMPORTANT:
-  // There is NO maximum based on stock.
-  // =====================================================
+  // No stock-based maximum.
+  // ============================================================
 
-  setQuantity(value: number): void {
+  setQuantity(value: number | string): void {
 
-    let newQuantity =
-      Number(value);
+    let parsed =
+      typeof value === 'number'
+        ? value
+        : Number(value);
 
-    if (!Number.isFinite(newQuantity)) {
-      newQuantity = 1;
+    if (!Number.isFinite(parsed)) {
+      parsed = 1;
     }
 
-    newQuantity =
-      Math.floor(newQuantity);
+    parsed =
+      Math.floor(parsed);
 
-    if (newQuantity < 1) {
-      newQuantity = 1;
+    if (parsed < 1) {
+      parsed = 1;
     }
 
-    this.quantity.set(newQuantity);
+    this.quantity.set(parsed);
   }
 
-
-  // =====================================================
-  // ADD TO CART
-  // =====================================================
+  // ============================================================
+  // ADD MAIN PRODUCT TO CART
+  // ============================================================
 
   addToCart(): void {
 
     const product =
       this.product();
 
-    if (!product) {
-      return;
-    }
-
-    if (!this.canAddToCart) {
+    if (
+      !product ||
+      !this.canAddToCart
+    ) {
       return;
     }
 
     const selectedQuantity =
       this.quantity();
 
-
-    // ===================================================
-    // NO VARIANTS
-    // ===================================================
+    // ----------------------------------------------------------
+    // PRODUCT WITHOUT VARIANT
+    // ----------------------------------------------------------
 
     if (!this.hasVariants) {
 
@@ -903,10 +883,9 @@ export class ProductModalComponent
       return;
     }
 
-
-    // ===================================================
-    // VARIANT PRODUCT
-    // ===================================================
+    // ----------------------------------------------------------
+    // PRODUCT WITH VARIANT
+    // ----------------------------------------------------------
 
     const variant =
       this.selectedVariant;
@@ -929,10 +908,141 @@ export class ProductModalComponent
     this.goBack();
   }
 
+  // ============================================================
+  // RELATIVE PRODUCTS
+  // ============================================================
 
-  // =====================================================
+  addRelativeProductToCart(
+    product: Product
+  ): void {
+
+    const added =
+      this.cartService.addToCart(product);
+
+    if (!added) {
+
+      this.addedToCartProductId.set(null);
+
+      this.showAlreadyInCartMessage(
+        product.id
+      );
+
+      return;
+    }
+
+    this.alreadyInCartProductId.set(null);
+
+    this.showAddedToCartSuccess(
+      product.id
+    );
+  }
+
+
+  private showAddedToCartSuccess(
+    productId: number
+  ): void {
+
+    if (this.addedToCartTimer) {
+      clearTimeout(
+        this.addedToCartTimer
+      );
+    }
+
+    this.addedToCartProductId.set(
+      productId
+    );
+
+    this.addedToCartTimer =
+      setTimeout(() => {
+
+        if (
+          this.addedToCartProductId() ===
+          productId
+        ) {
+          this.addedToCartProductId.set(null);
+        }
+
+      }, 1500);
+  }
+
+
+  private showAlreadyInCartMessage(
+    productId: number
+  ): void {
+
+    if (this.alreadyInCartMessageTimer) {
+      clearTimeout(
+        this.alreadyInCartMessageTimer
+      );
+    }
+
+    this.alreadyInCartProductId.set(
+      productId
+    );
+
+    this.alreadyInCartMessageTimer =
+      setTimeout(() => {
+
+        if (
+          this.alreadyInCartProductId() ===
+          productId
+        ) {
+          this.alreadyInCartProductId.set(null);
+        }
+
+      }, 3000);
+  }
+
+  // ============================================================
+  // OPEN PRODUCT DETAILS
+  // ============================================================
+
+  openProductDetails(
+    product: Product
+  ): void {
+    this.router.navigate([
+      '/product',
+      product.id
+    ]);
+  }
+
+  // ============================================================
+  // SUBCATEGORY
+  //
+  // Supports your current model if subCategoryId exists.
+  // ============================================================
+
+  get CategoryId(): number | null {
+
+    const product =
+      this.product();
+    const id =product?.category?.id
+    if (
+      id == null ||
+      !Number.isInteger(Number(id))
+    ) {
+      return null;
+    }
+
+    return Number(id);
+  }
+ get ProductId(): number | null {
+
+    const product =
+      this.product();
+    const id =product?.id
+    if (
+      id == null ||
+      !Number.isInteger(Number(id))
+    ) {
+      return null;
+    }
+
+    return Number(id);
+  }
+  // ============================================================
   // GO BACK
-  // =====================================================
+  // ============================================================
 
   goBack(): void {
 
@@ -941,10 +1051,9 @@ export class ProductModalComponent
     ]);
   }
 
-
-  // =====================================================
+  // ============================================================
   // IMAGE URL
-  // =====================================================
+  // ============================================================
 
   getImageUrl(
     imageUrl?: string | null
@@ -954,20 +1063,26 @@ export class ProductModalComponent
       return 'assets/images/product-placeholder.png';
     }
 
-    if (
-      imageUrl.startsWith('http://') ||
-      imageUrl.startsWith('https://')
-    ) {
-      return imageUrl;
+    const url =
+      imageUrl.trim();
+
+    if (!url) {
+      return 'assets/images/product-placeholder.png';
     }
 
-    return `${this.api}${imageUrl}`;
+    if (
+      url.startsWith('http://') ||
+      url.startsWith('https://')
+    ) {
+      return url;
+    }
+
+    return `${this.api}${url}`;
   }
 
-
-  // =====================================================
+  // ============================================================
   // PRODUCT NAME
-  // =====================================================
+  // ============================================================
 
   getProductName(): string {
 
@@ -996,10 +1111,9 @@ export class ProductModalComponent
     );
   }
 
-
-  // =====================================================
+  // ============================================================
   // DESCRIPTION
-  // =====================================================
+  // ============================================================
 
   getProductDescription(): string {
 
@@ -1028,10 +1142,9 @@ export class ProductModalComponent
     );
   }
 
-
-  // =====================================================
+  // ============================================================
   // CATEGORY
-  // =====================================================
+  // ============================================================
 
   getCategoryName(): string {
 
@@ -1060,10 +1173,9 @@ export class ProductModalComponent
     );
   }
 
-
-  // =====================================================
+  // ============================================================
   // SIZE NAME
-  // =====================================================
+  // ============================================================
 
   getSizeName(
     variant: ProductVariant
@@ -1075,10 +1187,9 @@ export class ProductModalComponent
     );
   }
 
-
-  // =====================================================
+  // ============================================================
   // HEEL SIZE NAME
-  // =====================================================
+  // ============================================================
 
   getHeelSizeName(
     variant: ProductVariant
@@ -1089,22 +1200,4 @@ export class ProductModalComponent
       ''
     );
   }
-
-
-  // =====================================================
-  // VARIANT STOCK
-  //
-  // Kept only if the template or another component uses it.
-  // It does NOT participate in availability decisions.
-  // =====================================================
-
-  getVariantStock(
-    variant: ProductVariant
-  ): number {
-
-    return Number(
-      variant.stockQuantity ?? 0
-    );
-  }
 }
-

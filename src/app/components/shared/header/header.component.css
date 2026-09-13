@@ -1020,6 +1020,8 @@ min-width: 130px;
    ========================================================= */
 
 .mobile-dropdown {
+  max-height: 150px;
+  overflow-y: scroll;
   margin: 2px 5px 5px;
   padding: 3px;
 
@@ -1035,6 +1037,8 @@ min-width: 130px;
    ========================================================= */
 
 .mobile-category {
+   max-height: 150px;
+  overflow-y: scroll;
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -1064,6 +1068,8 @@ min-width: 130px;
 .mobile-subcategory {
   width: 100%;
   min-height: 34px;
+   max-height: 150px;
+  overflow-y: scroll;
   padding: 0 8px;
 
   display: flex;
@@ -1097,6 +1103,8 @@ min-width: 130px;
 .mobile-brand {
   width: 100%;
   min-height: 40px;
+   max-height: 150px;
+  overflow-y: scroll;
   padding: 0 9px;
 
   display: flex;
