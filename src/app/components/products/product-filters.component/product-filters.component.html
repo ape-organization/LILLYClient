@@ -35,25 +35,31 @@
       {{ 'FILTER.CATEGORY' | translate }}
     </label>
 
-    <select
-      [(ngModel)]="tempCategoryId"
-      (ngModelChange)="onCategoryChange()"
+    <mat-form-field
+      appearance="outline"
+      class="filter-select"
     >
 
-      <option [ngValue]="null">
-        {{ 'FILTER.All_Categories' | translate }}
-      </option>
-
-      <option
-        *ngFor="let category of categories"
-        [ngValue]="category.id"
+      <mat-select
+        [(ngModel)]="tempCategoryId"
+        (ngModelChange)="onCategoryChange()"
+        panelClass="product-filter-select-panel"
       >
 
-        {{ getCategoryName(category) }}
+        <mat-option [value]="null">
+          {{ 'FILTER.All_Categories' | translate }}
+        </mat-option>
 
-      </option>
+        <mat-option
+          *ngFor="let category of categories"
+          [value]="category.id"
+        >
+          {{ getCategoryName(category) }}
+        </mat-option>
 
-    </select>
+      </mat-select>
+
+    </mat-form-field>
 
   </div>
 

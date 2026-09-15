@@ -525,107 +525,38 @@ export class ProductListComponent implements OnInit {
   // LOAD PRODUCTS
   // ========================================================
 
-  loadProducts(): void {
+ loadProducts(): void {
 
-    const requestVersion =
-      ++this.requestVersion;
+  const requestVersion =
+    ++this.requestVersion;
 
-    const search =
-      this.searchName().trim();
+  const search =
+    this.searchName().trim();
 
+  // ======================================================
+  // SEARCH MODE
+  // ======================================================
 
-    // ======================================================
-    // SEARCH MODE
-    // ======================================================
+  if (search) {
 
-    if (search) {
-
-      this.loadSearchResults(
-        search,
-        requestVersion
-      );
-
-      return;
-    }
-
-
-    // ======================================================
-    // NORMAL MODE
-    // ======================================================
-
-    this.searchResults.set([]);
-
-
-    // ------------------------------------------------------
-    // FILTER ACTIVE + ALL PRODUCTS LOADED
-    // ------------------------------------------------------
-
-    if (
-      this.hasApiFilters() &&
-      this.allUnfilteredProductsLoaded()
-    ) {
-
-      this.applyLocalApiFilters();
-
-      this.isLoading.set(false);
-
-      return;
-    }
-
-
-    // ------------------------------------------------------
-    // FILTER ACTIVE
-    // ------------------------------------------------------
-
-    if (
-      this.hasApiFilters()
-    ) {
-
-      this.loadFilteredProductsFromApi(
-        requestVersion
-      );
-
-      return;
-    }
-
-
-    // ------------------------------------------------------
-    // CACHE EXISTS
-    // ------------------------------------------------------
-
-    if (
-      this.allLoadedProducts().length > 0
-    ) {
-
-      const cachedProducts =
-        this.allLoadedProducts();
-
-      this.products.set(
-        cachedProducts
-      );
-
-      this.filteredProducts.set(
-        cachedProducts
-      );
-
-      this.resetQuantities(
-        cachedProducts
-      );
-
-      this.isLoading.set(false);
-
-      return;
-    }
-
-
-    // ------------------------------------------------------
-    // FIRST LOAD
-    // ------------------------------------------------------
-
-    this.loadFirstPage(
+    this.loadSearchResults(
+      search,
       requestVersion
     );
+
+    return;
   }
+
+  // ======================================================
+  // NORMAL / API FILTER MODE
+  // ======================================================
+
+  this.searchResults.set([]);
+
+  this.loadFirstPage(
+    requestVersion
+  );
+}
 
 
   // ========================================================
@@ -712,42 +643,55 @@ export class ProductListComponent implements OnInit {
   // LOAD FIRST PAGE
   // ========================================================
 
-  private loadFirstPage(
-    requestVersion: number
-  ): void {
+ private loadFirstPage(
+  requestVersion: number
+): void {
 
-    this.isLoading.set(true);
+  this.isLoading.set(true);
+  this.isLoadingMore.set(false);
 
-    this.isLoadingMore.set(false);
+  this.currentPage = 0;
 
-    this.currentPage = 1;
-
-    this.productService
-      .getProducts(
-        1,
-        null,
-        false
+  this.productService
+    .getProducts(
+      1,
+      this.selectedCategoryId(),
+      this.showOffers()
+    )
+    .pipe(
+      takeUntilDestroyed(
+        this.destroyRef
       )
-      .pipe(
-        takeUntilDestroyed(
-          this.destroyRef
-        )
-      )
-      .subscribe({
+    )
+    .subscribe({
 
-        next: (
-          response: ProductPageResponse
-        ) => {
+      next: (
+        response: ProductPageResponse
+      ) => {
 
-          if (
-            requestVersion !==
-            this.requestVersion
-          ) {
-            return;
-          }
+        if (
+          requestVersion !==
+          this.requestVersion
+        ) {
+          return;
+        }
 
-          const loadedProducts =
-            response.items ?? [];
+        const loadedProducts =
+          response.items ?? [];
+
+        this.currentPage =
+          response.page ?? 1;
+
+        this.hasMoreProducts.set(
+          response.hasMore === true
+        );
+
+        // --------------------------------------------------
+        // Only maintain the unfiltered cache when there
+        // are NO API filters.
+        // --------------------------------------------------
+
+        if (!this.hasApiFilters()) {
 
           this.allLoadedProducts.set(
             loadedProducts
@@ -757,118 +701,119 @@ export class ProductListComponent implements OnInit {
             response.totalCount ??
             loadedProducts.length
           );
-
-          this.currentPage =
-            response.page ?? 1;
-
-          this.hasMoreProducts.set(
-            response.hasMore === true
-          );
-
-          this.products.set(
-            loadedProducts
-          );
-
-          this.filteredProducts.set(
-            loadedProducts
-          );
-
-          this.resetQuantities(
-            loadedProducts
-          );
-
-          this.isLoading.set(false);
-        },
-
-        error: () => {
-
-          if (
-            requestVersion !==
-            this.requestVersion
-          ) {
-            return;
-          }
-
-          this.products.set([]);
-
-          this.filteredProducts.set([]);
-
-          this.allLoadedProducts.set([]);
-
-          this.unfilteredTotalCount.set(0);
-
-          this.quantities.set({});
-
-          this.hasMoreProducts.set(false);
-
-          this.isLoading.set(false);
-
-          this.isLoadingMore.set(false);
         }
 
-      });
-  }
+        this.products.set(
+          loadedProducts
+        );
+
+        this.filteredProducts.set(
+          loadedProducts
+        );
+
+        this.resetQuantities(
+          loadedProducts
+        );
+
+        this.isLoading.set(false);
+      },
+
+      error: () => {
+
+        if (
+          requestVersion !==
+          this.requestVersion
+        ) {
+          return;
+        }
+
+        this.products.set([]);
+        this.filteredProducts.set([]);
+
+        this.quantities.set({});
+
+        if (!this.hasApiFilters()) {
+
+          this.allLoadedProducts.set([]);
+          this.unfilteredTotalCount.set(0);
+        }
+
+        this.hasMoreProducts.set(false);
+
+        this.isLoading.set(false);
+        this.isLoadingMore.set(false);
+      }
+
+    });
+}
 
 
   // ========================================================
   // LOAD NEXT PAGE
   // ========================================================
 
-  private loadNextPage(): void {
+ private loadNextPage(): void {
 
-    if (
-      this.hasSearch()
-    ) {
-      return;
-    }
+  if (this.hasSearch()) {
+    return;
+  }
 
-    if (
-      this.isLoading() ||
-      this.isLoadingMore() ||
-      !this.hasMoreProducts()
-    ) {
-      return;
-    }
+  if (
+    this.isLoading() ||
+    this.isLoadingMore() ||
+    !this.hasMoreProducts()
+  ) {
+    return;
+  }
 
-    if (
-      this.hasApiFilters()
-    ) {
-      return;
-    }
+  const nextPage =
+    this.currentPage + 1;
 
-    const nextPage =
-      this.currentPage + 1;
+  const requestVersion =
+    this.requestVersion;
 
-    this.isLoadingMore.set(true);
+  this.isLoadingMore.set(true);
 
-    this.productService
-      .getProducts(
-        nextPage,
-        null,
-        false
+  this.productService
+    .getProducts(
+      nextPage,
+      this.selectedCategoryId(),
+      this.showOffers()
+    )
+    .pipe(
+      takeUntilDestroyed(
+        this.destroyRef
       )
-      .pipe(
-        takeUntilDestroyed(
-          this.destroyRef
-        )
-      )
-      .subscribe({
+    )
+    .subscribe({
 
-        next: (
-          response: ProductPageResponse
-        ) => {
+      next: (
+        response: ProductPageResponse
+      ) => {
 
-          const newProducts =
-            response.items ?? [];
+        if (
+          requestVersion !==
+          this.requestVersion
+        ) {
+          return;
+        }
+
+        const newProducts =
+          response.items ?? [];
+
+        // ==================================================
+        // FILTERED MODE
+        // ==================================================
+
+        if (this.hasApiFilters()) {
 
           const existingProducts =
-            this.allLoadedProducts();
+            this.products();
 
           const existingIds =
             new Set(
               existingProducts.map(
-                product =>
-                  product.id
+                product => product.id
               )
             );
 
@@ -880,6 +825,53 @@ export class ProductListComponent implements OnInit {
                 )
             );
 
+          if (
+            uniqueProducts.length > 0
+          ) {
+
+            const updatedProducts = [
+              ...existingProducts,
+              ...uniqueProducts
+            ];
+
+            this.products.set(
+              updatedProducts
+            );
+
+            this.filteredProducts.set(
+              updatedProducts
+            );
+
+            this.addQuantities(
+              uniqueProducts
+            );
+          }
+
+        }
+
+        // ==================================================
+        // UNFILTERED MODE
+        // ==================================================
+
+        else {
+
+          const existingProducts =
+            this.allLoadedProducts();
+
+          const existingIds =
+            new Set(
+              existingProducts.map(
+                product => product.id
+              )
+            );
+
+          const uniqueProducts =
+            newProducts.filter(
+              product =>
+                !existingIds.has(
+                  product.id
+                )
+            );
 
           if (
             uniqueProducts.length > 0
@@ -907,108 +899,42 @@ export class ProductListComponent implements OnInit {
             );
           }
 
-
-          this.currentPage =
-            response.page ??
-            nextPage;
-
           this.unfilteredTotalCount.set(
             response.totalCount ??
             this.unfilteredTotalCount()
           );
-
-          this.hasMoreProducts.set(
-            response.hasMore === true
-          );
-
-          this.isLoadingMore.set(false);
-        },
-
-        error: () => {
-
-          this.isLoadingMore.set(false);
         }
 
-      });
-  }
+        // ==================================================
+        // PAGINATION STATE
+        // ==================================================
 
+        this.currentPage =
+          response.page ??
+          nextPage;
 
-  // ========================================================
-  // LOAD FILTERED PRODUCTS
-  // ========================================================
+        this.hasMoreProducts.set(
+          response.hasMore === true
+        );
 
-  private loadFilteredProductsFromApi(
-    requestVersion: number
-  ): void {
+        this.isLoadingMore.set(false);
+      },
 
-    this.isLoading.set(true);
+      error: () => {
 
-    this.isLoadingMore.set(false);
-
-    this.productService
-      .getProducts(
-        1,
-        this.selectedCategoryId(),
-        this.showOffers()
-      )
-      .pipe(
-        takeUntilDestroyed(
-          this.destroyRef
-        )
-      )
-      .subscribe({
-
-        next: (
-          response: ProductPageResponse
-        ) => {
-
-          if (
-            requestVersion !==
-            this.requestVersion
-          ) {
-            return;
-          }
-
-          const filtered =
-            response.items ?? [];
-
-          this.products.set(
-            filtered
-          );
-
-          this.filteredProducts.set(
-            filtered
-          );
-
-          this.resetQuantities(
-            filtered
-          );
-
-          this.isLoading.set(false);
-        },
-
-        error: () => {
-
-          if (
-            requestVersion !==
-            this.requestVersion
-          ) {
-            return;
-          }
-
-          this.products.set([]);
-
-          this.filteredProducts.set([]);
-
-          this.quantities.set({});
-
-          this.isLoading.set(false);
-
-          this.isLoadingMore.set(false);
+        if (
+          requestVersion !==
+          this.requestVersion
+        ) {
+          return;
         }
 
-      });
-  }
+        this.isLoadingMore.set(false);
+      }
+
+    });
+}
+
 
 
   // ========================================================
@@ -1267,43 +1193,34 @@ export class ProductListComponent implements OnInit {
   // ========================================================
 
   @HostListener('window:scroll')
-  onWindowScroll(): void {
+onWindowScroll(): void {
 
-    if (
-      this.hasSearch()
-    ) {
-      return;
-    }
-
-    if (
-      this.hasApiFilters()
-    ) {
-      return;
-    }
-
-    if (
-      this.isLoading() ||
-      this.isLoadingMore() ||
-      !this.hasMoreProducts()
-    ) {
-      return;
-    }
-
-    const scrollPosition =
-      window.innerHeight +
-      window.scrollY;
-
-    const pageHeight =
-      document.documentElement.scrollHeight;
-
-    if (
-      scrollPosition >=
-      pageHeight - 500
-    ) {
-
-      this.loadNextPage();
-    }
+  if (this.hasSearch()) {
+    return;
   }
+
+  if (
+    this.isLoading() ||
+    this.isLoadingMore() ||
+    !this.hasMoreProducts()
+  ) {
+    return;
+  }
+
+  const scrollPosition =
+    window.innerHeight +
+    window.scrollY;
+
+  const pageHeight =
+    document.documentElement.scrollHeight;
+
+  if (
+    scrollPosition >=
+    pageHeight - 500
+  ) {
+    this.loadNextPage();
+  }
+}
 
 
   // ========================================================

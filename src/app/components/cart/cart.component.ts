@@ -46,7 +46,7 @@ export class CartComponent implements OnInit, OnDestroy {
   // ============================================================
   // LIFECYCLE
   // ============================================================
-
+/* 
   ngOnInit(): void {
 
     this.cartService.cartItems$
@@ -64,8 +64,23 @@ export class CartComponent implements OnInit, OnDestroy {
 
         this.isLoading = loading;
       });
-  }
+  } */
+ngOnInit(): void {
+  this.cartService.refreshCartFromApi();
 
+  this.cartService.cartItems$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(items => {
+      this.cartItems = items;
+      this.calculateCartTotal();
+    });
+
+  this.cartService.cartLoading$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(loading => {
+      this.isLoading = loading;
+    });
+}
   ngOnDestroy(): void {
 
     this.destroy$.next();

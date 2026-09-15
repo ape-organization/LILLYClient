@@ -1,20 +1,3 @@
-/* =========================================================
-   PRODUCT FILTERS FONT
-   ========================================================= */
-/* 
-.product-filters,
-.product-filters label,
-.product-filters span,
-.product-filters h2,
-.product-filters select,
-.product-filters option,
-.product-filters input,
-.product-filters button {
-  font-family: Cursive !important;
-} */
-/* =========================================================
-   PRODUCT FILTERS
-   ========================================================= */
 
 .product-filters {
   width: 100%;
@@ -44,24 +27,162 @@
 
 
 /* =========================================================
-   FILTER SECTION
+   MATERIAL SELECT
    ========================================================= */
 
-.filter-section {
-  margin-bottom: 20px;
+.filter-select {
+  display: block;
+  width: 100%;
+  margin: 0;
 }
 
-.filter-section label {
-  display: block;
+.filter-select {
+  --mat-form-field-container-height: 42px;
+  --mat-form-field-container-vertical-padding: 0px;
+}
 
-  margin-bottom: 8px;
+.filter-select ::ng-deep
+.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.filter-select ::ng-deep
+.mat-mdc-text-field-wrapper {
+  height: 42px;
+
+  padding: 0 12px;
+
+  border-radius: 8px;
+
+  background: #fff;
+}
+
+.filter-select ::ng-deep
+.mat-mdc-form-field-flex {
+  height: 42px;
+}
+
+.filter-select ::ng-deep
+.mat-mdc-select-trigger {
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+}
+
+.filter-select ::ng-deep
+.mat-mdc-select-value {
+  color: var(--color-primary);
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.filter-select ::ng-deep
+.mat-mdc-select-placeholder {
+  color: var(--color-primary);
+}
+
+.filter-select ::ng-deep
+.mat-mdc-select-arrow {
+  color: var(--color-accent);
+}
+
+
+/* =========================================================
+   MATERIAL SELECT BORDER
+   ========================================================= */
+
+.filter-select ::ng-deep
+.mdc-notched-outline__leading,
+.filter-select ::ng-deep
+.mdc-notched-outline__notch,
+.filter-select ::ng-deep
+.mdc-notched-outline__trailing {
+  border-color:
+    rgba(58, 39, 33, 0.15);
+}
+
+.filter-select:hover ::ng-deep
+.mdc-notched-outline__leading,
+.filter-select:hover ::ng-deep
+.mdc-notched-outline__notch,
+.filter-select:hover ::ng-deep
+.mdc-notched-outline__trailing {
+  border-color:
+    rgba(184, 138, 90, 0.6);
+}
+
+.filter-select.mat-focused ::ng-deep
+.mdc-notched-outline__leading,
+.filter-select.mat-focused ::ng-deep
+.mdc-notched-outline__notch,
+.filter-select.mat-focused ::ng-deep
+.mdc-notched-outline__trailing {
+  border-color:
+    var(--color-accent);
+}
+
+
+/* =========================================================
+   SELECT DROPDOWN PANEL
+   ========================================================= */
+
+::ng-deep
+.product-filter-select-panel {
+  max-height: 220px !important;
+
+  padding: 5px !important;
+
+  border-radius: 8px !important;
+
+  background: #fff !important;
+
+  box-shadow:
+    0 8px 25px
+    rgba(58, 39, 33, 0.14) !important;
+}
+
+
+/* =========================================================
+   SELECT OPTIONS
+   ========================================================= */
+
+::ng-deep
+.product-filter-select-panel
+.mat-mdc-option {
+  min-height: 38px;
+
+  padding: 0 12px;
+
+  border-radius: 6px;
 
   color: var(--color-primary);
 
+  font-family: inherit;
   font-size: 13px;
-  font-weight: 600;
 }
 
+::ng-deep
+.product-filter-select-panel
+.mat-mdc-option:hover {
+  background:
+    rgba(184, 138, 90, 0.08);
+}
+
+::ng-deep
+.product-filter-select-panel
+.mat-mdc-option.mdc-list-item--selected {
+  background:
+    rgba(184, 138, 90, 0.10);
+}
+
+::ng-deep
+.product-filter-select-panel
+.mat-mdc-option.mdc-list-item--selected:hover {
+  background:
+    rgba(184, 138, 90, 0.14);
+}
 
 /* =========================================================
    SEARCH

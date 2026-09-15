@@ -19,6 +19,7 @@ import { CategoryFilter } from '../../../models/category.model';
 
 
 import { LanguageService } from '../../../services/language.service';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @Component({
@@ -27,6 +28,7 @@ import { LanguageService } from '../../../services/language.service';
   standalone: true,
 
   imports: [
+    MatSelectModule,
     CommonModule,
     FormsModule,
     MaterialModule,

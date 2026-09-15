@@ -251,7 +251,12 @@ margin: 5px auto;
   margin-top: 8px;
 
   color: var(--color-text-secondary);
+ padding: 10px 12px;
 
+  border: 1px solid var(--color-accent-light);
+  border-radius: var(--radius-sm);
+
+  background: rgba(184, 138, 90, 0.08);
   font-size: 12px;
 }
 
@@ -286,7 +291,12 @@ margin: 5px auto;
 
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+ padding: 10px 12px;
 
+  border: 1px solid var(--color-accent-light);
+  border-radius: var(--radius-sm);
+
+  background: rgba(184, 138, 90, 0.08);
   overflow: hidden;
 }
 
@@ -409,6 +419,12 @@ margin: 5px auto;
 .variant-section {
   margin-top: 4px;
   margin-bottom: 4px;
+   padding: 10px 12px;
+
+  border: 1px solid var(--color-accent-light);
+  border-radius: var(--radius-sm);
+
+  background: rgba(184, 138, 90, 0.08);
 }
 
 
