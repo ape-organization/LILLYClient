@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -65,22 +65,42 @@ export class CartComponent implements OnInit, OnDestroy {
         this.isLoading = loading;
       });
   } */
+
+
+
+
+/////////////////////
+private readonly cdr = inject(ChangeDetectorRef);
 ngOnInit(): void {
-  this.cartService.refreshCartFromApi();
 
-  this.cartService.cartItems$
-    .pipe(takeUntil(this.destroy$))
+  // Subscribe first so we receive the refreshed cart
+  this.cartService
+    .cartItems$
+    .pipe(
+      takeUntil(this.destroy$)
+    )
     .subscribe(items => {
+
       this.cartItems = items;
+
       this.calculateCartTotal();
+
+     this.cdr.detectChanges();
+
     });
 
-  this.cartService.cartLoading$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(loading => {
-      this.isLoading = loading;
-    });
+
+  // Refresh product data whenever Cart page is opened
+  this.cartService
+    .refreshCartFromApi()
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe();
+
 }
+
+///////////////////////
   ngOnDestroy(): void {
 
     this.destroy$.next();
