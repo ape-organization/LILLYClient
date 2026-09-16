@@ -6,20 +6,17 @@ import {
   HttpResponse
 } from '@angular/common/http';
 
-import { signal } from '@angular/core';
-
 import {
   Observable,
   of,
-  tap,
   finalize,
   shareReplay,
-  filter
+  tap
 } from 'rxjs';
 
 
 // ============================================================
-// CACHE REQUEST CONTEXT
+// OPTIONAL CACHE FLAG
 // ============================================================
 
 export const CACHE_REQUEST =
@@ -27,460 +24,170 @@ export const CACHE_REQUEST =
 
 
 // ============================================================
-// CACHE ENTRY
-// ============================================================
-
-interface CacheEntry {
-
-  response: HttpResponse<unknown>;
-
-  expiresAt: number;
-
-}
-
-
-// ============================================================
 // CACHE
 // ============================================================
 
-const cache =
-  new Map<string, CacheEntry>();
+interface CacheEntry {
+  response: HttpResponse<unknown>;
+  expiresAt: number;
+}
 
-
-// ============================================================
-// ACTIVE REQUESTS
-// ============================================================
+const cache = new Map<string, CacheEntry>();
 
 const activeRequests =
-  new Map<
-    string,
-    Observable<HttpEvent<unknown>>
-  >();
+  new Map<string, Observable<HttpEvent<unknown>>>();
 
 
 // ============================================================
-// CACHE VERSION
+// CACHE SETTINGS
 // ============================================================
 
-export const cacheVersion =
-  signal(0);
-
-
-// ============================================================
-// CACHE TTL
-// ============================================================
-
-const CACHE_TTL =
-  30 * 60 * 1000;
+const CACHE_TTL = 30 * 60 * 1000;
 
 
 // ============================================================
-// CACHEABLE RESOURCES
+// CACHEABLE ENDPOINTS
 // ============================================================
 
-type CacheResource =
-  | 'brands'
-  | 'categories'
-  | 'subcategories';
-
-
-// ============================================================
-// CHECK CACHEABLE REQUEST
-// ============================================================
-
-function isCacheableRequest(
-  req: HttpRequest<unknown>
-): boolean {
-
-  if (
-    req.method.toUpperCase() !== 'GET'
-  ) {
-
-    return false;
-
-  }
-
-  if (
-    req.context.get(CACHE_REQUEST)
-  ) {
-
-    return true;
-
-  }
-
-  return (
-    getCacheResource(req.url) !== null
-  );
-
-}
+const CACHEABLE_ENDPOINTS = [
+  '/products/new',
+  '/categories',
+  '/products/best-sellers'
+];
 
 
 // ============================================================
-// GET RESOURCE
+// INTERCEPTOR
 // ============================================================
 
-function getCacheResource(
-  url: string
-): CacheResource | null {
+export const cacheInterceptor: HttpInterceptorFn =
+  (req, next) => {
 
-  const normalizedUrl =
-    url
-      .toLowerCase()
-      .split('?')[0];
-
-
-  if (
-    isEndpoint(
-      normalizedUrl,
-      '/brands'
-    )
-  ) {
-
-    return 'brands';
-
-  }
-
-
-  if (
-    isEndpoint(
-      normalizedUrl,
-      '/subcategories'
-    )
-  ) {
-
-    return 'subcategories';
-
-  }
-
-
-  if (
-    isEndpoint(
-      normalizedUrl,
-      '/categories'
-    )
-  ) {
-
-    return 'categories';
-
-  }
-
-
-  return null;
-
-}
-
-
-// ============================================================
-// ENDPOINT
-// ============================================================
-
-function isEndpoint(
-  url: string,
-  endpoint: string
-): boolean {
-
-  return (
-    url.endsWith(endpoint) ||
-    url.includes(`${endpoint}/`)
-  );
-
-}
-
-
-// ============================================================
-// CACHE KEY
-// ============================================================
-
-function getCacheKey(
-  req: HttpRequest<unknown>
-): string {
-
-  return (
-    req.method.toUpperCase() +
-    ':' +
-    req.urlWithParams
-  );
-
-}
-
-
-// ============================================================
-// RESOURCE CHECK
-// ============================================================
-
-function cacheKeyContainsResource(
-  key: string,
-  resource: CacheResource
-): boolean {
-
-  const normalized =
-    key.toLowerCase();
-
-
-  switch (resource) {
-
-    case 'brands':
-
-      return normalized.includes(
-        '/brands'
-      );
-
-
-    case 'subcategories':
-
-      return normalized.includes(
-        '/subcategories'
-      );
-
-
-    case 'categories':
-
-      return (
-        normalized.includes('/categories') &&
-        !normalized.includes('/subcategories')
-      );
-
-
-    default:
-
-      return false;
-
-  }
-
-}
-
-
-// ============================================================
-// CLEAR CACHE
-// ============================================================
-
-function clearCacheForResource(
-  resource: CacheResource
-): void {
-
-  for (
-    const key of cache.keys()
-  ) {
-
-    if (
-      cacheKeyContainsResource(
-        key,
-        resource
-      )
-    ) {
-
-      cache.delete(key);
-
-    }
-
-  }
-
-
-  cacheVersion.update(
-    value => value + 1
-  );
-
-}
-
-
-// ============================================================
-// INVALIDATE CACHE
-// ============================================================
-
-function invalidateCache(
-  req: HttpRequest<unknown>
-): void {
-
-  const resource =
-    getCacheResource(req.url);
-
-
-  if (
-    resource === 'brands'
-  ) {
-
-    clearCacheForResource(
-      'brands'
-    );
-
-    return;
-
-  }
-
-
-  if (
-    resource === 'subcategories'
-  ) {
-
-    clearCacheForResource(
-      'subcategories'
-    );
-
-    clearCacheForResource(
-      'categories'
-    );
-
-    return;
-
-  }
-
-
-  if (
-    resource === 'categories'
-  ) {
-
-    clearCacheForResource(
-      'categories'
-    );
-
-    clearCacheForResource(
-      'subcategories'
-    );
-
-  }
-
-}
-
-
-// ============================================================
-// CACHE INTERCEPTOR
-// ============================================================
-
-export const cacheInterceptor:
-  HttpInterceptorFn = (
-    req,
-    next
-  ) => {
-
-  // ==========================================================
-  // MUTATION
-  // ==========================================================
-
-  const isMutation =
-    [
-      'POST',
-      'PUT',
-      'PATCH',
-      'DELETE'
-    ].includes(
-      req.method.toUpperCase()
-    );
-
-
-  // ==========================================================
-  // CACHEABLE GET
-  // ==========================================================
-
-  if (
-    isCacheableRequest(req)
-  ) {
-
-    const cacheKey =
-      getCacheKey(req);
+    const method = req.method.toUpperCase();
 
 
     // ========================================================
-    // CHECK CACHE
+    // MUTATIONS
+    // ========================================================
+
+    if (
+      method === 'POST' ||
+      method === 'PUT' ||
+      method === 'PATCH' ||
+      method === 'DELETE'
+    ) {
+
+      return next(req).pipe(
+
+        tap(() => {
+          invalidate(req.url);
+        })
+
+      );
+
+    }
+
+
+    // ========================================================
+    // ONLY GET REQUESTS ARE CACHEABLE
+    // ========================================================
+
+    if (method !== 'GET') {
+      return next(req);
+    }
+
+
+    // ========================================================
+    // CHECK CACHEABLE
+    // ========================================================
+
+    const cacheable =
+      req.context.get(CACHE_REQUEST) ||
+      isCacheable(req.url);
+
+
+    if (!cacheable) {
+      return next(req);
+    }
+
+
+    // ========================================================
+    // CACHE KEY
+    // ========================================================
+
+    const key =
+      req.urlWithParams;
+
+
+    // ========================================================
+    // CACHE HIT
     // ========================================================
 
     const cached =
-      cache.get(cacheKey);
-
+      cache.get(key);
 
     if (
       cached &&
-      Date.now() < cached.expiresAt
+      cached.expiresAt > Date.now()
     ) {
 
-      return of(
-        cached.response
-      );
+      return of(cached.response);
 
     }
 
 
-    // ========================================================
-    // REMOVE EXPIRED CACHE
-    // ========================================================
+    // Remove expired entry
 
     if (cached) {
-
-      cache.delete(cacheKey);
-
+      cache.delete(key);
     }
 
 
     // ========================================================
-    // CHECK ACTIVE REQUEST
+    // REQUEST ALREADY RUNNING
     // ========================================================
 
     const active =
-      activeRequests.get(cacheKey);
+      activeRequests.get(key);
 
-
-    if (
-      active
-    ) {
-
+    if (active) {
       return active;
-
     }
 
 
     // ========================================================
-    // CREATE REQUEST
+    // HTTP REQUEST
     // ========================================================
 
     const request$ =
       next(req).pipe(
 
-        // ----------------------------------------------------
-        // ONLY CACHE HttpResponse
-        // ----------------------------------------------------
+        tap(event => {
 
-        tap({
-          next: event => {
+          if (
+            event instanceof HttpResponse
+          ) {
 
-            if (
-              event instanceof HttpResponse
-            ) {
-
-              cache.set(
-                cacheKey,
-                {
-                  response: event,
-                  expiresAt:
-                    Date.now() +
-                    CACHE_TTL
-                }
-              );
-
-              cacheVersion.update(
-                value => value + 1
-              );
-
-            }
+            cache.set(
+              key,
+              {
+                response: event,
+                expiresAt:
+                  Date.now() + CACHE_TTL
+              }
+            );
 
           }
+
         }),
 
-
-        // ----------------------------------------------------
-        // ALWAYS REMOVE ACTIVE REQUEST
-        // ----------------------------------------------------
 
         finalize(() => {
 
-          activeRequests.delete(
-            cacheKey
-          );
+          activeRequests.delete(key);
 
         }),
 
-
-        // ----------------------------------------------------
-        // SHARE REQUEST
-        // ----------------------------------------------------
 
         shareReplay({
           bufferSize: 1,
@@ -490,43 +197,132 @@ export const cacheInterceptor:
       );
 
 
-    // ========================================================
-    // STORE ACTIVE REQUEST
-    // ========================================================
-
     activeRequests.set(
-      cacheKey,
+      key,
       request$
     );
 
 
     return request$;
+  };
 
+
+// ============================================================
+// CHECK CACHEABLE ENDPOINT
+// ============================================================
+
+function isCacheable(
+  url: string
+): boolean {
+
+  const path =
+    url
+      .toLowerCase()
+      .split('?')[0];
+
+  return CACHEABLE_ENDPOINTS.some(
+    endpoint =>
+      path.endsWith(endpoint) ||
+      path.includes(`${endpoint}/`)
+  );
+
+}
+
+
+// ============================================================
+// INVALIDATE
+// ============================================================
+
+function invalidate(
+  url: string
+): void {
+
+  const path =
+    url
+      .toLowerCase()
+      .split('?')[0];
+
+
+  // ----------------------------------------------------------
+  // products/best-sellers
+  // ----------------------------------------------------------
+
+  if (isResource(path, '/products/best-sellers')) {
+
+    clearResource('/products/best-sellers');
+
+    return;
   }
 
 
-  // ==========================================================
-  // NORMAL REQUEST
-  // ==========================================================
+  // ----------------------------------------------------------
+  // products/new
+  // ----------------------------------------------------------
 
-  return next(req).pipe(
+  if (isResource(path, '/products/new')) {
 
-    tap({
+    clearResource('/products/new');
 
-      next: () => {
+    return;
+  }
 
-        if (
-          isMutation
-        ) {
 
-          invalidateCache(req);
+  // ----------------------------------------------------------
+  // CATEGORIES
+  // ----------------------------------------------------------
 
-        }
+  if (isResource(path, '/categories')) {
 
-      }
+    clearResource('/categories');
+    clearResource('/products/new');
 
-    })
+  }
 
+}
+
+
+// ============================================================
+// RESOURCE CHECK
+// ============================================================
+
+function isResource(
+  url: string,
+  resource: string
+): boolean {
+
+  return (
+    url.endsWith(resource) ||
+    url.includes(`${resource}/`)
   );
 
-};
+}
+
+
+// ============================================================
+// CLEAR RESOURCE
+// ============================================================
+
+function clearResource(
+  resource: string
+): void {
+
+  for (
+    const key of cache.keys()
+  ) {
+
+    const url =
+      key
+        .toLowerCase()
+        .split('?')[0];
+
+    if (
+      isResource(url, resource)
+    ) {
+
+      cache.delete(key);
+
+    }
+
+  }
+
+}

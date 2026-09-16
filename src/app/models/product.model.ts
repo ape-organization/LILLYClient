@@ -5,7 +5,7 @@ import { Size } from './size,model';
 
 export interface Product {
   id: number;
-
+hasVariants?:boolean| true;
   nameEn: string;
   descriptionEn?: string | null;
 

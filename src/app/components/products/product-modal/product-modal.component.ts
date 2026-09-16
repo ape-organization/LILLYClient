@@ -29,6 +29,7 @@ import { LanguageService } from '../../../services/language.service';
 import { ProductService } from '../../../services/product.service';
 
 import { RelativeProduct } from '../relative-product/relative-product';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({
@@ -58,7 +59,7 @@ export class ProductModalComponent
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
-
+private readonly dialog=inject(MatDialog);
   readonly languageService = inject(LanguageService);
 
   // ============================================================
@@ -117,8 +118,10 @@ export class ProductModalComponent
   // ============================================================
 
   ngOnInit(): void {
-  this.route.paramMap.subscribe(params => {
+    console.log(this.route.paramMap)
 
+  this.route.paramMap.subscribe(params => {
+console.log(params)
     const idParam = params.get('id');
     const productId = Number(idParam);
 
@@ -150,7 +153,7 @@ export class ProductModalComponent
   // ============================================================
 
   private loadProduct(id: number): void {
-
+console.log(id)
     this.stopImageSlider();
 
     this.productService.getProduct(id).subscribe({
@@ -866,7 +869,8 @@ export class ProductModalComponent
     // PRODUCT WITHOUT VARIANT
     // ----------------------------------------------------------
 
-    if (!this.hasVariants) {
+    if (!product.hasVariants
+) {
 
       const added =
         this.cartService.replaceCartItem(
@@ -908,6 +912,8 @@ export class ProductModalComponent
     this.goBack();
   }
 
+ 
+
   // ============================================================
   // RELATIVE PRODUCTS
   // ============================================================
@@ -915,7 +921,13 @@ export class ProductModalComponent
   addRelativeProductToCart(
     product: Product
   ): void {
-
+  if (product.hasVariants
+) {
+       this.openProductDetails(
+      product
+    );
+    return
+     }
     const added =
       this.cartService.addToCart(product);
 

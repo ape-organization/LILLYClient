@@ -93,14 +93,20 @@ export class Home implements OnInit, OnDestroy {
   private alreadyInCartMessageTimer?:
     ReturnType<typeof setTimeout>;
 
-    
+   
 
   // =====================================================
   // ADD TO CART
   // =====================================================
 
   addToCart(product: Product): void {
-
+console.log(product)
+     if (product.hasVariants) {
+       this.openProductDetails(
+      product
+    );
+    return
+     }
     const alreadyExists =
       this.cartService.addToCart(product);
 
@@ -225,15 +231,6 @@ export class Home implements OnInit, OnDestroy {
     product: Product
   ): void {
 
-   /*  this.dialog.open(
-      ProductModalComponent,
-      {
-        width: '800px',
-        maxWidth: '95vw',
-        data: product,
-        disableClose: false
-      }
-    ); */
   
   this.router.navigate(['/product', product.id]);
 

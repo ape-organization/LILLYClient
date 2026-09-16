@@ -1553,33 +1553,11 @@ onWindowScroll(): void {
     product: Product
   ): void {
 
-    // ======================================================
-    // CHECK PRODUCT VARIANTS
-    // ======================================================
+var hasVariant=product.hasVariants
 
-    const hasSizes =
-      Array.isArray(
-        (product as any).sizes
-      ) &&
-      (product as any).sizes.length > 0;
+ 
 
-
-    const hasHeelSizes =
-      Array.isArray(
-        (product as any).heelSizes
-      ) &&
-      (product as any).heelSizes.length > 0;
-
-
-    // ======================================================
-    // NO SIZE + NO HEEL SIZE
-    // → ADD DIRECTLY
-    // ======================================================
-
-    if (
-      !hasSizes &&
-      !hasHeelSizes
-    ) {
+    if (!hasVariant) {
 
       this.addProductDirectlyToCart(
         product
