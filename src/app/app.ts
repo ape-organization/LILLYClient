@@ -29,7 +29,7 @@ export class App {
     
 
     const message = "الاستفسار";
-    const phoneNumber = '1211849330';
+    const phoneNumber = '*********';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   }

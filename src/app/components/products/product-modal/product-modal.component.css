@@ -51,7 +51,7 @@ margin: 5px auto;
   position: relative;
 
   width: 100%;
-  height: 700px;
+  height: 550px;
 
   display: flex;
   align-items: center;
@@ -61,7 +61,7 @@ margin: 5px auto;
 
   overflow: hidden;
 
-  background: var(--color-surface-soft);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 
@@ -235,7 +235,7 @@ margin: 5px auto;
 
   color: var(--color-primary);
 
-  font-size: 26px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.25;
 
@@ -261,6 +261,11 @@ margin: 5px auto;
 }
 
 .category-name {
+  border-radius: 13.7px;
+  background-color: #93c06e;
+text-align: center;
+padding: 5px 10px;
+margin: 3px;
   color: var(--color-primary-light);
   font-weight: 600;
 }
@@ -282,7 +287,7 @@ margin: 5px auto;
 .product-description {
   display: -webkit-box;
 
-  margin: 0;
+  margin-bottom: 10px;
 
   color: var(--color-text-secondary);
 
@@ -299,7 +304,27 @@ margin: 5px auto;
   background: rgba(184, 138, 90, 0.08);
   overflow: hidden;
 }
+.product-data {
+  display: -webkit-box;
 
+  margin-bottom: 10px;
+
+  color: var(--color-text-secondary);
+
+  font-size: 13px;
+  line-height: 1.65;
+
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+ padding: 10px 12px;
+display: flex;
+justify-content: space-between;
+  border: 1px solid var(--color-accent-light);
+  border-radius: var(--radius-sm);
+
+  background: rgba(184, 138, 90, 0.08);
+  overflow: hidden;
+}
 
 /* ============================================================
    OFFER
@@ -310,7 +335,7 @@ margin: 5px auto;
   align-items: center;
   gap: 10px;
 
-  margin-top: 14px;
+  margin-bottom: 10px;
   padding: 10px 12px;
 
   border: 1px solid var(--color-accent-light);
@@ -373,7 +398,7 @@ margin: 5px auto;
   margin: 18px 0;
   padding-bottom: 14px;
 
-  border-bottom: 1px solid var(--color-border);
+
 }
 
 .current-price-wrapper,
@@ -766,11 +791,11 @@ margin: 5px auto;
   margin-bottom: 18px;
 }
 
-.quantity-section label {
+.product-description label {
   color: var(--color-primary);
 
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 .quantity-control {
@@ -1030,7 +1055,7 @@ margin: 5px auto;
   }
 
   .image-frame {
-    height: 280px;
+    height: 380px;
   }
 
   .product-details {
@@ -1069,7 +1094,7 @@ margin: 5px auto;
   }
 
   .image-frame {
-    height: 280px;
+    height: 380px;
 
     padding: 12px;
 

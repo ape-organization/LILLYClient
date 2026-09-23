@@ -1216,300 +1216,637 @@ left: 5px;
 }
 
 }
-
 /* ==========================================================
-TABLET
+   TABLET
 ========================================================== */
 
 @media (max-width: 1100px) {
 
-.checkout-grid {
-grid-template-columns: minmax(0, 1fr) 370px;
-gap: 20px;
+  .checkout-container {
+    width: 94%;
+  }
+
+  .checkout-grid {
+    grid-template-columns: minmax(0, 1fr) 370px;
+    gap: 20px;
+  }
+
+  .checkout-card {
+    padding: 21px;
+  }
+
+  .summary-products {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .summary-header,
+  .summary-row,
+  .summary-total {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .summary-product {
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .product-image {
+    width: 58px;
+    height: 72px;
+  }
+
+  .product-actions {
+    min-width: 62px;
+  }
+
 }
 
-.checkout-container {
-width: min(94%, 1000px);
-}
-
-.checkout-card {
-padding: 21px;
-}
-
-.summary-products {
-padding-left: 16px;
-padding-right: 16px;
-}
-
-.summary-header,
-.summary-row,
-.summary-total {
-padding-left: 18px;
-padding-right: 18px;
-}
-
-}
 
 /* ==========================================================
-TABLET / SMALL LAPTOP
+   SMALL LAPTOP / TABLET
 ========================================================== */
 
 @media (max-width: 900px) {
 
-.checkout-grid {
-grid-template-columns: 1fr;
+  .checkout-header {
+    padding-left: 4%;
+    padding-right: 4%;
+  }
+
+  .checkout-container {
+    width: 92%;
+    margin-top: 28px;
+  }
+
+  /*
+   * Stack the layout.
+   * Summary stays first so the customer sees
+   * the order before entering information.
+   */
+
+  .checkout-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .order-summary {
+    position: static;
+    order: 2;
+  }
+
+  .checkout-form-section {
+    order: 1;
+  }
+
+  /*
+   * Allow the summary to grow naturally.
+   */
+
+  .summary-products {
+    max-height: none;
+    overflow: visible;
+  }
+
+  /*
+   * Keep the form fields in two columns
+   * at this width.
+   */
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
 }
 
-.order-summary {
-position: static;
-order: 1;
-}
-
-.summary-products {
-max-height: none;
-}
-
-}
 
 /* ==========================================================
-MOBILE
+   MOBILE
 ========================================================== */
 
 @media (max-width: 650px) {
 
-.checkout-page {
-padding-bottom: 35px;
+  .checkout-page {
+    padding-bottom: 35px;
+    overflow-x: hidden;
+  }
+
+
+  /* --------------------------------------------------------
+     HEADER
+  -------------------------------------------------------- */
+
+  .checkout-header {
+    padding: 20px 5% 22px;
+  }
+
+  .back-button {
+    margin-bottom: 17px;
+    font-size: 12px;
+  }
+
+  .back-button mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+  }
+
+  .header-content {
+    gap: 11px;
+    align-items: center;
+  }
+
+  .header-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border-radius: 11px;
+  }
+
+  .header-icon mat-icon {
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
+  }
+
+  .header-text {
+    min-width: 0;
+  }
+
+  .header-text h1 {
+    font-size: 27px;
+    line-height: 1.15;
+  }
+
+  .header-text p {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+
+  /* --------------------------------------------------------
+     MAIN
+  -------------------------------------------------------- */
+
+  .checkout-container {
+    width: 92%;
+    margin-top: 20px;
+  }
+
+  .checkout-grid {
+    gap: 16px;
+  }
+
+
+  /* --------------------------------------------------------
+     FORM
+  -------------------------------------------------------- */
+
+  .checkout-form-section form {
+    gap: 16px;
+  }
+
+  .checkout-card {
+    padding: 18px;
+    border-radius: 13px;
+  }
+
+  .card-header {
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 17px;
+  }
+
+  .card-icon {
+    width: 37px;
+    height: 37px;
+    flex: 0 0 37px;
+    border-radius: 10px;
+  }
+
+  .card-icon mat-icon {
+    width: 19px;
+    height: 19px;
+    font-size: 19px;
+  }
+
+  .card-header h2 {
+    font-size: 18px;
+  }
+
+  .card-header p {
+    font-size: 10px;
+  }
+
+
+  /*
+   * Single-column form on phones.
+   */
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+
+
+  /* --------------------------------------------------------
+     INPUTS
+  -------------------------------------------------------- */
+
+  .input-wrapper input {
+    height: 46px;
+  }
+
+  .textarea-wrapper textarea {
+    min-height: 100px;
+  }
+
+  .form-field label {
+    font-size: 12px;
+  }
+
+
+  /* --------------------------------------------------------
+     PAYMENT
+  -------------------------------------------------------- */
+
+  .payment-option {
+    min-height: 76px;
+    padding: 13px;
+    gap: 10px;
+  }
+
+  .payment-icon {
+    width: 37px;
+    height: 37px;
+    flex: 0 0 37px;
+  }
+
+  .payment-icon mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+  .payment-content {
+    min-width: 0;
+  }
+
+  .payment-content h3 {
+    font-size: 12px;
+  }
+
+  .payment-content p {
+    font-size: 10px;
+  }
+
+
+  /* --------------------------------------------------------
+     ORDER SUMMARY
+  -------------------------------------------------------- */
+
+  .order-summary {
+    border-radius: 13px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .summary-header {
+    padding: 18px;
+  }
+
+  .summary-header h2 {
+    font-size: 18px;
+  }
+
+  .summary-header p {
+    font-size: 10px;
+  }
+
+  .summary-icon {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  .summary-icon mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+
+
+  /* --------------------------------------------------------
+     PRODUCTS
+  -------------------------------------------------------- */
+
+  .summary-products {
+    padding: 4px 15px;
+  }
+
+  .summary-product {
+    /*
+     * Two columns only.
+     * Actions move underneath product information.
+     */
+    grid-template-columns: 57px minmax(0, 1fr);
+    gap: 10px;
+    padding: 13px 0;
+  }
+
+  .product-image {
+    width: 57px;
+    height: 69px;
+  }
+
+  .product-info {
+    min-width: 0;
+  }
+
+  .product-info h3 {
+    font-size: 12px;
+    line-height: 1.4;
+
+    /*
+     * Important for long Arabic/English names.
+     */
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+
+  /* --------------------------------------------------------
+     VARIANTS
+  -------------------------------------------------------- */
+
+  .product-variants {
+    max-width: 100%;
+    gap: 4px;
+  }
+
+  .variant-chip {
+    max-width: 100%;
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+
+
+  /* --------------------------------------------------------
+     QUANTITY
+  -------------------------------------------------------- */
+
+  .product-quantity {
+    margin-top: 5px;
+    margin-bottom: 6px;
+  }
+
+  .quantity-control {
+    height: 24px;
+  }
+
+  .quantity-btn {
+    width: 24px;
+    height: 23px;
+  }
+
+  .quantity-value {
+    min-width: 24px;
+  }
+
+
+  /* --------------------------------------------------------
+     PRICING
+  -------------------------------------------------------- */
+
+  .product-pricing {
+    gap: 5px;
+  }
+
+  .new-price {
+    font-size: 11px;
+  }
+
+  .old-price {
+    font-size: 9px;
+  }
+
+
+  /* --------------------------------------------------------
+     ACTIONS
+  -------------------------------------------------------- */
+
+  .product-actions {
+    grid-column: 2;
+
+    width: 100%;
+    min-width: 0;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: -4px;
+  }
+
+  .product-subtotal {
+    font-size: 12px;
+  }
+
+  .remove-item {
+    width: 27px;
+    height: 27px;
+  }
+
+
+  /* --------------------------------------------------------
+     SUMMARY TOTALS
+  -------------------------------------------------------- */
+
+  .summary-divider {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+  .summary-row {
+    padding: 12px 17px;
+  }
+
+  .summary-total {
+    padding: 17px;
+  }
+
+  .summary-total span {
+    font-size: 13px;
+  }
+
+  .summary-total strong {
+    font-size: 18px;
+  }
+
+
+  /* --------------------------------------------------------
+     SECURE CHECKOUT
+  -------------------------------------------------------- */
+
+  .secure-checkout {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+
+
+  /* --------------------------------------------------------
+     PLACE ORDER
+  -------------------------------------------------------- */
+
+  .place-order-button {
+    min-height: 52px;
+  }
+
 }
 
-.checkout-header {
-padding: 22px 5% 23px;
-}
-
-.back-button {
-margin-bottom: 17px;
-}
-
-.header-content {
-gap: 11px;
-}
-
-.header-icon {
-width: 44px;
-height: 44px;
-
-border-radius: 11px;
-
-}
-
-.header-icon mat-icon {
-width: 22px;
-height: 22px;
-font-size: 22px;
-}
-
-.header-text h1 {
-font-size: 27px;
-}
-
-.header-text p {
-font-size: 11px;
-}
-
-.checkout-container {
-width: 92%;
-margin-top: 20px;
-}
-
-.checkout-form-section form {
-gap: 16px;
-}
-
-.checkout-card {
-padding: 18px;
-
-border-radius: 13px;
-
-}
-
-.card-header {
-margin-bottom: 18px;
-padding-bottom: 17px;
-}
-
-.card-header h2 {
-font-size: 18px;
-}
-
-.card-header p {
-font-size: 10px;
-}
-
-.card-icon {
-width: 37px;
-height: 37px;
-flex-basis: 37px;
-}
-
-.card-icon mat-icon {
-width: 19px;
-height: 19px;
-font-size: 19px;
-}
-
-.form-grid {
-grid-template-columns: 1fr;
-gap: 17px;
-}
-
-.full-width {
-grid-column: auto;
-}
-
-.order-summary {
-border-radius: 13px;
-}
-
-.summary-header {
-padding: 18px;
-}
-
-.summary-header h2 {
-font-size: 18px;
-}
-
-.summary-products {
-padding: 4px 15px;
-}
-
-.summary-product {
-grid-template-columns: 57px minmax(0, 1fr);
-gap: 10px;
-
-padding: 13px 0;
-
-}
-
-.product-image {
-width: 57px;
-height: 69px;
-}
-
-.product-actions {
-grid-column: 2;
-
-flex-direction: row;
-align-items: center;
-justify-content: space-between;
-
-min-width: 0;
-
-margin-top: -4px;
-
-}
-
-.product-subtotal {
-font-size: 12px;
-}
-
-.remove-item {
-width: 27px;
-height: 27px;
-}
-
-.summary-divider {
-margin: 0 15px;
-}
-
-.summary-row {
-padding: 12px 17px;
-}
-
-.summary-total {
-padding: 17px;
-}
-
-.summary-total strong {
-font-size: 18px;
-}
-
-.secure-checkout {
-margin-left: 15px;
-margin-right: 15px;
-}
-
-.payment-option {
-padding: 13px;
-}
-
-.payment-content h3 {
-font-size: 12px;
-}
-
-.payment-content p {
-font-size: 10px;
-}
-
-.place-order-button {
-min-height: 52px;
-}
-
-}
 
 /* ==========================================================
-VERY SMALL MOBILE
+   VERY SMALL MOBILE
 ========================================================== */
 
 @media (max-width: 420px) {
 
-.checkout-container {
-width: 94%;
-}
+  .checkout-header {
+    padding-left: 4%;
+    padding-right: 4%;
+  }
 
-.checkout-card {
-padding: 15px;
-}
+  .checkout-container {
+    width: 94%;
+  }
 
-.summary-product {
-grid-template-columns: 52px minmax(0, 1fr);
-}
 
-.product-image {
-width: 52px;
-height: 64px;
-}
+  /* --------------------------------------------------------
+     HEADER
+  -------------------------------------------------------- */
 
-.product-info h3 {
-font-size: 12px;
-}
+  .header-content {
+    gap: 9px;
+  }
 
-.variant-chip {
-font-size: 9px;
-padding: 3px 6px;
-}
+  .header-icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 10px;
+  }
 
-.product-quantity {
-font-size: 9px;
-}
+  .header-icon mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
 
-.quantity-control {
-height: 23px;
-}
+  .header-text h1 {
+    font-size: 24px;
+  }
 
-.quantity-btn {
-width: 23px;
-height: 22px;
-}
+  .header-text p {
+    font-size: 10px;
+  }
 
-.quantity-value {
-min-width: 23px;
-}
 
-.new-price {
-font-size: 11px;
-}
+  /* --------------------------------------------------------
+     CARDS
+  -------------------------------------------------------- */
 
-.old-price {
-font-size: 9px;
-}
+  .checkout-card {
+    padding: 15px;
+  }
+
+  .card-header h2 {
+    font-size: 17px;
+  }
+
+
+  /* --------------------------------------------------------
+     SUMMARY
+  -------------------------------------------------------- */
+
+  .summary-header {
+    padding: 16px;
+  }
+
+  .summary-products {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .summary-product {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .product-image {
+    width: 52px;
+    height: 64px;
+  }
+
+  .product-info h3 {
+    font-size: 11px;
+  }
+
+  .variant-chip {
+    font-size: 8px;
+    padding: 3px 5px;
+  }
+
+  .product-quantity {
+    font-size: 9px;
+  }
+
+  .quantity-control {
+    height: 23px;
+  }
+
+  .quantity-btn {
+    width: 23px;
+    height: 22px;
+  }
+
+  .quantity-value {
+    min-width: 23px;
+  }
+
+  .new-price {
+    font-size: 10px;
+  }
+
+  .old-price {
+    font-size: 8px;
+  }
+
+  .product-subtotal {
+    font-size: 11px;
+  }
+
+  .summary-row {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .summary-total {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .summary-total strong {
+    font-size: 17px;
+  }
+
+  .secure-checkout {
+    margin-left: 13px;
+    margin-right: 13px;
+  }
 
 }

@@ -5,8 +5,11 @@
 .container {
   width: 100%;
   max-width: 1380px;
-  margin: auto;
+
+  margin: 0 auto;
+
   padding: 45px 38px 75px;
+
   box-sizing: border-box;
 }
 
@@ -17,9 +20,14 @@
 
 .product-layout {
   display: grid;
+
   grid-template-columns: 240px minmax(0, 1fr);
+
   gap: 28px;
+
   align-items: start;
+
+  width: 100%;
 }
 
 
@@ -32,6 +40,7 @@
   top: 20px;
 
   width: 100%;
+  min-width: 0;
 }
 
 
@@ -40,6 +49,7 @@
    ========================================================== */
 
 .products-area {
+  width: 100%;
   min-width: 0;
 }
 
@@ -56,9 +66,11 @@
 
   align-items: center;
   justify-content: center;
+
   gap: 8px;
 
   margin-bottom: 14px;
+  padding: 0 15px;
 
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -73,10 +85,26 @@
   cursor: pointer;
 
   box-shadow: var(--shadow-sm);
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .mobile-filter-button mat-icon {
+  width: 20px;
+  height: 20px;
+
   color: var(--color-accent);
+
+  font-size: 20px;
+}
+
+.mobile-filter-button:hover {
+  border-color: var(--color-accent);
+
+  box-shadow: var(--shadow-md);
 }
 
 .filter-count {
@@ -89,12 +117,15 @@
 
   padding: 0 5px;
 
+  box-sizing: border-box;
+
   border-radius: 20px;
 
   background: var(--color-primary);
   color: var(--color-surface);
 
   font-size: 10px;
+  font-weight: 700;
 }
 
 
@@ -106,10 +137,15 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
   gap: 10px;
+
+  width: 100%;
 
   margin-bottom: 20px;
   padding: 11px 14px;
+
+  box-sizing: border-box;
 
   background: var(--color-surface);
 
@@ -119,10 +155,18 @@
   box-shadow: var(--shadow-sm);
 }
 
+
+/* ==========================================================
+   ACTIVE FILTER TITLE
+   ========================================================== */
+
 .active-filter-title {
   display: inline-flex;
   align-items: center;
+
   gap: 6px;
+
+  flex-shrink: 0;
 
   padding-right: 12px;
 
@@ -139,24 +183,43 @@
   height: 17px;
 
   color: var(--color-accent);
+
   font-size: 17px;
 }
+
+
+/* ==========================================================
+   ACTIVE FILTER LIST
+   ========================================================== */
 
 .active-filter-list {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+
   gap: 7px;
+
+  min-width: 0;
 }
+
+
+/* ==========================================================
+   FILTER CHIP
+   ========================================================== */
 
 .filter-chip {
   display: inline-flex;
   align-items: center;
+
   gap: 6px;
 
   min-height: 28px;
 
+  max-width: 100%;
+
   padding: 3px 5px 3px 9px;
+
+  box-sizing: border-box;
 
   background: var(--color-surface-soft);
 
@@ -166,15 +229,30 @@
   color: var(--color-text-secondary);
 
   font-size: 11px;
+
+  white-space: nowrap;
 }
 
 .filter-chip strong {
+  max-width: 180px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
   color: var(--color-primary);
+
   font-weight: 700;
 }
 
+
+/* ==========================================================
+   OFFER CHIP
+   ========================================================== */
+
 .offer-chip {
   color: var(--color-accent);
+
   border-color: var(--color-accent-light);
 }
 
@@ -184,12 +262,15 @@
 
   font-size: 15px;
 }
+
+
 /* ==========================================================
    SEARCH CHIP
    ========================================================== */
 
 .search-chip {
   color: var(--color-accent);
+
   border-color: var(--color-accent-light);
 }
 
@@ -207,9 +288,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+/* ==========================================================
+   REMOVE FILTER
+   ========================================================== */
+
 .remove-filter {
   width: 20px;
   height: 20px;
+
   min-width: 20px;
 
   display: flex;
@@ -225,6 +313,10 @@
   color: var(--color-text-secondary);
 
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .remove-filter mat-icon {
@@ -239,10 +331,19 @@
   color: var(--color-surface);
 }
 
-.clear-active-filters {
-  border: 0;
-  background: transparent;
 
+/* ==========================================================
+   CLEAR ACTIVE FILTERS
+   ========================================================== */
+
+.clear-active-filters {
+  height: 28px;
+
+  padding: 0 5px;
+
+  border: 0;
+
+  background: transparent;
   color: var(--color-accent);
 
   font-family: inherit;
@@ -250,6 +351,10 @@
   font-weight: 700;
 
   cursor: pointer;
+
+  white-space: nowrap;
+
+  transition: color 0.2s ease;
 }
 
 .clear-active-filters:hover {
@@ -264,10 +369,38 @@
 .product-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
-  gap: 10px;
+  gap: 20px;
+
+  width: 100%;
+
+  align-items: stretch;
+}
+
+
+/* ==========================================================
+   PRODUCT CARD HOST
+   ========================================================== */
+
+/*
+  Important:
+
+  This makes every Angular product-card component
+  fill its grid cell.
+
+  Combined with the flex layout inside
+  .product-card, cards in the same row stay equal height.
+*/
+
+.product-grid app-product-card {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+
+  box-sizing: border-box;
 }
 
 
@@ -350,6 +483,8 @@
 
   padding: 30px;
 
+  box-sizing: border-box;
+
   background: var(--color-surface);
 
   border: 1px solid var(--color-border);
@@ -384,6 +519,7 @@
   color: var(--color-primary);
 
   font-size: 18px;
+  font-weight: 700;
 }
 
 .no-products p {
@@ -417,29 +553,63 @@
   font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.show-all-button mat-icon {
+  width: 18px;
+  height: 18px;
+
+  font-size: 18px;
+}
+
+.show-all-button:hover {
+  border-color: var(--color-accent);
+
+  background: var(--color-primary);
+  color: var(--color-surface);
 }
 
 
 /* ==========================================================
-   RESPONSIVE
+   LARGE TABLET / SMALL DESKTOP
    ========================================================== */
 
 @media (max-width: 1200px) {
 
+  .container {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
   .product-layout {
     grid-template-columns: 220px minmax(0, 1fr);
+
     gap: 20px;
   }
 
   .product-grid {
-    grid-template-columns:
-      repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
   }
 
 }
 
 
+/* ==========================================================
+   TABLET
+   ========================================================== */
+
 @media (max-width: 900px) {
+
+  .container {
+    padding: 30px 20px 60px;
+  }
 
   .product-layout {
     display: block;
@@ -454,48 +624,130 @@
   }
 
   .product-grid {
-    grid-template-columns:
-      repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 16px;
   }
 
 }
 
 
+/* ==========================================================
+   SMALL TABLET / LARGE MOBILE
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+  .container {
+    padding: 25px 15px 50px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+  }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
 @media (max-width: 600px) {
 
   .container {
-    padding: 30px 24px 50px;
+    padding: 25px 12px 45px;
   }
 
   .active-filters {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 8px;
+
     padding: 10px;
   }
 
   .active-filter-title {
     width: 100%;
 
-    padding-right: 0;
-    padding-bottom: 7px;
+    padding: 0 0 8px;
 
     border-right: 0;
     border-bottom: 1px solid var(--color-border-light);
   }
 
+  .active-filter-list {
+    width: 100%;
+  }
+
+  .filter-chip strong {
+    max-width: 140px;
+  }
+
+  .search-chip strong {
+    max-width: 160px;
+  }
+
   .product-grid {
-    gap: 3px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
   }
 
 }
 
 
-@media (max-width: 400px) {
+/* ==========================================================
+   SMALL MOBILE
+   ========================================================== */
 
- /*  .product-grid {
-    gap: 13px;
-  } */
-  .product-grid {
-    gap: 13px;
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+@media (max-width: 450px) {
+
+  .container {
+    padding: 20px 10px 40px;
   }
+
+  .mobile-filter-button {
+    height: 44px;
+
+    margin-bottom: 12px;
+  }
+
+  .active-filters {
+    margin-bottom: 16px;
+  }
+
+  .product-grid {
+    gap: 10px;
+  }
+
+  .filter-chip strong {
+    max-width: 120px;
+  }
+
+  .search-chip strong {
+    max-width: 140px;
+  }
+
+}
+
+
+/* ==========================================================
+   VERY SMALL MOBILE
+   ========================================================== */
+
+@media (max-width: 360px) {
+
+  .container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .product-grid {
+    gap: 8px;
+  }
+
 }

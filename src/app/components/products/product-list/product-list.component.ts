@@ -1545,35 +1545,48 @@ onWindowScroll(): void {
   }
 
 
-  // ========================================================
+  // =====================================================
   // ADD TO CART
-  // ========================================================
+  // =====================================================
 
-  addToCart(
-    product: Product
-  ): void {
+  addToCart(product: Product): void {
+console.log(product)
+     if (product.hasVariants) {
+       this.openProductDetails(
+      product
+    );
+    return
+     }
+    const alreadyExists =
+      this.cartService.addToCart(product);
 
-var hasVariant=product.hasVariants
 
- 
+    // ---------------------------------------------------
+    // PRODUCT ALREADY EXISTS
+    // ---------------------------------------------------
 
-    if (!hasVariant) {
+    if (!alreadyExists) {
 
-      this.addProductDirectlyToCart(
-        product
+      // Remove check mark
+      this.addedToCartProductId.set(null);
+
+      this.showAlreadyInCartMessage(
+        product.id
       );
 
       return;
     }
 
 
-    // ======================================================
-    // HAS SIZE OR HEEL SIZE
-    // → OPEN MODAL
-    // ======================================================
+    // ---------------------------------------------------
+    // PRODUCT ADDED SUCCESSFULLY
+    // ---------------------------------------------------
 
-    this.openProductModal(
-      product
+    // Remove already-in-cart message
+    this.alreadyInCartProductId.set(null);
+
+    this.showAddedToCartSuccess(
+      product.id
     );
   }
 
@@ -1621,67 +1634,6 @@ var hasVariant=product.hasVariants
     this.showAddedToCartSuccess(
       product.id
     );
-  }
-
-
-  // ========================================================
-  // OPEN PRODUCT MODAL
-  // ========================================================
-
-  private openProductModal(
-    product: Product
-  ): void {
-
-    const dialogRef =
-      this.dialog.open(
-        ProductModalComponent,
-        {
-
-          width: '800px',
-
-          maxWidth: '95vw',
-
-          maxHeight: '90vh',
-
-          data: product,
-
-          disableClose: false
-
-        }
-      );
-
-
-    // ======================================================
-    // MODAL CLOSED
-    // ======================================================
-
-    dialogRef.afterClosed()
-      .pipe(
-        takeUntilDestroyed(
-          this.destroyRef
-        )
-      )
-      .subscribe(
-        result => {
-
-          // User closed modal
-          // without adding anything.
-
-          if (!result) {
-            return;
-          }
-
-
-          // ------------------------------------------------
-          // MODAL RETURNS PRODUCT
-          // ------------------------------------------------
-
-          this.addSelectedProductToCart(
-            result
-          );
-
-        }
-      );
   }
 
 

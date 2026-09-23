@@ -1,9 +1,5 @@
+
 <div class="product-filters">
-
-
-  <!-- ====================================================
-       MOBILE HEADER
-       ==================================================== -->
 
   <div class="mobile-filter-header">
 
@@ -22,13 +18,6 @@
   </div>
 
 
- 
-
-
-  <!-- ====================================================
-       CATEGORY
-       ==================================================== -->
-
   <div class="filter-section">
 
     <label>
@@ -42,14 +31,16 @@
 
       <mat-select
         [(ngModel)]="tempCategoryId"
-        (ngModelChange)="onCategoryChange()"
         panelClass="product-filter-select-panel"
       >
 
-        <mat-option [value]="null">
+        <!-- DEFAULT -->
+        <mat-option value="all">
           {{ 'FILTER.All_Categories' | translate }}
         </mat-option>
 
+
+        <!-- CATEGORIES -->
         <mat-option
           *ngFor="let category of categories"
           [value]="category.id"
@@ -64,11 +55,6 @@
   </div>
 
 
-
-  <!-- ====================================================
-       OFFERS
-       ==================================================== -->
-
   <label class="offer-filter">
 
     <input
@@ -82,10 +68,6 @@
 
   </label>
 
-
-  <!-- ====================================================
-       ACTIONS
-       ==================================================== -->
 
   <div class="filter-actions">
 

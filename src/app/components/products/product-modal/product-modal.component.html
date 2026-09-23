@@ -110,33 +110,72 @@
            HEADER
            ====================================================== -->
 
-      <div class="details-header">
-
-        <span
+      <div class="product-data">
+<div>
+ <span
           class="product-brand"
           *ngIf="getCategoryName()"
         >
           {{ getCategoryName() }}
         </span>
 
-        <h2 class="product-name">
+        <h4 class="product-name">
           {{ getProductName() }}
-        </h2>
+        </h4>
+
+</div>
+  <!-- ======================================================
+           PRICE
+           ====================================================== -->
+
+      <div class="price-section">
+
+        <div class="current-price-wrapper">
+
+          <span class="price">
+            {{ newPrice | number:'1.0-2' }}
+          </span>
+
+          <span class="currency">
+            {{ 'COMMON.EGP' | translate }}
+          </span>
+
+        </div>
 
         <div
-          class="product-location"
+          class="old-price-wrapper"
+          *ngIf="hasDiscount"
+        >
+
+          <span class="old-price">
+            {{ oldPrice | number:'1.0-2' }}
+          </span>
+
+          <span class="old-currency">
+            {{ 'COMMON.EGP' | translate }}
+          </span>
+
+        </div>
+
+      </div>
+       
+       
+
+<!--         <div class="title-line"></div>
+ -->
+      </div>
+
+<div
+          class="product-description"
           *ngIf="getCategoryName()"
         >
+          <label for="quantity">
+          {{ 'PRODUCT.CATEGORY' | translate }}
+        </label>
           <span class="category-name">
             {{ getCategoryName() }}
           </span>
         </div>
-
-        <div class="title-line"></div>
-
-      </div>
-
-
       <!-- ======================================================
            DESCRIPTION
            ====================================================== -->
@@ -178,40 +217,7 @@
       </div>
 
 
-      <!-- ======================================================
-           PRICE
-           ====================================================== -->
-
-      <div class="price-section">
-
-        <div class="current-price-wrapper">
-
-          <span class="price">
-            {{ newPrice | number:'1.0-2' }}
-          </span>
-
-          <span class="currency">
-            {{ 'COMMON.EGP' | translate }}
-          </span>
-
-        </div>
-
-        <div
-          class="old-price-wrapper"
-          *ngIf="hasDiscount"
-        >
-
-          <span class="old-price">
-            {{ oldPrice | number:'1.0-2' }}
-          </span>
-
-          <span class="old-currency">
-            {{ 'COMMON.EGP' | translate }}
-          </span>
-
-        </div>
-
-      </div>
+    
 
 
       <!-- ======================================================
@@ -478,16 +484,16 @@
            ====================================================== -->
 
       <div
-        class="quantity-section"
+        class="product-description"
         *ngIf="
           !isOutOfStock &&
           !requiresVariantSelection
         "
       >
 
-        <label for="quantity">
+        <!-- <label for="quantity">
           {{ 'PRODUCT.QUANTITY' | translate }}
-        </label>
+        </label> -->
 
         <div class="quantity-control">
 
@@ -552,7 +558,7 @@
         </div>
 
       </div>
-
+ 
 
       <!-- ======================================================
            ACTIONS

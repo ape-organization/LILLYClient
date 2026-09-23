@@ -43,7 +43,20 @@
 
   <!-- ====================================================== -->
 
-@if (cartItems.length === 0) {
+@if (!isCartInitialized) {
+
+  <section class="checkout-loading">
+
+    <mat-spinner diameter="40"></mat-spinner>
+
+    <p>
+      {{ 'CHECKOUT.LOADING_CART' | translate }}
+    </p>
+
+  </section>
+
+}
+@else if (cartItems.length === 0) {
 
 <section class="empty-checkout">
 
@@ -78,7 +91,7 @@
 
   <!-- ====================================================== -->
 
-@if (cartItems.length > 0) {
+@if (isCartInitialized && cartItems.length > 0) {
 
 <main class="checkout-container">
 
@@ -464,7 +477,7 @@
       <!-- PRODUCTS -->
       <!-- ============================================== -->
 
-      @if (cartItems.length > 0) {
+      @if (isCartInitialized && cartItems.length > 0) {
 
         <div class="summary-products">
 
@@ -726,7 +739,7 @@
         <!-- ============================================== -->
 
         <button
-          type="submit"
+          type="button"
           (click)="placeOrder()"
           class="place-order-button"
           [disabled]="isSubmitting() || checkoutForm.invalid || cartItems.length === 0"

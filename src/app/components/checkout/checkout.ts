@@ -3,6 +3,7 @@ import {
 } from '@angular/common';
 
 import {
+  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
@@ -40,9 +41,9 @@ import {
 
 import {
   Subject,
+  combineLatest,
   debounceTime,
   distinctUntilChanged,
-  filter,
   takeUntil
 } from 'rxjs';
 
@@ -104,7 +105,7 @@ import {
 export class CheckoutComponent
   implements OnInit, OnDestroy {
 
-
+private readonly cdr = inject(ChangeDetectorRef);
   // =========================================================
   // SERVICES
   // =========================================================
@@ -159,6 +160,10 @@ export class CheckoutComponent
 
   cartItems: CartItem[] = [];
 
+  isCartInitialized = false;
+
+  isCartLoading = false;
+
 
   // =========================================================
   // FORM
@@ -212,6 +217,7 @@ export class CheckoutComponent
     this.subscribeToCart();
 
     this.setupPhoneLookup();
+
   }
 
 
@@ -224,6 +230,7 @@ export class CheckoutComponent
     this.destroy$.next();
 
     this.destroy$.complete();
+
   }
 
 
@@ -231,18 +238,42 @@ export class CheckoutComponent
   // CART SUBSCRIPTION
   // =========================================================
 
-  private subscribeToCart(): void {
+private subscribeToCart(): void {
 
-    this.cartService.cartItems$
-      .pipe(
-        takeUntil(this.destroy$)
-      )
-      .subscribe(items => {
+  combineLatest([
+    this.cartService.cartItems$,
+    this.cartService.cartInitialized$,
+    this.cartService.cartLoading$
+  ])
+
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+
+    .subscribe(
+      ([items, initialized, loading]) => {
 
         this.cartItems = items ?? [];
 
-      });
-  }
+        this.isCartInitialized = initialized;
+
+        this.isCartLoading = loading;
+
+        console.log(
+          '[Checkout] Cart state:',
+          {
+            items: this.cartItems,
+            initialized: this.isCartInitialized,
+            loading: this.isCartLoading
+          }
+        );
+
+        this.cdr.detectChanges();
+
+      }
+    );
+
+}
 
 
   // =========================================================
@@ -253,9 +284,13 @@ export class CheckoutComponent
 
     return this.cartItems.reduce(
       (total, item) =>
-        total + Number(item.quantity || 0),
+        total +
+        Number(
+          item.quantity || 0
+        ),
       0
     );
+
   }
 
 
@@ -268,11 +303,14 @@ export class CheckoutComponent
     const total =
       this.cartItems.reduce(
         (sum, item) =>
-          sum + this.getItemSubtotal(item),
+          sum +
+          this.getItemSubtotal(item),
         0
       );
 
+
     return this.roundPrice(total);
+
   }
 
 
@@ -282,17 +320,10 @@ export class CheckoutComponent
 
   get total(): number {
 
-    /*
-     * Delivery is currently free,
-     * therefore total = subtotal.
-     *
-     * If delivery charges are added later,
-     * calculate them here.
-     */
-
     return this.roundPrice(
       this.subtotal
     );
+
   }
 
 
@@ -305,7 +336,9 @@ export class CheckoutComponent
     const phoneControl =
       this.checkoutForm.controls.phone;
 
+
     phoneControl.valueChanges
+
       .pipe(
 
         debounceTime(400),
@@ -315,41 +348,40 @@ export class CheckoutComponent
         takeUntil(this.destroy$)
 
       )
+
       .subscribe(phone => {
 
         const normalizedPhone =
           phone.trim();
 
 
-        /*
-         * Do not search while the phone
-         * number is still too short.
-         */
-
         if (
           normalizedPhone.length < 7
         ) {
 
-          this.isSearchingClient.set(false);
+          this.isSearchingClient.set(
+            false
+          );
 
-          this.clientFound.set(false);
+          this.clientFound.set(
+            false
+          );
 
           return;
         }
 
 
-        /*
-         * Do not search if the phone
-         * control itself is invalid.
-         */
-
         if (
           phoneControl.errors?.['pattern']
         ) {
 
-          this.isSearchingClient.set(false);
+          this.isSearchingClient.set(
+            false
+          );
 
-          this.clientFound.set(false);
+          this.clientFound.set(
+            false
+          );
 
           return;
         }
@@ -360,6 +392,7 @@ export class CheckoutComponent
         );
 
       });
+
   }
 
 
@@ -371,9 +404,13 @@ export class CheckoutComponent
     phone: string
   ): void {
 
-    this.isSearchingClient.set(true);
+    this.isSearchingClient.set(
+      true
+    );
 
-    this.clientFound.set(false);
+    this.clientFound.set(
+      false
+    );
 
 
     this.clientService
@@ -387,20 +424,17 @@ export class CheckoutComponent
 
         next: client => {
 
-          this.isSearchingClient.set(false);
+          this.isSearchingClient.set(
+            false
+          );
 
-
-          /*
-           * No client found.
-           *
-           * Clear the old client information
-           * so information from another phone
-           * is never submitted accidentally.
-           */
 
           if (!client) {
 
-            this.clientFound.set(false);
+            this.clientFound.set(
+              false
+            );
+
 
             this.checkoutForm.patchValue(
               {
@@ -413,15 +447,14 @@ export class CheckoutComponent
               }
             );
 
+
             return;
           }
 
 
-          /*
-           * Existing client found.
-           */
-
-          this.clientFound.set(true);
+          this.clientFound.set(
+            true
+          );
 
 
           this.checkoutForm.patchValue(
@@ -452,13 +485,19 @@ export class CheckoutComponent
             error
           );
 
-          this.isSearchingClient.set(false);
 
-          this.clientFound.set(false);
+          this.isSearchingClient.set(
+            false
+          );
+
+          this.clientFound.set(
+            false
+          );
 
         }
 
       });
+
   }
 
 
@@ -471,6 +510,7 @@ export class CheckoutComponent
     this.router.navigate([
       '/cart'
     ]);
+
   }
 
 
@@ -484,6 +524,7 @@ export class CheckoutComponent
 
     const product =
       item?.product;
+
 
     if (!product) {
       return '';
@@ -508,6 +549,7 @@ export class CheckoutComponent
       product.nameAr?.trim() ||
       ''
     );
+
   }
 
 
@@ -523,21 +565,6 @@ export class CheckoutComponent
       return '';
     }
 
-
-    /*
-     * Use any here intentionally because
-     * your API has had both nested and
-     * flattened variant responses.
-     *
-     * Supported:
-     *
-     * variant.size.name
-     * variant.size.nameAr
-     * variant.size.nameEn
-     *
-     * variant.sizeName
-     * variant.sizeValue
-     */
 
     const v =
       variant as any;
@@ -558,6 +585,7 @@ export class CheckoutComponent
             ?.toString()
             .trim();
 
+
         if (arabicName) {
           return arabicName;
         }
@@ -570,6 +598,7 @@ export class CheckoutComponent
           ?.toString()
           .trim();
 
+
       if (englishName) {
         return englishName;
       }
@@ -579,6 +608,7 @@ export class CheckoutComponent
         nestedSize.name
           ?.toString()
           .trim();
+
 
       if (normalName) {
         return normalName;
@@ -590,16 +620,13 @@ export class CheckoutComponent
           ?.toString()
           .trim();
 
+
       if (value) {
         return value;
       }
 
     }
 
-
-    /*
-     * Flattened API response.
-     */
 
     if (
       this.languageService.isArabic()
@@ -609,6 +636,7 @@ export class CheckoutComponent
         v.sizeNameAr
           ?.toString()
           .trim();
+
 
       if (arabicName) {
         return arabicName;
@@ -622,6 +650,7 @@ export class CheckoutComponent
         ?.toString()
         .trim();
 
+
     if (sizeName) {
       return sizeName;
     }
@@ -631,6 +660,7 @@ export class CheckoutComponent
       v.sizeValue
         ?.toString()
         .trim();
+
 
     if (sizeValue) {
       return sizeValue;
@@ -652,6 +682,7 @@ export class CheckoutComponent
     return this.getSizeName(
       item?.variant
     ).length > 0;
+
   }
 
 
@@ -667,18 +698,6 @@ export class CheckoutComponent
       return '';
     }
 
-
-    /*
-     * Supports both:
-     *
-     * variant.heelSize.name
-     *
-     * variant.heelSize.nameAr
-     * variant.heelSize.nameEn
-     *
-     * variant.heelSizeName
-     * variant.heelSizeValue
-     */
 
     const v =
       variant as any;
@@ -699,6 +718,7 @@ export class CheckoutComponent
             ?.toString()
             .trim();
 
+
         if (arabicName) {
           return arabicName;
         }
@@ -711,6 +731,7 @@ export class CheckoutComponent
           ?.toString()
           .trim();
 
+
       if (englishName) {
         return englishName;
       }
@@ -720,6 +741,7 @@ export class CheckoutComponent
         nestedHeelSize.name
           ?.toString()
           .trim();
+
 
       if (normalName) {
         return normalName;
@@ -731,16 +753,13 @@ export class CheckoutComponent
           ?.toString()
           .trim();
 
+
       if (value) {
         return value;
       }
 
     }
 
-
-    /*
-     * Flattened API response.
-     */
 
     if (
       this.languageService.isArabic()
@@ -750,6 +769,7 @@ export class CheckoutComponent
         v.heelSizeNameAr
           ?.toString()
           .trim();
+
 
       if (arabicName) {
         return arabicName;
@@ -763,6 +783,7 @@ export class CheckoutComponent
         ?.toString()
         .trim();
 
+
     if (heelSizeName) {
       return heelSizeName;
     }
@@ -772,6 +793,7 @@ export class CheckoutComponent
       v.heelSizeValue
         ?.toString()
         .trim();
+
 
     if (heelValue) {
       return heelValue;
@@ -793,6 +815,7 @@ export class CheckoutComponent
     return this.getHeelSizeName(
       item?.variant
     ).length > 0;
+
   }
 
 
@@ -805,6 +828,7 @@ export class CheckoutComponent
   ): boolean {
 
     return !!item?.variant;
+
   }
 
 
@@ -819,6 +843,7 @@ export class CheckoutComponent
     return Number(
       product?.discountPercentage ?? 0
     ) > 0;
+
   }
 
 
@@ -833,11 +858,12 @@ export class CheckoutComponent
     return Number(
       product?.discountPercentage ?? 0
     );
+
   }
 
 
   // =========================================================
-  // DISCOUNTED / FINAL PRICE
+  // DISCOUNTED PRICE
   // =========================================================
 
   getDiscountedPrice(
@@ -852,6 +878,7 @@ export class CheckoutComponent
     return this.cartService.getFinalPrice(
       item.product
     );
+
   }
 
 
@@ -873,11 +900,12 @@ export class CheckoutComponent
         item
       )
     );
+
   }
 
 
   // =========================================================
-  // FIRST PRODUCT IMAGE
+  // FIRST IMAGE
   // =========================================================
 
   getFirstImage(
@@ -891,10 +919,12 @@ export class CheckoutComponent
 
     const images =
       [...(product.images ?? [])]
+
         .filter(
           image =>
             !!image?.imageUrl
         )
+
         .sort(
           (a, b) =>
             (a.sortOrder ?? 0) -
@@ -906,6 +936,7 @@ export class CheckoutComponent
       images[0]?.imageUrl ??
       null
     );
+
   }
 
 
@@ -914,12 +945,14 @@ export class CheckoutComponent
   // =========================================================
 
   getImageUrl(
-    imageUrl: string | null | undefined
+    imageUrl:
+      string | null | undefined
   ): string {
 
     if (!imageUrl) {
 
       return 'assets/images/product-placeholder.png';
+
     }
 
 
@@ -930,6 +963,7 @@ export class CheckoutComponent
     if (!normalizedUrl) {
 
       return 'assets/images/product-placeholder.png';
+
     }
 
 
@@ -943,14 +977,9 @@ export class CheckoutComponent
     ) {
 
       return normalizedUrl;
+
     }
 
-
-    /*
-     * Prevent:
-     *
-     * https://domain.com//uploads/...
-     */
 
     const baseUrl =
       environment.imageApiBaseUrl
@@ -967,7 +996,7 @@ export class CheckoutComponent
 
 
   // =========================================================
-  // INCREASE QUANTITY
+  // INCREASE
   // =========================================================
 
   increaseQuantity(
@@ -980,17 +1009,15 @@ export class CheckoutComponent
 
 
     this.cartService.increaseQuantity(
-
       item.product.id,
-
       item.variant?.id
-
     );
+
   }
 
 
   // =========================================================
-  // DECREASE QUANTITY
+  // DECREASE
   // =========================================================
 
   decreaseQuantity(
@@ -1007,17 +1034,15 @@ export class CheckoutComponent
 
 
     this.cartService.decreaseQuantity(
-
       item.product.id,
-
       item.variant?.id
-
     );
+
   }
 
 
   // =========================================================
-  // REMOVE ITEM
+  // REMOVE
   // =========================================================
 
   removeItem(
@@ -1030,17 +1055,15 @@ export class CheckoutComponent
 
 
     this.cartService.removeFromCart(
-
       item.product.id,
-
       item.variant?.id
-
     );
+
   }
 
 
   // =========================================================
-  // TRACK CART ITEM
+  // TRACK
   // =========================================================
 
   trackCartItem(
@@ -1052,6 +1075,7 @@ export class CheckoutComponent
       item.product.id,
       item.variant?.id ?? 'default'
     ].join('-');
+
   }
 
 
@@ -1061,18 +1085,25 @@ export class CheckoutComponent
 
   placeOrder(): void {
 
-    /*
-     * Prevent double submission.
-     */
-
     if (this.isSubmitting()) {
       return;
     }
 
 
     /*
-     * Cart must contain items.
+     * DO NOT allow checkout while the cart
+     * is still being restored.
      */
+
+    if (!this.isCartInitialized) {
+
+      console.log(
+        '[Checkout] Cart is still initializing'
+      );
+
+      return;
+    }
+
 
     if (
       this.cartItems.length === 0
@@ -1086,10 +1117,6 @@ export class CheckoutComponent
     }
 
 
-    /*
-     * Validate form.
-     */
-
     if (
       this.checkoutForm.invalid
     ) {
@@ -1099,11 +1126,6 @@ export class CheckoutComponent
       return;
     }
 
-
-    /*
-     * Make sure client lookup
-     * is finished before submitting.
-     */
 
     if (
       this.isSearchingClient()
@@ -1116,13 +1138,6 @@ export class CheckoutComponent
     const form =
       this.checkoutForm.getRawValue();
 
-
-    /*
-     * Get the cart items prepared
-     * by CartService.
-     *
-     * This preserves variantId.
-     */
 
     const items =
       this.cartService.getOrderItems();
@@ -1140,17 +1155,6 @@ export class CheckoutComponent
       return;
     }
 
-
-    /*
-     * Build request.
-     *
-     * IMPORTANT:
-     *
-     * Do NOT send prices from Angular.
-     *
-     * The backend must calculate the
-     * final price from the database.
-     */
 
     const request = {
 
@@ -1183,7 +1187,9 @@ export class CheckoutComponent
     );
 
 
-    this.isSubmitting.set(true);
+    this.isSubmitting.set(
+      true
+    );
 
 
     this.orderService
@@ -1203,7 +1209,9 @@ export class CheckoutComponent
           );
 
 
-          this.isSubmitting.set(false);
+          this.isSubmitting.set(
+            false
+          );
 
 
           this.handleSuccessfulOrder();
@@ -1219,13 +1227,10 @@ export class CheckoutComponent
           );
 
 
-          this.isSubmitting.set(false);
+          this.isSubmitting.set(
+            false
+          );
 
-
-          /*
-           * Try to extract a useful
-           * backend error message.
-           */
 
           const message =
             this.extractErrorMessage(
@@ -1240,11 +1245,12 @@ export class CheckoutComponent
         }
 
       });
+
   }
 
 
   // =========================================================
-  // EXTRACT ERROR MESSAGE
+  // ERROR MESSAGE
   // =========================================================
 
   private extractErrorMessage(
@@ -1252,10 +1258,12 @@ export class CheckoutComponent
   ): string {
 
     if (
-      typeof error?.error === 'string'
+      typeof error?.error ===
+      'string'
     ) {
 
       return error.error;
+
     }
 
 
@@ -1264,6 +1272,7 @@ export class CheckoutComponent
     ) {
 
       return error.error.message;
+
     }
 
 
@@ -1272,6 +1281,7 @@ export class CheckoutComponent
     ) {
 
       return error.error.title;
+
     }
 
 
@@ -1280,6 +1290,7 @@ export class CheckoutComponent
     ) {
 
       return error.message;
+
     }
 
 
@@ -1293,11 +1304,6 @@ export class CheckoutComponent
 
   private handleSuccessfulOrder(): void {
 
-    /*
-     * Clear cart only after the backend
-     * successfully creates the order.
-     */
-
     this.cartService.clearCart();
 
 
@@ -1305,6 +1311,7 @@ export class CheckoutComponent
       this.dialog.open(
         NotifyMessage,
         {
+
           width: '400px',
 
           disableClose: true,
@@ -1318,6 +1325,7 @@ export class CheckoutComponent
               'ORDER.SUCCESSORDER'
 
           }
+
         }
       );
 
@@ -1336,6 +1344,7 @@ export class CheckoutComponent
         ]);
 
       });
+
   }
 
 
@@ -1350,6 +1359,7 @@ export class CheckoutComponent
     this.dialog.open(
       NotifyMessage,
       {
+
         width: '400px',
 
         data: {
@@ -1360,8 +1370,10 @@ export class CheckoutComponent
           message
 
         }
+
       }
     );
+
   }
 
 
@@ -1387,6 +1399,7 @@ export class CheckoutComponent
         control.touched
       )
     );
+
   }
 
 
@@ -1404,6 +1417,7 @@ export class CheckoutComponent
         Number.EPSILON
       ) * 100
     ) / 100;
+
   }
 
 }

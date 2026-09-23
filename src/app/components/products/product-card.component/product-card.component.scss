@@ -1,29 +1,15 @@
-/* ============================================================
-   PRODUCT CARD FONT
-   ============================================================ */
-
-/*
-.product-card,
-.product-card .discount-badge,
-.product-card .stock-badge,
-.product-card .already-in-cart-message,
-.product-card .product-name,
-.product-card .old-price,
-.product-card .current-price,
-.product-card button {
-  font-family: Cursive !important;
-}
-*/
-
-
-/* ============================================================
+ /* ============================================================
    PRODUCT CARD HOST
    ============================================================ */
 
 :host {
   display: block;
+
   width: 100%;
+  height: 100%;
+
   min-width: 0;
+
   box-sizing: border-box;
 }
 
@@ -33,20 +19,24 @@
    ============================================================ */
 
 .product-card {
+  position: relative;
+
   width: 100%;
+  height: 100%;
+
   min-width: 0;
+
+  display: flex;
+  flex-direction: column;
 
   box-sizing: border-box;
 
- // border-radius: 10px;
-
-  position: relative;
+  overflow: hidden;
 
   cursor: pointer;
 
-  overflow: hidden;
-
   background: var(--color-background);
+
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -70,7 +60,10 @@
   position: relative;
 
   width: 100%;
+
   aspect-ratio: 1 / 1;
+
+  flex-shrink: 0;
 
   overflow: hidden;
 
@@ -122,10 +115,6 @@
 
   opacity: 0;
 
-  /*
-   * Starts slightly zoomed in.
-   * On hover it smoothly settles to normal size.
-   */
   transform: scale(1.035);
 }
 
@@ -148,7 +137,7 @@
 
 
 /* ============================================================
-   DISCOUNT / STOCK
+   DISCOUNT / STOCK BADGES
    ============================================================ */
 
 .discount-badge,
@@ -165,6 +154,8 @@
 
   font-size: 12px;
   font-weight: 600;
+
+  line-height: 1.2;
 }
 
 .discount-badge {
@@ -202,15 +193,13 @@
   height: 38px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   padding: 0;
 
   border: none;
-
-  border-radius: 5%;
+  border-radius: 5px;
 
   background: var(--color-surface);
 
@@ -221,7 +210,6 @@
     scale(0.8);
 
   opacity: 0;
-
   visibility: hidden;
 
   cursor: pointer;
@@ -230,14 +218,15 @@
     opacity 0.25s ease,
     visibility 0.25s ease,
     transform 0.25s ease,
-    background 0.2s ease;
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .add-cart-button mat-icon {
-  margin: 0;
-
   width: 22px;
   height: 22px;
+
+  margin: 0;
 
   font-size: 22px;
 }
@@ -282,8 +271,6 @@
   top: calc(70% + 25px);
   left: 50%;
 
-  transform: translateX(-50%);
-
   z-index: 7;
 
   width: max-content;
@@ -292,6 +279,8 @@
 
   padding: 5px 9px;
 
+  box-sizing: border-box;
+
   border-radius: 5px;
 
   background: var(--color-surface-soft);
@@ -299,15 +288,14 @@
   color: var(--color-primary-light);
 
   font-size: 11px;
-
   font-weight: 600;
 
   line-height: 1.3;
 
   text-align: center;
 
-  /* Allow the box to fit the text and wrap if necessary */
   white-space: normal;
+
   overflow-wrap: break-word;
 
   pointer-events: none;
@@ -315,13 +303,31 @@
 
 
 /* ============================================================
-   CONTENT
+   PRODUCT CONTENT
    ============================================================ */
 
 .product-content {
+  width: 100%;
+
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
   padding: 12px 4px 14px;
 
   box-sizing: border-box;
+}
+
+
+/* ============================================================
+   PRODUCT BRAND
+   ============================================================ */
+
+.product-brand {
+  flex-shrink: 0;
 }
 
 
@@ -332,16 +338,21 @@
 .product-name {
   margin: 0 0 8px;
 
+  min-height: 42px;
+  max-height: 42px;
+
+  flex-shrink: 0;
+
   color: var(--color-primary);
 
   font-size: 15px;
-
   font-weight: 600;
+
+  line-height: 1.4;
 
   display: -webkit-box;
 
   -webkit-line-clamp: 2;
-
   -webkit-box-orient: vertical;
 
   overflow: hidden;
@@ -354,12 +365,15 @@
 
 .product-price {
   display: flex;
-
   align-items: center;
 
   gap: 8px;
 
   min-width: 0;
+
+  margin-bottom: 12px;
+
+  flex-shrink: 0;
 }
 
 .old-price {
@@ -374,67 +388,25 @@
   color: var(--color-accent);
 
   font-size: 17px;
-
   font-weight: 700;
 }
 
 
 /* ============================================================
-   MOBILE / TABLET
+   ADD TO CART WRAPPER
    ============================================================ */
 
-@media (max-width: 768px) {
+/*
+  If .addToCart is the wrapper around the button/message,
+  this pushes it to the bottom of the card.
 
-  .product-card {
-    background-color: var(--color-surface);
-  }
+  Keep this only if your HTML contains .addToCart.
+*/
 
+.addToCart {
+  margin-top: auto;
 
-  /* Remove desktop card hover */
-
-  .product-card:hover {
-    transform: none;
-
-    box-shadow: none;
-  }
-
-
-  /* Disable image transition on touch devices */
-
-  .product-card:hover .product-image-main {
-    opacity: 1;
-
-    transform: none;
-  }
-
-  .product-card:hover .product-image-hover {
-    opacity: 0;
-
-    transform: none;
-  }
-
-  .product-card:hover .product-image img {
-    transform: none;
-  }
-
-
-  /* Add cart always visible */
-
-  .add-cart-button {
-    opacity: 1;
-
-    visibility: visible;
-
-    transform:
-      translate(-50%, -50%)
-      scale(1);
-  }
-
-  .add-cart-button:hover:not(:disabled) {
-    transform:
-      translate(-50%, -50%)
-      scale(1);
-  }
+  flex-shrink: 0;
 }
 
 
@@ -478,7 +450,6 @@
 
 .added-check-icon {
   width: 23px !important;
-
   height: 23px !important;
 
   font-size: 23px !important;
@@ -512,5 +483,174 @@
     opacity: 1;
 
     transform: scale(1);
+  }
+}
+
+
+/* ============================================================
+   MOBILE / TABLET
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+  .product-card {
+    background-color: var(--color-surface);
+  }
+
+
+  /* ----------------------------------------------------------
+     REMOVE DESKTOP CARD HOVER
+     ---------------------------------------------------------- */
+
+  .product-card:hover {
+    transform: none;
+
+    box-shadow: none;
+  }
+
+
+  /* ----------------------------------------------------------
+     DISABLE IMAGE HOVER
+     ---------------------------------------------------------- */
+
+  .product-card:hover .product-image-main {
+    opacity: 1;
+
+    transform: none;
+  }
+
+  .product-card:hover .product-image-hover {
+    opacity: 0;
+
+    transform: none;
+  }
+
+  .product-card:hover .product-image img {
+    transform: none;
+  }
+
+
+  /* ----------------------------------------------------------
+     ADD CART ALWAYS VISIBLE
+     ---------------------------------------------------------- */
+
+  .add-cart-button {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+  }
+
+  .add-cart-button:hover:not(:disabled) {
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+  }
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+  .product-content {
+    padding: 10px 3px 12px;
+  }
+
+  .product-name {
+    font-size: 14px;
+
+    min-height: 39px;
+    max-height: 39px;
+
+    line-height: 1.4;
+
+    margin-bottom: 7px;
+  }
+
+  .product-price {
+    gap: 6px;
+
+    margin-bottom: 10px;
+  }
+
+  .old-price {
+    font-size: 11px;
+  }
+
+  .current-price {
+    font-size: 15px;
+  }
+
+  .discount-badge,
+  .stock-badge {
+    top: 7px;
+
+    padding: 4px 7px;
+
+    font-size: 10px;
+  }
+
+  .discount-badge {
+    left: 7px;
+  }
+
+  .stock-badge {
+    right: 7px;
+  }
+
+  .add-cart-button {
+    width: 72px;
+    height: 34px;
+  }
+
+  .add-cart-button mat-icon {
+    width: 20px;
+    height: 20px;
+
+    font-size: 20px;
+  }
+
+  .already-in-cart-message {
+    top: calc(70% + 22px);
+
+    max-width: 130px;
+
+    padding: 4px 7px;
+
+    font-size: 10px;
+  }
+}
+
+
+/* ============================================================
+   VERY SMALL MOBILE
+   ============================================================ */
+
+@media (max-width: 360px) {
+
+  .product-name {
+    font-size: 13px;
+
+    min-height: 36px;
+    max-height: 36px;
+  }
+
+  .current-price {
+    font-size: 14px;
+  }
+
+  .old-price {
+    font-size: 10px;
+  }
+
+  .add-cart-button {
+    width: 68px;
+    height: 32px;
   }
 }
