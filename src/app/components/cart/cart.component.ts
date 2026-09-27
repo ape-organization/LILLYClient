@@ -587,7 +587,11 @@ export class CartComponent
     if (!item) {
       return;
     }
+ const stockQuantity = item.product.stockQuantity ?? 0;
 
+const maxQuantity = stockQuantity > 0
+  ? stockQuantity
+  : 5;
 
     quantity =
       Number(quantity);
@@ -611,7 +615,10 @@ export class CartComponent
     if (quantity < 1) {
       quantity = 1;
     }
-
+ if (quantity > maxQuantity) {
+    quantity = maxQuantity;
+  }
+    
 
     this.cartService.updateQuantity(
       item.product.id,

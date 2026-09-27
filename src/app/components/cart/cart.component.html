@@ -366,6 +366,7 @@
             <input
               type="number"
               min="1"
+              [max]="item.product.stockQuantity > 0 ? item.product.stockQuantity : 5"
               [value]="item.quantity"
               (change)="
                 updateQuantity(

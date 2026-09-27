@@ -294,7 +294,7 @@ margin: 3px;
   font-size: 13px;
   line-height: 1.65;
 
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
  padding: 10px 12px;
 
@@ -390,8 +390,8 @@ justify-content: space-between;
    ============================================================ */
 
 .price-section {
-  display: flex;
-  align-items: baseline;
+  /* display: flex;
+  align-items: baseline; */
   flex-wrap: wrap;
   gap: 10px;
 
@@ -418,7 +418,7 @@ justify-content: space-between;
 .currency {
   color: var(--color-accent);
 
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 700;
 }
 

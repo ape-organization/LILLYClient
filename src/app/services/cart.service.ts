@@ -132,33 +132,14 @@ export class CartService {
 
     const storedItems =
       this.readStoredCart();
-
-
-    console.log(
-      '[CartService] Initializing cart:',
-      storedItems
-    );
-
-
-    /*
-     * No saved cart.
-     *
-     * We can immediately consider the cart initialized.
-     */
-
-    if (storedItems.length === 0) {
+  if (storedItems.length === 0) {
 
       this.cartItems.next([]);
 
       this.updateCartCount();
 
       this.cartInitialized.next(true);
-
-      console.log(
-        '[CartService] Cart initialized - empty'
-      );
-
-      return;
+ return;
     }
 
 
@@ -180,36 +161,14 @@ export class CartService {
            */
 
           this.cartInitialized.next(true);
-
-          console.log(
-            '[CartService] Cart initialization finished'
-          );
-
-        })
+})
       )
       .subscribe({
         next: items => {
-
-          console.log(
-            '[CartService] Cart refresh result:',
-            items
-          );
-
         },
 
         error: error => {
-
-          /*
-           * This should normally not be reached because
-           * refreshCartFromApi handles its own errors.
-           */
-
-          console.error(
-            '[CartService] Cart initialization error:',
-            error
-          );
-
-        }
+ }
       });
 
   }
@@ -787,15 +746,7 @@ export class CartService {
         )
       )
     ];
-
-
-    console.log(
-      '[CartService] Refreshing product IDs:',
-      productIds
-    );
-
-
-    this.cartLoading.next(true);
+this.cartLoading.next(true);
 
 
     return this.productService
@@ -816,14 +767,7 @@ export class CartService {
 
 
         map(products => {
-
-          console.log(
-            '[CartService] Products returned:',
-            products
-          );
-
-
-          const validCart: CartItem[] = [];
+ const validCart: CartItem[] = [];
 
 
           for (
@@ -948,14 +892,7 @@ export class CartService {
 
 
         tap(validCart => {
-
-          console.log(
-            '[CartService] Valid cart:',
-            validCart
-          );
-
-
-          this.cartItems.next(
+ this.cartItems.next(
             validCart
           );
 
@@ -975,23 +912,6 @@ export class CartService {
 
 
         catchError(error => {
-
-          console.error(
-            '[CartService] Failed to refresh cart:',
-            error
-          );
-
-
-          /*
-           * IMPORTANT:
-           *
-           * Do NOT delete localStorage if the API
-           * temporarily fails.
-           *
-           * Also return the current cart so the
-           * observable completes normally.
-           */
-
           return of(
             this.cartItems.value
           );
@@ -1073,13 +993,7 @@ export class CartService {
       );
 
     } catch (error) {
-
-      console.error(
-        'Error saving cart:',
-        error
-      );
-
-    }
+}
   }
 
 
@@ -1223,14 +1137,7 @@ export class CartService {
       return [];
 
     } catch (error) {
-
-      console.error(
-        'Error reading cart:',
-        error
-      );
-
-
-      this.removeCartFromStorage();
+ this.removeCartFromStorage();
 
       return [];
 
@@ -1254,13 +1161,7 @@ export class CartService {
       );
 
     } catch (error) {
-
-      console.error(
-        'Error saving migrated cart:',
-        error
-      );
-
-    }
+}
   }
 
 

@@ -258,17 +258,7 @@ private subscribeToCart(): void {
         this.isCartInitialized = initialized;
 
         this.isCartLoading = loading;
-
-        console.log(
-          '[Checkout] Cart state:',
-          {
-            items: this.cartItems,
-            initialized: this.isCartInitialized,
-            loading: this.isCartLoading
-          }
-        );
-
-        this.cdr.detectChanges();
+this.cdr.detectChanges();
 
       }
     );
@@ -479,14 +469,7 @@ private subscribeToCart(): void {
 
 
         error: error => {
-
-          console.error(
-            'Client lookup error:',
-            error
-          );
-
-
-          this.isSearchingClient.set(
+this.isSearchingClient.set(
             false
           );
 
@@ -1096,12 +1079,7 @@ private subscribeToCart(): void {
      */
 
     if (!this.isCartInitialized) {
-
-      console.log(
-        '[Checkout] Cart is still initializing'
-      );
-
-      return;
+ return;
     }
 
 
@@ -1179,15 +1157,7 @@ private subscribeToCart(): void {
       items
 
     };
-
-
-    console.log(
-      'Create order request:',
-      request
-    );
-
-
-    this.isSubmitting.set(
+this.isSubmitting.set(
       true
     );
 
@@ -1202,14 +1172,7 @@ private subscribeToCart(): void {
       .subscribe({
 
         next: response => {
-
-          console.log(
-            'Order created successfully:',
-            response
-          );
-
-
-          this.isSubmitting.set(
+this.isSubmitting.set(
             false
           );
 
@@ -1220,14 +1183,7 @@ private subscribeToCart(): void {
 
 
         error: error => {
-
-          console.error(
-            'Create order error:',
-            error
-          );
-
-
-          this.isSubmitting.set(
+ this.isSubmitting.set(
             false
           );
 

@@ -132,7 +132,7 @@
 
         <div class="current-price-wrapper">
 
-          <span class="price">
+          <span class="currency">
             {{ newPrice | number:'1.0-2' }}
           </span>
 
@@ -147,7 +147,7 @@
           *ngIf="hasDiscount"
         >
 
-          <span class="old-price">
+          <span class="old-currency">
             {{ oldPrice | number:'1.0-2' }}
           </span>
 
@@ -180,12 +180,12 @@
            DESCRIPTION
            ====================================================== -->
 
-      <p
+      <div
         class="product-description"
         *ngIf="getProductDescription()"
       >
         {{ getProductDescription() }}
-      </p>
+      </div>
 
 
       <!-- ======================================================
@@ -535,7 +535,7 @@
 
             min="1"
             step="1"
-
+[max]="product.stockQuantity > 0 ? product.stockQuantity : 5"
             class="quantity-input"
           />
 

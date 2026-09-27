@@ -118,10 +118,8 @@ private readonly dialog=inject(MatDialog);
   // ============================================================
 
   ngOnInit(): void {
-    console.log(this.route.paramMap)
 
   this.route.paramMap.subscribe(params => {
-console.log(params)
     const idParam = params.get('id');
     const productId = Number(idParam);
 
@@ -153,13 +151,11 @@ console.log(params)
   // ============================================================
 
   private loadProduct(id: number): void {
-console.log(id)
     this.stopImageSlider();
 
     this.productService.getProduct(id).subscribe({
 
       next: (product) => {
-
         this.product.set(product);
 
         this.selectedImageIndex.set(0);
@@ -322,14 +318,12 @@ console.log(id)
   get activeVariants(): ProductVariant[] {
 
     return (this.product()?.variants ?? [])
-      .filter(
-        variant =>
-          variant.isActive !== false
-      );
+      
   }
 
 
   get hasVariants(): boolean {
+
     return this.activeVariants.length > 0;
   }
 
@@ -826,7 +820,11 @@ console.log(id)
   // ============================================================
 
   setQuantity(value: number | string): void {
+ const stockQuantity = this.product()?.stockQuantity ?? 0;
 
+const maxQuantity = stockQuantity > 0
+  ? stockQuantity
+  : 5;
     let parsed =
       typeof value === 'number'
         ? value
@@ -842,7 +840,9 @@ console.log(id)
     if (parsed < 1) {
       parsed = 1;
     }
-
+  if (parsed > maxQuantity) {
+    parsed = maxQuantity;
+  }
     this.quantity.set(parsed);
   }
 
@@ -851,7 +851,6 @@ console.log(id)
   // ============================================================
 
   addToCart(): void {
-
     const product =
       this.product();
 
@@ -862,14 +861,22 @@ console.log(id)
       return;
     }
 
-    const selectedQuantity =
+    var selectedQuantity =
       this.quantity();
+       const stockQuantity = this.product()?.stockQuantity ?? 0;
 
+const maxQuantity = stockQuantity > 0
+  ? stockQuantity
+  : 5;
+    
+  if (selectedQuantity > maxQuantity) {
+    selectedQuantity = maxQuantity;
+  }
     // ----------------------------------------------------------
     // PRODUCT WITHOUT VARIANT
     // ----------------------------------------------------------
 
-    if (!product.hasVariants
+    if (!this.hasVariants
 ) {
 
       const added =
@@ -877,7 +884,6 @@ console.log(id)
           product,
           selectedQuantity
         );
-
       if (!added) {
         return;
       }
@@ -893,7 +899,6 @@ console.log(id)
 
     const variant =
       this.selectedVariant;
-
     if (!variant) {
       return;
     }
@@ -904,7 +909,6 @@ console.log(id)
         selectedQuantity,
         variant
       );
-
     if (!added) {
       return;
     }
@@ -918,36 +922,51 @@ console.log(id)
   // RELATIVE PRODUCTS
   // ============================================================
 
-  addRelativeProductToCart(
-    product: Product
-  ): void {
-  if (product.hasVariants
-) {
-       this.openProductDetails(
-      product
-    );
-    return
-     }
-    const added =
-      this.cartService.addToCart(product);
+ addRelativeProductToCart(product: Product): void {
 
-    if (!added) {
+  // ---------------------------------------------------
+  // PRODUCT HAS VARIANTS
+  // Open that product in the product modal/page
+  // ---------------------------------------------------
 
-      this.addedToCartProductId.set(null);
+  if (product.hasVariants) {
+    this.openProductDetails(product);
+    return;
+  }
 
-      this.showAlreadyInCartMessage(
-        product.id
-      );
+  // ---------------------------------------------------
+  // PRODUCT WITHOUT VARIANTS
+  // Check cart and add directly
+  // ---------------------------------------------------
 
-      return;
-    }
+  const added =
+    this.cartService.addToCart(product);
 
-    this.alreadyInCartProductId.set(null);
+  // ---------------------------------------------------
+  // ALREADY IN CART
+  // ---------------------------------------------------
 
-    this.showAddedToCartSuccess(
+  if (!added) {
+
+    this.addedToCartProductId.set(null);
+
+    this.showAlreadyInCartMessage(
       product.id
     );
+
+    return;
   }
+
+  // ---------------------------------------------------
+  // ADDED SUCCESSFULLY
+  // ---------------------------------------------------
+
+  this.alreadyInCartProductId.set(null);
+
+  this.showAddedToCartSuccess(
+    product.id
+  );
+}
 
 
   private showAddedToCartSuccess(

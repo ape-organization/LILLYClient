@@ -504,7 +504,7 @@
 
                     <div class="quantity-control">
 
-                      <button
+                      <!-- <button
                         type="button"
                         class="quantity-btn"
                         [disabled]="item.quantity <= 1"
@@ -512,12 +512,12 @@
                         [attr.aria-label]="'CHECKOUT.DECREASE_QUANTITY' | translate"
                       >
                         <mat-icon>remove</mat-icon>
-                      </button>
+                      </button> -->
 
                       <span class="quantity-value">
                         {{ item.quantity }}
                       </span>
-
+<!-- 
                       <button
                         type="button"
                         class="quantity-btn"
@@ -525,7 +525,7 @@
                         [attr.aria-label]="'CHECKOUT.INCREASE_QUANTITY' | translate"
                       >
                         <mat-icon>add</mat-icon>
-                      </button>
+                      </button> -->
 
                     </div>
 
@@ -619,9 +619,7 @@
                 {{ 'CHECKOUT.TOTAL' | translate }}
               </span>
 
-              <small>
-                {{ 'CHECKOUT.INCLUDING_DELIVERY' | translate }}
-              </small>
+            
 
             </div>
 
