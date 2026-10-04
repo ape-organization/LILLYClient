@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   inject,
   OnDestroy,
@@ -51,8 +52,52 @@ interface HomeSlide {
     './home.scss'
   ]
 })
-export class Home implements OnInit, OnDestroy {
+export class Home implements OnInit, OnDestroy,AfterViewInit {
+private scrollObserver?: IntersectionObserver;
+// =====================================================
+// SCROLL REVEAL
+// =====================================================
 
+ngAfterViewInit(): void {
+
+  const sections =
+    document.querySelectorAll('.scroll-reveal');
+
+  if (!sections.length) {
+    return;
+  }
+
+  this.scrollObserver =
+    new IntersectionObserver(
+      (entries) => {
+
+        entries.forEach(entry => {
+
+          if (entry.isIntersecting) {
+
+            entry.target.classList.add('visible');
+
+            this.scrollObserver?.unobserve(
+              entry.target
+            );
+          }
+
+        });
+
+      },
+      {
+        threshold: 0.15
+      }
+    );
+
+  sections.forEach(section => {
+
+    section.classList.add('reveal-ready');
+
+    this.scrollObserver?.observe(section);
+
+  });
+}
   // =====================================================
   // SERVICES
   // =====================================================
@@ -471,7 +516,7 @@ console.log(product)
   // =====================================================
 
   ngOnDestroy(): void {
-
+this.scrollObserver?.disconnect();
     this.stopSlider();
 
 

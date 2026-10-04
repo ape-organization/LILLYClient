@@ -15,78 +15,129 @@
 
     <div class="product-image">
 
-      <div
-        class="image-frame"
-        [class.out-of-stock-image]="isOutOfStock"
-      >
+      <!-- NEW: IMAGE GALLERY WRAPPER -->
+      <div class="image-gallery">
 
-        <img
-          [src]="currentImageUrl"
-          [alt]="getProductName()"
-        />
-
-        <!-- Previous -->
-
-        <button
-          type="button"
-          class="image-nav previous"
-          *ngIf="images.length > 1"
-          (click)="previousImage()"
-          aria-label="Previous image"
-        >
-          <mat-icon>
-            chevron_left
-          </mat-icon>
-        </button>
-
-        <!-- Next -->
-
-        <button
-          type="button"
-          class="image-nav next"
-          *ngIf="images.length > 1"
-          (click)="nextImage()"
-          aria-label="Next image"
-        >
-          <mat-icon>
-            chevron_right
-          </mat-icon>
-        </button>
-
-        <!-- Out of stock -->
-
+        <!-- EXISTING MAIN IMAGE SLIDER -->
         <div
-          class="out-of-stock-overlay"
-          *ngIf="isOutOfStock"
+          class="image-frame"
+          [class.out-of-stock-image]="isOutOfStock"
         >
-          <span class="out-of-stock-text">
-            {{ 'PRODUCT.OUT_OF_STOCK' | translate }}
-          </span>
+
+          <img
+            [src]="currentImageUrl"
+            [alt]="getProductName()"
+          />
+
+          <!-- Previous -->
+
+          <button
+            type="button"
+            class="image-nav previous"
+            *ngIf="images.length > 1"
+            (click)="previousImage()"
+            aria-label="Previous image"
+          >
+            <mat-icon>
+              chevron_left
+            </mat-icon>
+          </button>
+
+          <!-- Next -->
+
+          <button
+            type="button"
+            class="image-nav next"
+            *ngIf="images.length > 1"
+            (click)="nextImage()"
+            aria-label="Next image"
+          >
+            <mat-icon>
+              chevron_right
+            </mat-icon>
+          </button>
+
+          <!-- Out of stock -->
+
+          <div
+            class="out-of-stock-overlay"
+            *ngIf="isOutOfStock"
+          >
+            <span class="out-of-stock-text">
+              {{ 'PRODUCT.OUT_OF_STOCK' | translate }}
+            </span>
+          </div>
+
+          <!-- Category -->
+
+          <div
+            class="image-label"
+            *ngIf="getCategoryName()"
+          >
+            <span class="category-symbol">
+              ✦
+            </span>
+
+            {{ getCategoryName() }}
+          </div>
+
+          <!-- Discount -->
+
+          <div
+            class="discount-badge"
+            *ngIf="hasDiscount && !isOutOfStock"
+          >
+            -{{ product.discountPercentage }}%
+          </div>
+
         </div>
 
-        <!-- Category -->
+
+        <!-- ======================================================
+             NEW: IMAGE THUMBNAILS
+             ====================================================== -->
 
         <div
-          class="image-label"
-          *ngIf="getCategoryName()"
+          class="image-thumbnails"
+          *ngIf="images.length > 1"
         >
-          <span class="category-symbol">
-            ✦
-          </span>
 
-          {{ getCategoryName() }}
-        </div>
+          <button
+            type="button"
+            class="image-thumbnail"
 
-        <!-- Discount -->
+            *ngFor="
+              let image of images;
+              let i = index
+            "
 
-        <div
-          class="discount-badge"
-          *ngIf="hasDiscount && !isOutOfStock"
-        >
-          -{{ product.discountPercentage }}%
+            [class.active]="
+              i === selectedImageIndex()
+            "
+
+            (click)="selectImage(i)"
+
+            [attr.aria-label]="
+              'View image ' + (i + 1)
+            "
+          >
+
+            <img
+              [src]="getImageUrl(image.imageUrl)"
+              [alt]="
+                getProductName() +
+                ' image ' +
+                (i + 1)
+              "
+              loading="lazy"
+            />
+
+          </button>
+
         </div>
 
       </div>
+
 
       <!-- Stock badge -->
 
@@ -111,71 +162,77 @@
            ====================================================== -->
 
       <div class="product-data">
-<div>
- <span
-          class="product-brand"
-          *ngIf="getCategoryName()"
-        >
+
+        <div>
+
+          <span
+            class="product-brand"
+            *ngIf="getCategoryName()"
+          >
+            {{ getCategoryName() }}
+          </span>
+
+          <h4 class="product-name">
+            {{ getProductName() }}
+          </h4>
+
+        </div>
+
+
+        <!-- ======================================================
+             PRICE
+             ====================================================== -->
+
+        <div class="price-section">
+
+          <div class="current-price-wrapper">
+
+            <span class="currency">
+              {{ newPrice | number:'1.0-2' }}
+            </span>
+
+            <span class="currency">
+              {{ 'COMMON.EGP' | translate }}
+            </span>
+
+          </div>
+
+          <div
+            class="old-price-wrapper"
+            *ngIf="hasDiscount"
+          >
+
+            <span class="old-currency">
+              {{ oldPrice | number:'1.0-2' }}
+            </span>
+
+            <span class="old-currency">
+              {{ 'COMMON.EGP' | translate }}
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="product-description"
+        *ngIf="getCategoryName()"
+      >
+
+        <label for="quantity">
+          {{ 'PRODUCT.CATEGORY' | translate }}
+        </label>
+
+        <span class="category-name">
           {{ getCategoryName() }}
         </span>
 
-        <h4 class="product-name">
-          {{ getProductName() }}
-        </h4>
-
-</div>
-  <!-- ======================================================
-           PRICE
-           ====================================================== -->
-
-      <div class="price-section">
-
-        <div class="current-price-wrapper">
-
-          <span class="currency">
-            {{ newPrice | number:'1.0-2' }}
-          </span>
-
-          <span class="currency">
-            {{ 'COMMON.EGP' | translate }}
-          </span>
-
-        </div>
-
-        <div
-          class="old-price-wrapper"
-          *ngIf="hasDiscount"
-        >
-
-          <span class="old-currency">
-            {{ oldPrice | number:'1.0-2' }}
-          </span>
-
-          <span class="old-currency">
-            {{ 'COMMON.EGP' | translate }}
-          </span>
-
-        </div>
-
-      </div>
-       
-       
-
-<!--         <div class="title-line"></div>
- -->
       </div>
 
-<div
-          class="product-description"
-          *ngIf="getCategoryName()"
-        >
-          <label for="quantity">
-          {{ 'PRODUCT.CATEGORY' | translate }}
-        </label>
-          <span class="category-name">
-            {{ getCategoryName() }}
-          </span>
-        </div>
+
       <!-- ======================================================
            DESCRIPTION
            ====================================================== -->
@@ -192,7 +249,6 @@
            OFFER
            ====================================================== -->
 
-           
       <div
         class="offer-box"
         *ngIf="hasDiscount"
@@ -215,9 +271,6 @@
         </div>
 
       </div>
-
-
-    
 
 
       <!-- ======================================================
@@ -357,7 +410,9 @@
               type="button"
               class="option-button"
 
-              *ngFor="let variant of availableHeelSizes"
+              *ngFor="
+                let variant of availableHeelSizes
+              "
 
               [class.selected]="
                 isHeelSelected(
@@ -491,10 +546,6 @@
         "
       >
 
-        <!-- <label for="quantity">
-          {{ 'PRODUCT.QUANTITY' | translate }}
-        </label> -->
-
         <div class="quantity-control">
 
           <!-- Minus -->
@@ -535,7 +586,13 @@
 
             min="1"
             step="1"
-[max]="product.stockQuantity > 0 ? product.stockQuantity : 5"
+
+            [max]="
+              product.stockQuantity > 0
+                ? product.stockQuantity
+                : 5
+            "
+
             class="quantity-input"
           />
 
@@ -558,7 +615,7 @@
         </div>
 
       </div>
- 
+
 
       <!-- ======================================================
            ACTIONS
@@ -638,9 +695,11 @@
       [CategoryId]="
         CategoryId!
       "
-[ProductId]="
+
+      [ProductId]="
         ProductId!
       "
+
       (productClicked)="
         openProductDetails($event)
       "

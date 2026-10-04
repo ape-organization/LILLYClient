@@ -1,8 +1,7 @@
 <div class="section-heading">
-
-  <span class="section-small-title">
+  <!-- <span class="section-small-title">
     {{ 'CATEGORY.CATEGORY' | translate }}
-  </span>
+  </span> -->
 
   <h2>
     {{ 'CATEGORY.Shop_By_Category' | translate }}
@@ -11,63 +10,21 @@
   <div class="title-line">
     <span>✦</span>
   </div>
-
 </div>
-
-
-<!-- =====================================================
-     CATEGORY CAROUSEL
-     ===================================================== -->
 
 <div
   class="category-carousel"
   *ngIf="categories().length > 0"
 >
-
-  <!-- ===================================================
-       LEFT ARROW
-       =================================================== -->
-
-  <button
-    type="button"
-    class="carousel-arrow category-arrow category-prev"
-
-    [disabled]="
-      !hasCategoryOverflow() ||
-      isAtStart()
-    "
-
-    (click)="scrollCategories('left')"
-
-    [attr.aria-label]="
-      languageService.isArabic()
-        ? 'الفئات السابقة'
-        : 'Previous categories'
-    "
-  >
-
-    <mat-icon>
-      chevron_left
-    </mat-icon>
-
-  </button>
-
-
-  <!-- ===================================================
-       CATEGORY TRACK
-       =================================================== -->
-
   <div
     class="horizontal-track category-track"
     #categoryTrack
   >
-
     <div
       class="category-card"
       *ngFor="let category of categories()"
       (click)="selectCategory(category)"
     >
-
       <div class="category-image">
 
         <img
@@ -76,44 +33,11 @@
           loading="lazy"
         />
 
+        <div class="category-name">
+          {{ getCategoryName(category) }}
+        </div>
+
       </div>
-
-
-      <h3>
-        {{ getCategoryName(category) }}
-      </h3>
-
     </div>
-
   </div>
-
-
-  <!-- ===================================================
-       RIGHT ARROW
-       =================================================== -->
-
-  <button
-    type="button"
-    class="carousel-arrow category-arrow category-next"
-
-    [disabled]="
-      !hasCategoryOverflow() ||
-      isAtEnd()
-    "
-
-    (click)="scrollCategories('right')"
-
-    [attr.aria-label]="
-      languageService.isArabic()
-        ? 'الفئات التالية'
-        : 'Next categories'
-    "
-  >
-
-    <mat-icon>
-      chevron_right
-    </mat-icon>
-
-  </button>
-
 </div>

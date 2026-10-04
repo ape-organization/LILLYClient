@@ -23,9 +23,9 @@
 
   width: 100%;
   height: 100%;
-
+  background-color: var(--color-surface);
   min-width: 0;
-
+text-align: center;
   display: flex;
   flex-direction: column;
 
@@ -35,7 +35,6 @@
 
   cursor: pointer;
 
-  background: var(--color-background);
 
   transition:
     transform 0.25s ease,
@@ -182,16 +181,10 @@
    ============================================================ */
 
 .add-cart-button {
-  position: absolute;
-
-  top: 70%;
-  left: 50%;
-
-  z-index: 6;
-
-  width: 80px;
+ 
+  width: 80%;
   height: 38px;
-
+margin: 1px auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -199,34 +192,23 @@
   padding: 0;
 
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
 
-  background: var(--color-surface);
+  background: var(--color-primary-light);
 
   color: var(--color-primary-light);
 
-  transform:
-    translate(-50%, -50%)
-    scale(0.8);
 
-  opacity: 0;
-  visibility: hidden;
 
   cursor: pointer;
 
-  transition:
-    opacity 0.25s ease,
-    visibility 0.25s ease,
-    transform 0.25s ease,
-    background-color 0.2s ease,
-    color 0.2s ease;
 }
 
 .add-cart-button mat-icon {
   width: 22px;
   height: 22px;
-
-  margin: 0;
+color: var(--color-surface);
+  margin: 1px auto;
 
   font-size: 22px;
 }
@@ -236,23 +218,7 @@
    DESKTOP HOVER
    ============================================================ */
 
-.product-card:hover .add-cart-button:not(:disabled) {
-  opacity: 1;
 
-  visibility: visible;
-
-  transform:
-    translate(-50%, -50%)
-    scale(1);
-}
-
-.add-cart-button:hover:not(:disabled) {
-  background: var(--color-accent);
-
-  transform:
-    translate(-50%, -50%)
-    scale(1.08);
-}
 
 .add-cart-button:disabled {
   cursor: not-allowed;
@@ -317,7 +283,7 @@
   flex-direction: column;
 
   padding: 12px 4px 14px;
-
+  background-color: var(--color-surface);
   box-sizing: border-box;
 }
 
@@ -366,7 +332,7 @@
 .product-price {
   display: flex;
   align-items: center;
-
+justify-content: center;
   gap: 8px;
 
   min-width: 0;

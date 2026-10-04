@@ -92,6 +92,8 @@
 .logo-text {
   font-family: "Brush Script MT", "Segoe Script", cursive;
   font-size: 19px;
+  letter-spacing: 3px;
+ border-bottom: 1px solid rgba(58, 39, 33, 0.15);
   font-weight: 700;
 }
 

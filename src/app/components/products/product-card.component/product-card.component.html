@@ -1,5 +1,5 @@
 <article
-  class="product-card"
+  class="product-card "
   (click)="openDetails()"
 >
 
@@ -54,45 +54,7 @@
     </span>
 
 
-    <!-- ================================================== -->
-    <!-- ADD TO CART -->
-    <!-- ================================================== -->
-
-    <button
-      type="button"
-      class="add-cart-button"
-
-      [class.added]="showAddedCheck"
-
-      [disabled]="
-        !product.isInStock ||
-        showAddedCheck
-      "
-
-      (click)="addToCart($event)"
-
-      [attr.aria-label]="
-        showAddedCheck
-          ? ('PRODUCT.ADDED_TO_CART' | translate)
-          : ('PRODUCT.ADD_TO_CART' | translate)
-      "
-    >
-
-      @if (showAddedCheck) {
-
-        <mat-icon class="added-check-icon">
-          check
-        </mat-icon>
-
-      } @else {
-
-        <mat-icon>
-          shopping_cart
-        </mat-icon>
-
-      }
-
-    </button>
+  
 
 
     <!-- ================================================== -->
@@ -139,7 +101,45 @@
       </span>
 
     </div>
+  <!-- ================================================== -->
+    <!-- ADD TO CART -->
+    <!-- ================================================== -->
 
+    <button
+      type="button"
+      class="add-cart-button"
+
+      [class.added]="showAddedCheck"
+
+      [disabled]="
+        !product.isInStock ||
+        showAddedCheck
+      "
+
+      (click)="addToCart($event)"
+
+      [attr.aria-label]="
+        showAddedCheck
+          ? ('PRODUCT.ADDED_TO_CART' | translate)
+          : ('PRODUCT.ADD_TO_CART' | translate)
+      "
+    >
+
+      @if (showAddedCheck) {
+
+        <mat-icon class="added-check-icon">
+          check
+        </mat-icon>
+
+      } @else {
+
+        <mat-icon>
+          shopping_cart
+        </mat-icon>
+
+      }
+
+    </button>
   </div>
 
 </article>

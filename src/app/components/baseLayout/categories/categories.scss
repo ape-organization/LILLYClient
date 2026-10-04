@@ -1,15 +1,4 @@
 /* ============================================================
-   CATEGORY FONT
-   ============================================================ */
-
-/* .section-heading,
-.section-heading span,
-.section-heading h2,
-.category-card h3,
-.category-carousel button {
-font-family: "Brush Script MT", cursive;
-}  */
-/* ============================================================
    CATEGORIES SECTION
    ============================================================ */
 
@@ -21,64 +10,32 @@ font-family: "Brush Script MT", cursive;
 
 
 /* ============================================================
-   SECTION SMALL TITLE
-   ============================================================ */
-
-.section-small-title {
-  padding-top: 10px;
-}
-
-
-/* ============================================================
-   CATEGORY CAROUSEL
+   CATEGORY CONTAINER
    ============================================================ */
 
 .category-carousel {
-  display: flex;
-  align-items: center;
-
   width: 100%;
-  min-width: 0;
-
-  margin: 35px auto 0;
-
-  gap: 15px;
+  max-width: 1250px;
+  margin: 40px auto 0;
 }
 
 
 /* ============================================================
-   CATEGORY TRACK
+   CATEGORY GRID
    ============================================================ */
 
 .category-track {
-  flex: 1;
-  min-width: 0;
+  width: 80%;
 
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  gap: 22px;
+  column-gap: 28px;
+  row-gap: 28px;
 
-  padding: 5px 5px 15px;
+  margin: 0 auto;
 
-  overflow-x: auto;
-  overflow-y: hidden;
-
-  scroll-behavior: smooth;
-  scroll-snap-type: x proximity;
-
-  scrollbar-width: none;
-
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
-
-  scroll-padding-left: 5px;
-  scroll-padding-right: 5px;
-}
-
-.category-track::-webkit-scrollbar {
-  display: none;
+  overflow: visible;
 }
 
 
@@ -87,22 +44,19 @@ font-family: "Brush Script MT", cursive;
    ============================================================ */
 
 .category-card {
-  flex: 0 0 90px;
+  position: relative;
 
-  width: 90px;
-  min-width: 90px;
-
-  text-align: center;
+  width: 100%;
+  min-width: 0;
 
   cursor: pointer;
+  overflow: hidden;
 
-  scroll-snap-align: start;
+  border-radius: 0;
 
-  transition: transform 0.25s ease;
-}
-
-.category-card:hover {
-  transform: translateY(-5px);
+  transition:
+    transform 0.45s cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.45s ease;
 }
 
 
@@ -111,25 +65,21 @@ font-family: "Brush Script MT", cursive;
    ============================================================ */
 
 .category-image {
-  width: 90px;
-  height: 90px;
+  position: relative;
+
+  width: 100%;
+
+  /* Rectangle */
+  aspect-ratio: 1.6 / 1;
 
   overflow: hidden;
 
-  border-radius: 50%;
-
-  background: transparent;
-
-  transition: transform 0.25s ease;
-}
-
-.category-card:hover .category-image {
-  transform: translateY(-5px);
+  background: #eee;
 }
 
 
 /* ============================================================
-   CATEGORY IMAGE
+   IMAGE
    ============================================================ */
 
 .category-image img {
@@ -138,65 +88,138 @@ font-family: "Brush Script MT", cursive;
   width: 100%;
   height: 100%;
 
-  object-fit: cover;
+  object-fit: fill;
 
-  transition: transform 0.4s ease;
-}
+  transform: scale(1);
 
-.category-card:hover .category-image img {
-  transform: scale(1.07);
-}
-
-
-/* ============================================================
-   CATEGORY TITLE
-   ============================================================ */
-
-.category-card h3 {
-  margin: 15px 0 0;
-
-  color: var(--color-primary);
-
-  font-size: 15px;
-  font-weight: 600;
-
-  line-height: 1.3;
-
-  transition: color 0.25s ease;
-}
-
-.category-card:hover h3 {
-  color: var(--color-accent);
+  transition:
+    transform 0.8s cubic-bezier(.16, 1, .3, 1),
+    filter 0.6s ease;
 }
 
 
 /* ============================================================
-   CAROUSEL ARROWS
+   IMAGE OVERLAY
    ============================================================ */
 
-.category-arrow {
-  flex: 0 0 auto;
-}
+.category-image::after {
+  content: "";
 
-.category-arrow:disabled {
-  opacity: 0.35;
+  position: absolute;
+  inset: 0;
 
-  cursor: default;
+  background:
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.78) 0%,
+      rgba(0, 0, 0, 0.32) 40%,
+      rgba(0, 0, 0, 0.04) 72%,
+      rgba(0, 0, 0, 0) 100%
+    );
 
   pointer-events: none;
+
+  transition: background 0.5s ease;
+}
+
+.section-heading
+{
+  padding: 10px;
+}
+/* ============================================================
+   CATEGORY NAME
+   ============================================================ */
+
+.category-name {
+  position: absolute;
+
+  /* Bottom-right */
+  right: 20px;
+  bottom: 18px;
+
+  z-index: 2;
+
+  max-width: 75%;
+
+  color: #fff;
+
+  font-family: "Montserrat", sans-serif;
+
+  font-size: 28px;
+  font-weight: 600;
+
+  line-height: 1.2;
+letter-spacing: 3px;
+  text-align: right;
+
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.4);
+
+  transition:
+    transform 0.5s cubic-bezier(.2, .8, .2, 1),
+    letter-spacing 0.4s ease;
 }
 
 
 /* ============================================================
-   DESKTOP ARROW SPACING
+   ACCENT LINE
    ============================================================ */
 
-.category-prev {
-  margin-right: 15px;
+.category-name::after {
+  content: "";
+
+  display: block;
+
+  width: 0;
+  height: 2px;
+
+  margin-top: 7px;
+  margin-left: auto;
+
+  background: var(--color-accent);
+
+  transition:
+    width 0.45s cubic-bezier(.2, .8, .2, 1);
 }
 
-.category-next {
-  margin-left: 15px;
+
+/* ============================================================
+   DESKTOP HOVER
+   ============================================================ */
+
+@media (min-width: 901px) {
+
+  .category-card:hover {
+    transform: translateY(-8px);
+
+    box-shadow:
+      0 18px 35px rgba(0, 0, 0, 0.18);
+  }
+
+  .category-card:hover .category-image img {
+    transform: scale(1.10);
+    filter: brightness(0.86);
+  }
+
+  .category-card:hover .category-image::after {
+    background:
+      linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.86) 0%,
+        rgba(0, 0, 0, 0.36) 42%,
+        rgba(0, 0, 0, 0.02) 75%,
+        rgba(0, 0, 0, 0) 100%
+      );
+  }
+
+  .category-card:hover .category-name {
+    transform: translateY(-7px);
+    letter-spacing: 0.3px;
+  }
+
+  .category-card:hover .category-name::after {
+    width: 45px;
+  }
 }
 
 
@@ -206,23 +229,27 @@ font-family: "Brush Script MT", cursive;
 
 @media (max-width: 900px) {
 
+  .categories-section {
+    padding-left: 4%;
+    padding-right: 4%;
+  }
+
+  .category-carousel {
+    max-width: 850px;
+    margin-top: 35px;
+  }
+
   .category-track {
-    gap: 18px;
+    width: 90%;
 
-    padding-left: 5px;
-    padding-right: 5px;
+    column-gap: 20px;
+    row-gap: 20px;
   }
 
-  .category-card {
-    flex: 0 0 90px;
-
-    width: 90px;
-    min-width: 90px;
-  }
-
-  .category-image {
-    width: 90px;
-    height: 90px;
+  .category-name {
+    right: 16px;
+    bottom: 15px;
+    font-size: 18px;
   }
 }
 
@@ -233,43 +260,42 @@ font-family: "Brush Script MT", cursive;
 
 @media (max-width: 600px) {
 
+  .categories-section {
+    padding: 55px 5% 60px;
+  }
+
   .category-carousel {
-    gap: 8px;
+    width: 100%;
+    max-width: 520px;
+
+    margin: 30px auto 0;
   }
 
   .category-track {
-    gap: 15px;
+    width: 100%;
 
-    padding-left: 3px;
-    padding-right: 3px;
+    grid-template-columns: 1fr;
 
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
-
-    flex-wrap: nowrap;
-  }
-
-  .category-card {
-    flex: 0 0 90px;
-
-    width: 90px;
-    min-width: 90px;
+    gap: 18px;
   }
 
   .category-image {
-    width: 90px;
-    height: 90px;
+    aspect-ratio: 1.6 / 1;
   }
 
-  .category-prev {
-    margin-right: 8px;
+  .category-name {
+    right: 15px;
+    bottom: 14px;
+
+    font-size: 18px;
   }
 
-  .category-next {
-    margin-left: 8px;
+  .category-card:active {
+    transform: scale(0.985);
+  }
+
+  .category-card:active .category-image img {
+    transform: scale(1.04);
   }
 }
 
@@ -280,64 +306,65 @@ font-family: "Brush Script MT", cursive;
 
 @media (max-width: 400px) {
 
-  .category-arrow {
-    display: none;
+  .categories-section {
+    padding-left: 4%;
+    padding-right: 4%;
   }
 
   .category-carousel {
-    width: 100%;
+    max-width: 100%;
   }
 
   .category-track {
-    width: 100%;
-
     gap: 14px;
-
-    padding-left: 3px;
-    padding-right: 3px;
   }
 
-  .category-card {
-    flex: 0 0 90px;
+  .category-name {
+    right: 13px;
+    bottom: 12px;
 
-    width: 90px;
-    min-width: 90px;
-  }
-
-  .category-image {
-    width: 90px;
-    height: 90px;
-  }
-
-  .category-card h3 {
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 
 
 /* ============================================================
-   RTL SUPPORT
+   RTL
    ============================================================ */
 
-[dir="rtl"] .category-prev {
-  margin-right: 0;
-  margin-left: 15px;
+[dir="rtl"] .category-name {
+  right: auto;
+  left: 20px;
+
+  text-align: left;
 }
 
-[dir="rtl"] .category-next {
+[dir="rtl"] .category-name::after {
   margin-left: 0;
-  margin-right: 15px;
+  margin-right: auto;
+}
+
+
+@media (max-width: 900px) {
+
+  [dir="rtl"] .category-name {
+    left: 16px;
+  }
 }
 
 
 @media (max-width: 600px) {
 
-  [dir="rtl"] .category-prev {
-    margin-left: 8px;
+  [dir="rtl"] .category-name {
+    left: 15px;
   }
+}
 
-  [dir="rtl"] .category-next {
-    margin-right: 8px;
+
+@media (max-width: 400px) {
+
+  [dir="rtl"] .category-name {
+    left: 13px;
   }
 }
 
@@ -348,8 +375,7 @@ font-family: "Brush Script MT", cursive;
 
 .category-card:focus-visible {
   outline: 2px solid var(--color-accent);
-  outline-offset: 5px;
-  border-radius: 50%;
+  outline-offset: 4px;
 }
 
 
@@ -359,14 +385,11 @@ font-family: "Brush Script MT", cursive;
 
 @media (prefers-reduced-motion: reduce) {
 
-  .category-track {
-    scroll-behavior: auto;
-  }
-
   .category-card,
-  .category-image,
   .category-image img,
-  .category-card h3 {
+  .category-image::after,
+  .category-name,
+  .category-name::after {
     transition: none;
   }
 }

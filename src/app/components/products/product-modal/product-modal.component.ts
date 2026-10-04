@@ -59,7 +59,8 @@ export class ProductModalComponent
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
-private readonly dialog=inject(MatDialog);
+  private readonly dialog = inject(MatDialog);
+
   readonly languageService = inject(LanguageService);
 
   // ============================================================
@@ -119,19 +120,22 @@ private readonly dialog=inject(MatDialog);
 
   ngOnInit(): void {
 
-  this.route.paramMap.subscribe(params => {
-    const idParam = params.get('id');
-    const productId = Number(idParam);
+    this.route.paramMap.subscribe(params => {
 
-    if (!Number.isInteger(productId) || productId <= 0) {
-      this.goBack();
-      return;
-    }
+      const idParam = params.get('id');
+      const productId = Number(idParam);
 
-    this.loadProduct(productId);
-  });
-}
+      if (
+        !Number.isInteger(productId) ||
+        productId <= 0
+      ) {
+        this.goBack();
+        return;
+      }
 
+      this.loadProduct(productId);
+    });
+  }
 
   ngOnDestroy(): void {
 
@@ -151,11 +155,13 @@ private readonly dialog=inject(MatDialog);
   // ============================================================
 
   private loadProduct(id: number): void {
+
     this.stopImageSlider();
 
     this.productService.getProduct(id).subscribe({
 
       next: (product) => {
+
         this.product.set(product);
 
         this.selectedImageIndex.set(0);
@@ -191,7 +197,6 @@ private readonly dialog=inject(MatDialog);
       );
   }
 
-
   get currentImageUrl(): string {
 
     const images = this.images;
@@ -210,6 +215,9 @@ private readonly dialog=inject(MatDialog);
     );
   }
 
+  // ============================================================
+  // IMAGE SLIDER
+  // ============================================================
 
   private startImageSlider(): void {
 
@@ -227,7 +235,6 @@ private readonly dialog=inject(MatDialog);
       }, 4000);
   }
 
-
   private stopImageSlider(): void {
 
     if (!this.imageSliderInterval) {
@@ -241,11 +248,9 @@ private readonly dialog=inject(MatDialog);
     this.imageSliderInterval = null;
   }
 
-
   private restartImageSlider(): void {
     this.startImageSlider();
   }
-
 
   selectImage(index: number): void {
 
@@ -260,7 +265,6 @@ private readonly dialog=inject(MatDialog);
 
     this.restartImageSlider();
   }
-
 
   previousImage(
     restartSlider = true
@@ -285,7 +289,6 @@ private readonly dialog=inject(MatDialog);
       this.restartImageSlider();
     }
   }
-
 
   nextImage(
     restartSlider = true
@@ -317,16 +320,13 @@ private readonly dialog=inject(MatDialog);
 
   get activeVariants(): ProductVariant[] {
 
-    return (this.product()?.variants ?? [])
-      
+    return (this.product()?.variants ?? []);
   }
-
 
   get hasVariants(): boolean {
 
     return this.activeVariants.length > 0;
   }
-
 
   get hasSizes(): boolean {
 
@@ -336,7 +336,6 @@ private readonly dialog=inject(MatDialog);
         !!variant.sizeName?.trim()
     );
   }
-
 
   get hasHeelSizes(): boolean {
 
@@ -349,9 +348,6 @@ private readonly dialog=inject(MatDialog);
 
   // ============================================================
   // AVAILABLE SIZE OPTIONS
-  //
-  // If a heel is selected, only sizes that actually exist
-  // with that heel are displayed as available.
   // ============================================================
 
   get availableSizes(): ProductVariant[] {
@@ -390,9 +386,6 @@ private readonly dialog=inject(MatDialog);
 
   // ============================================================
   // AVAILABLE HEEL OPTIONS
-  //
-  // If a size is selected, only heels that actually exist
-  // with that size are available.
   // ============================================================
 
   get availableHeelSizes(): ProductVariant[] {
@@ -455,7 +448,6 @@ private readonly dialog=inject(MatDialog);
     this.setQuantity(1);
   }
 
-
   private resetInvalidHeel(): void {
 
     const heelId =
@@ -515,7 +507,6 @@ private readonly dialog=inject(MatDialog);
     return this.selectedSizeId() === sizeId;
   }
 
-
   isHeelSelected(
     heelSizeId: number
   ): boolean {
@@ -525,8 +516,6 @@ private readonly dialog=inject(MatDialog);
 
   // ============================================================
   // SIZE AVAILABILITY
-  //
-  // Stock quantity is intentionally NOT checked.
   // ============================================================
 
   isSizeAvailable(
@@ -561,8 +550,6 @@ private readonly dialog=inject(MatDialog);
 
   // ============================================================
   // HEEL AVAILABILITY
-  //
-  // Stock quantity is intentionally NOT checked.
   // ============================================================
 
   isHeelAvailable(
@@ -607,10 +594,6 @@ private readonly dialog=inject(MatDialog);
     const heelId =
       this.selectedHeelSizeId();
 
-    // ----------------------------------------------------------
-    // SIZE + HEEL
-    // ----------------------------------------------------------
-
     if (
       this.hasSizes &&
       this.hasHeelSizes
@@ -632,10 +615,6 @@ private readonly dialog=inject(MatDialog);
       );
     }
 
-    // ----------------------------------------------------------
-    // SIZE ONLY
-    // ----------------------------------------------------------
-
     if (this.hasSizes) {
 
       if (sizeId == null) {
@@ -649,10 +628,6 @@ private readonly dialog=inject(MatDialog);
         ) ?? null
       );
     }
-
-    // ----------------------------------------------------------
-    // HEEL ONLY
-    // ----------------------------------------------------------
 
     if (this.hasHeelSizes) {
 
@@ -726,9 +701,6 @@ private readonly dialog=inject(MatDialog);
 
   // ============================================================
   // PRODUCT STOCK
-  //
-  // Business rule:
-  // product.isInStock is the only stock flag.
   // ============================================================
 
   get isOutOfStock(): boolean {
@@ -764,12 +736,10 @@ private readonly dialog=inject(MatDialog);
       return false;
     }
 
-    // No variants.
     if (!this.hasVariants) {
       return true;
     }
 
-    // Variants exist.
     return (
       !this.requiresVariantSelection &&
       this.selectedVariant !== null
@@ -787,7 +757,6 @@ private readonly dialog=inject(MatDialog);
     ) > 0;
   }
 
-
   get oldPrice(): number {
 
     return Number(
@@ -795,36 +764,40 @@ private readonly dialog=inject(MatDialog);
     );
   }
 
+  get newPrice(): number {
 
- get newPrice(): number {
-  const product = this.product();
+    const product = this.product();
 
-  if (!product) {
-    return 0;
+    if (!product) {
+      return 0;
+    }
+
+    const price = Number(product.price ?? 0);
+    const discount = Number(
+      product.discountPercentage ?? 0
+    );
+
+    if (discount <= 0) {
+      return price;
+    }
+
+    return price - (price * discount / 100);
   }
-
-  const price = Number(product.price ?? 0);
-  const discount = Number(product.discountPercentage ?? 0);
-
-  if (discount <= 0) {
-    return price;
-  }
-
-  return price - (price * discount / 100);
-}
 
   // ============================================================
   // QUANTITY
-  //
-  // No stock-based maximum.
   // ============================================================
 
   setQuantity(value: number | string): void {
- const stockQuantity = this.product()?.stockQuantity ?? 0;
 
-const maxQuantity = stockQuantity > 0
-  ? stockQuantity
-  : 5;
+    const stockQuantity =
+      this.product()?.stockQuantity ?? 0;
+
+    const maxQuantity =
+      stockQuantity > 0
+        ? stockQuantity
+        : 5;
+
     let parsed =
       typeof value === 'number'
         ? value
@@ -834,15 +807,16 @@ const maxQuantity = stockQuantity > 0
       parsed = 1;
     }
 
-    parsed =
-      Math.floor(parsed);
+    parsed = Math.floor(parsed);
 
     if (parsed < 1) {
       parsed = 1;
     }
-  if (parsed > maxQuantity) {
-    parsed = maxQuantity;
-  }
+
+    if (parsed > maxQuantity) {
+      parsed = maxQuantity;
+    }
+
     this.quantity.set(parsed);
   }
 
@@ -851,6 +825,7 @@ const maxQuantity = stockQuantity > 0
   // ============================================================
 
   addToCart(): void {
+
     const product =
       this.product();
 
@@ -861,29 +836,33 @@ const maxQuantity = stockQuantity > 0
       return;
     }
 
-    var selectedQuantity =
+    let selectedQuantity =
       this.quantity();
-       const stockQuantity = this.product()?.stockQuantity ?? 0;
 
-const maxQuantity = stockQuantity > 0
-  ? stockQuantity
-  : 5;
-    
-  if (selectedQuantity > maxQuantity) {
-    selectedQuantity = maxQuantity;
-  }
+    const stockQuantity =
+      this.product()?.stockQuantity ?? 0;
+
+    const maxQuantity =
+      stockQuantity > 0
+        ? stockQuantity
+        : 5;
+
+    if (selectedQuantity > maxQuantity) {
+      selectedQuantity = maxQuantity;
+    }
+
     // ----------------------------------------------------------
     // PRODUCT WITHOUT VARIANT
     // ----------------------------------------------------------
 
-    if (!this.hasVariants
-) {
+    if (!this.hasVariants) {
 
       const added =
         this.cartService.replaceCartItem(
           product,
           selectedQuantity
         );
+
       if (!added) {
         return;
       }
@@ -899,6 +878,7 @@ const maxQuantity = stockQuantity > 0
 
     const variant =
       this.selectedVariant;
+
     if (!variant) {
       return;
     }
@@ -909,6 +889,7 @@ const maxQuantity = stockQuantity > 0
         selectedQuantity,
         variant
       );
+
     if (!added) {
       return;
     }
@@ -916,58 +897,37 @@ const maxQuantity = stockQuantity > 0
     this.goBack();
   }
 
- 
-
   // ============================================================
   // RELATIVE PRODUCTS
   // ============================================================
 
- addRelativeProductToCart(product: Product): void {
+  addRelativeProductToCart(product: Product): void {
 
-  // ---------------------------------------------------
-  // PRODUCT HAS VARIANTS
-  // Open that product in the product modal/page
-  // ---------------------------------------------------
+    if (product.hasVariants) {
+      this.openProductDetails(product);
+      return;
+    }
 
-  if (product.hasVariants) {
-    this.openProductDetails(product);
-    return;
-  }
+    const added =
+      this.cartService.addToCart(product);
 
-  // ---------------------------------------------------
-  // PRODUCT WITHOUT VARIANTS
-  // Check cart and add directly
-  // ---------------------------------------------------
+    if (!added) {
 
-  const added =
-    this.cartService.addToCart(product);
+      this.addedToCartProductId.set(null);
 
-  // ---------------------------------------------------
-  // ALREADY IN CART
-  // ---------------------------------------------------
+      this.showAlreadyInCartMessage(
+        product.id
+      );
 
-  if (!added) {
+      return;
+    }
 
-    this.addedToCartProductId.set(null);
+    this.alreadyInCartProductId.set(null);
 
-    this.showAlreadyInCartMessage(
+    this.showAddedToCartSuccess(
       product.id
     );
-
-    return;
   }
-
-  // ---------------------------------------------------
-  // ADDED SUCCESSFULLY
-  // ---------------------------------------------------
-
-  this.alreadyInCartProductId.set(null);
-
-  this.showAddedToCartSuccess(
-    product.id
-  );
-}
-
 
   private showAddedToCartSuccess(
     productId: number
@@ -995,7 +955,6 @@ const maxQuantity = stockQuantity > 0
 
       }, 1500);
   }
-
 
   private showAlreadyInCartMessage(
     productId: number
@@ -1031,6 +990,7 @@ const maxQuantity = stockQuantity > 0
   openProductDetails(
     product: Product
   ): void {
+
     this.router.navigate([
       '/product',
       product.id
@@ -1038,16 +998,17 @@ const maxQuantity = stockQuantity > 0
   }
 
   // ============================================================
-  // SUBCATEGORY
-  //
-  // Supports your current model if subCategoryId exists.
+  // CATEGORY
   // ============================================================
 
   get CategoryId(): number | null {
 
     const product =
       this.product();
-    const id =product?.category?.id
+
+    const id =
+      product?.category?.id;
+
     if (
       id == null ||
       !Number.isInteger(Number(id))
@@ -1057,11 +1018,15 @@ const maxQuantity = stockQuantity > 0
 
     return Number(id);
   }
- get ProductId(): number | null {
+
+  get ProductId(): number | null {
 
     const product =
       this.product();
-    const id =product?.id
+
+    const id =
+      product?.id;
+
     if (
       id == null ||
       !Number.isInteger(Number(id))
@@ -1071,6 +1036,7 @@ const maxQuantity = stockQuantity > 0
 
     return Number(id);
   }
+
   // ============================================================
   // GO BACK
   // ============================================================
