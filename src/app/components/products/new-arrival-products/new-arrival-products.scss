@@ -3,6 +3,7 @@
    ===================================================== */
 
 .best-sellers {
+  
   width: 100%;
 
   padding: 55px 0;
@@ -66,11 +67,9 @@
 
 .best-sellers-products {
    display: grid;
-
+margin: 1px auto;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-
   gap: 20px;
-
   width: 100%;
 
   align-items: stretch;
@@ -83,7 +82,7 @@
   width: 95%;
   min-width: 0;
   height: 100%;
-
+margin: 1px auto;
   box-sizing: border-box;
 }
 
@@ -199,7 +198,7 @@
   .best-sellers-products {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
-    gap: 14px;
+    gap: 4px;
   }
 
 
@@ -234,7 +233,8 @@
 @media (max-width: 380px) {
 
   .best-sellers-products {
-     gap: 8px;
+     gap: 4px;
+
   }
 
 
