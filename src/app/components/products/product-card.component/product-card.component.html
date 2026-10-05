@@ -1,5 +1,6 @@
+
 <article
-  class="product-card "
+  class="product-card"
   (click)="openDetails()"
 >
 
@@ -19,14 +20,14 @@
     />
 
 
-    <!-- SECOND IMAGE -->
+    <!-- SECOND IMAGE - SHOWN ON DESKTOP HOVER -->
 
     <img
       *ngIf="getSecondImage()"
       class="product-image-hover"
       [src]="getImageUrl(getSecondImage())"
       [alt]="getProductName()"
-      loading="lazy"
+      loading="eager"
     />
 
 
@@ -54,9 +55,6 @@
     </span>
 
 
-  
-
-
     <!-- ================================================== -->
     <!-- ALREADY IN CART -->
     <!-- ================================================== -->
@@ -66,7 +64,7 @@
       *ngIf="showAlreadyInCartMessage"
     >
       {{ 'PRODUCT.ALREADY_IN_CART' | translate }}
-  </p>
+    </p>
 
   </div>
 
@@ -95,13 +93,14 @@
         {{ product.price | number:'1.2-2' }}
       </span>
 
-
       <span class="current-price">
         {{ getDiscountedPrice() | number:'1.2-2' }}
       </span>
 
     </div>
-  <!-- ================================================== -->
+
+
+    <!-- ================================================== -->
     <!-- ADD TO CART -->
     <!-- ================================================== -->
 
@@ -140,6 +139,7 @@
       }
 
     </button>
+
   </div>
 
 </article>

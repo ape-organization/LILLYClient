@@ -887,40 +887,28 @@ this.isSearchingClient.set(
   }
 
 
-  // =========================================================
-  // FIRST IMAGE
-  // =========================================================
 
-  getFirstImage(
-    product: Product
-  ): string | null {
+ // =========================================================
+// FIRST IMAGE
+// =========================================================
 
-    if (!product) {
-      return null;
-    }
+getFirstImage(
+  product: Product
+): string | null {
 
+  if (!product?.images?.length) {
+    return null;
+  }
 
-    const images =
-      [...(product.images ?? [])]
-
-        .filter(
-          image =>
-            !!image?.imageUrl
-        )
-
-        .sort(
-          (a, b) =>
-            (a.sortOrder ?? 0) -
-            (b.sortOrder ?? 0)
-        );
-
-
-    return (
-      images[0]?.imageUrl ??
-      null
+  const firstImage =
+    product.images.find(
+      image =>
+        typeof image === 'string' &&
+        image.trim().length > 0
     );
 
-  }
+  return firstImage?.trim() ?? null;
+}
 
 
   // =========================================================

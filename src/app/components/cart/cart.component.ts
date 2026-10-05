@@ -1,3 +1,4 @@
+
 import {
   CommonModule
 } from '@angular/common';
@@ -129,13 +130,11 @@ export class CartComponent
 
     this.cartService
       .cartItems$
-
       .pipe(
         takeUntil(
           this.destroy$
         )
       )
-
       .subscribe(items => {
 
         this.cartItems =
@@ -150,13 +149,11 @@ export class CartComponent
 
     this.cartService
       .cartLoading$
-
       .pipe(
         takeUntil(
           this.destroy$
         )
       )
-
       .subscribe(loading => {
 
         this.isLoading =
@@ -567,6 +564,37 @@ export class CartComponent
   // QUANTITY
   // ============================================================
 
+  /**
+   * Maximum quantity allowed for a cart item.
+   *
+   * If real stock exists:
+   *     max = stockQuantity
+   *
+   * If stock is 0:
+   *     max = 5
+   */
+  getMaxQuantity(
+    item: CartItem
+  ): number {
+
+    if (!item?.product) {
+      return 5;
+    }
+
+
+    const stockQuantity =
+      Number(
+        item.product.stockQuantity ?? 0
+      );
+
+
+    return stockQuantity > 0
+      ? Math.floor(stockQuantity)
+      : 5;
+
+  }
+
+
   getTotalQuantity(): number {
 
     return this.cartItems.reduce(
@@ -587,20 +615,14 @@ export class CartComponent
     if (!item) {
       return;
     }
- const stockQuantity = item.product.stockQuantity ?? 0;
 
-const maxQuantity = stockQuantity > 0
-  ? stockQuantity
-  : 5;
 
     quantity =
       Number(quantity);
 
 
     if (
-      !Number.isFinite(
-        quantity
-      )
+      !Number.isFinite(quantity)
     ) {
 
       return;
@@ -615,10 +637,19 @@ const maxQuantity = stockQuantity > 0
     if (quantity < 1) {
       quantity = 1;
     }
- if (quantity > maxQuantity) {
-    quantity = maxQuantity;
-  }
-    
+
+
+    const maxQuantity =
+      this.getMaxQuantity(item);
+
+
+    if (quantity > maxQuantity) {
+
+      quantity =
+        maxQuantity;
+
+    }
+
 
     this.cartService.updateQuantity(
       item.product.id,
@@ -638,8 +669,30 @@ const maxQuantity = stockQuantity > 0
     }
 
 
-    this.cartService.increaseQuantity(
+    const maxQuantity =
+      this.getMaxQuantity(item);
+
+
+    /*
+     * Do not allow the quantity to exceed
+     * the same maximum used by the input.
+     */
+    if (
+      item.quantity >= maxQuantity
+    ) {
+
+      return;
+
+    }
+
+
+    const nextQuantity =
+      item.quantity + 1;
+
+
+    this.cartService.updateQuantity(
       item.product.id,
+      nextQuantity,
       item.variant?.id
     );
 
@@ -660,9 +713,35 @@ const maxQuantity = stockQuantity > 0
     }
 
 
-    this.cartService.decreaseQuantity(
+    const nextQuantity =
+      item.quantity - 1;
+
+
+    this.cartService.updateQuantity(
       item.product.id,
+      nextQuantity,
       item.variant?.id
+    );
+
+  }
+
+
+  // ============================================================
+  // QUANTITY BUTTON STATE
+  // ============================================================
+
+  canIncreaseQuantity(
+    item: CartItem
+  ): boolean {
+
+    if (!item) {
+      return false;
+    }
+
+
+    return (
+      item.quantity <
+      this.getMaxQuantity(item)
     );
 
   }
@@ -757,27 +836,8 @@ const maxQuantity = stockQuantity > 0
     product: Product
   ): string | null {
 
-    const images =
-      [...(product?.images ?? [])]
-
-        .filter(
-          image =>
-            !!image?.imageUrl
-        )
-
-        .sort(
-          (a, b) =>
-            Number(
-              a.sortOrder ?? 0
-            ) -
-            Number(
-              b.sortOrder ?? 0
-            )
-        );
-
-
     return (
-      images[0]?.imageUrl ??
+      product?.images?.[0] ??
       null
     );
 

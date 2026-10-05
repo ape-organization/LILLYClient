@@ -1,4 +1,4 @@
- /* ============================================================
+/* ============================================================
    PRODUCT CARD HOST
    ============================================================ */
 
@@ -23,9 +23,13 @@
 
   width: 100%;
   height: 100%;
+
   background-color: var(--color-surface);
+
   min-width: 0;
-text-align: center;
+
+  text-align: center;
+
   display: flex;
   flex-direction: column;
 
@@ -34,7 +38,6 @@ text-align: center;
   overflow: hidden;
 
   cursor: pointer;
-
 
   transition:
     transform 0.25s ease,
@@ -74,7 +77,8 @@ text-align: center;
    PRODUCT IMAGES
    ============================================================ */
 
-.product-image img {
+.product-image-main,
+.product-image-hover {
   position: absolute;
 
   inset: 0;
@@ -86,9 +90,11 @@ text-align: center;
 
   object-fit: cover;
 
+  pointer-events: none;
+
   transition:
-    opacity 0.7s ease,
-    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.45s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 
@@ -114,24 +120,37 @@ text-align: center;
 
   opacity: 0;
 
-  transform: scale(1.035);
+  transform: scale(1.03);
 }
 
 
 /* ============================================================
-   IMAGE HOVER
+   DESKTOP IMAGE HOVER
    ============================================================ */
 
-.product-card:hover .product-image-main {
-  opacity: 0;
+@media (min-width: 769px) {
 
-  transform: scale(0.99);
-}
+  /*
+   * Show second image when hovering
+   * anywhere over the product card.
+   */
 
-.product-card:hover .product-image-hover {
-  opacity: 1;
+  .product-card:hover .product-image-hover {
+    opacity: 1;
 
-  transform: scale(1);
+    transform: scale(1);
+  }
+
+  /*
+   * Fade the first image away at the
+   * same time for a smooth transition.
+   */
+
+  .product-card:hover .product-image-main {
+    opacity: 0;
+
+    transform: scale(1.01);
+  }
 }
 
 
@@ -181,33 +200,36 @@ text-align: center;
    ============================================================ */
 
 .add-cart-button {
- 
   width: 80%;
+
   height: 38px;
-margin: 1px auto;
+
+  margin: 1px auto;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   padding: 0;
 
   border: none;
+
   border-radius: 10px;
 
   background: var(--color-primary-light);
 
   color: var(--color-primary-light);
 
-
-
   cursor: pointer;
-
 }
 
 .add-cart-button mat-icon {
   width: 22px;
   height: 22px;
-color: var(--color-surface);
+
+  color: var(--color-surface);
+
   margin: 1px auto;
 
   font-size: 22px;
@@ -215,10 +237,8 @@ color: var(--color-surface);
 
 
 /* ============================================================
-   DESKTOP HOVER
+   DISABLED ADD TO CART
    ============================================================ */
-
-
 
 .add-cart-button:disabled {
   cursor: not-allowed;
@@ -235,6 +255,7 @@ color: var(--color-surface);
   position: absolute;
 
   top: calc(70% + 25px);
+
   left: 50%;
 
   z-index: 7;
@@ -254,6 +275,7 @@ color: var(--color-surface);
   color: var(--color-primary-light);
 
   font-size: 11px;
+
   font-weight: 600;
 
   line-height: 1.3;
@@ -280,10 +302,13 @@ color: var(--color-surface);
   flex: 1;
 
   display: flex;
+
   flex-direction: column;
 
   padding: 12px 4px 14px;
+
   background-color: var(--color-surface);
+
   box-sizing: border-box;
 }
 
@@ -312,6 +337,7 @@ color: var(--color-surface);
   color: var(--color-primary);
 
   font-size: 15px;
+
   font-weight: 600;
 
   line-height: 1.4;
@@ -319,6 +345,7 @@ color: var(--color-surface);
   display: -webkit-box;
 
   -webkit-line-clamp: 2;
+
   -webkit-box-orient: vertical;
 
   overflow: hidden;
@@ -331,8 +358,11 @@ color: var(--color-surface);
 
 .product-price {
   display: flex;
+
   align-items: center;
-justify-content: center;
+
+  justify-content: center;
+
   gap: 8px;
 
   min-width: 0;
@@ -354,6 +384,7 @@ justify-content: center;
   color: var(--color-accent);
 
   font-size: 17px;
+
   font-weight: 700;
 }
 
@@ -361,13 +392,6 @@ justify-content: center;
 /* ============================================================
    ADD TO CART WRAPPER
    ============================================================ */
-
-/*
-  If .addToCart is the wrapper around the button/message,
-  this pushes it to the bottom of the card.
-
-  Keep this only if your HTML contains .addToCart.
-*/
 
 .addToCart {
   margin-top: auto;
@@ -416,6 +440,7 @@ justify-content: center;
 
 .added-check-icon {
   width: 23px !important;
+
   height: 23px !important;
 
   font-size: 23px !important;
@@ -476,44 +501,26 @@ justify-content: center;
 
 
   /* ----------------------------------------------------------
-     DISABLE IMAGE HOVER
+     DISABLE SECOND IMAGE ON MOBILE
      ---------------------------------------------------------- */
 
-  .product-card:hover .product-image-main {
-    opacity: 1;
-
-    transform: none;
-  }
-
-  .product-card:hover .product-image-hover {
+  .product-image-hover {
     opacity: 0;
 
     transform: none;
-  }
 
-  .product-card:hover .product-image img {
-    transform: none;
+    pointer-events: none;
   }
 
 
   /* ----------------------------------------------------------
-     ADD CART ALWAYS VISIBLE
+     KEEP FIRST IMAGE VISIBLE
      ---------------------------------------------------------- */
 
-  .add-cart-button {
+  .product-image-main {
     opacity: 1;
 
-    visibility: visible;
-
-    transform:
-      translate(-50%, -50%)
-      scale(1);
-  }
-
-  .add-cart-button:hover:not(:disabled) {
-    transform:
-      translate(-50%, -50%)
-      scale(1);
+    transform: none;
   }
 }
 
@@ -570,18 +577,6 @@ justify-content: center;
     right: 7px;
   }
 
-  .add-cart-button {
-    width: 72px;
-    height: 34px;
-  }
-
-  .add-cart-button mat-icon {
-    width: 20px;
-    height: 20px;
-
-    font-size: 20px;
-  }
-
   .already-in-cart-message {
     top: calc(70% + 22px);
 
@@ -617,6 +612,7 @@ justify-content: center;
 
   .add-cart-button {
     width: 68px;
+
     height: 32px;
   }
 }

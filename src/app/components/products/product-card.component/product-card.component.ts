@@ -1,3 +1,4 @@
+
 import {
   Component,
   EventEmitter,
@@ -80,14 +81,14 @@ export class ProductCardComponent {
 
       return (
         this.product?.nameAr?.trim() ||
-        this.product?.nameEn ||
+        this.product?.nameEn?.trim() ||
         'Product'
       );
     }
 
     return (
       this.product?.nameEn?.trim() ||
-      this.product?.nameAr ||
+      this.product?.nameAr?.trim() ||
       'Product'
     );
   }
@@ -119,38 +120,32 @@ export class ProductCardComponent {
   // PRODUCT IMAGES
   // ========================================================
 
-  getSortedImages() {
-
-    if (!this.product?.images?.length) {
-      return [];
-    }
-
-    return [...this.product.images]
-      .filter(
-        image => !!image?.imageUrl
-      )
-      .sort(
-        (a, b) =>
-          a.sortOrder - b.sortOrder
-      );
-  }
-
+  /**
+   * Product images are strings.
+   *
+   * Example:
+   *
+   * [
+   *   "/uploads/Shop/image-one.webp",
+   *   "/uploads/Shop/image-two.webp"
+   * ]
+   */
 
   getFirstImage(): string | null {
 
-    const images =
-      this.getSortedImages();
-
-    return images[0]?.imageUrl ?? null;
+    return (
+      this.product?.images?.[0] ??
+      null
+    );
   }
 
 
   getSecondImage(): string | null {
 
-    const images =
-      this.getSortedImages();
-
-    return images[1]?.imageUrl ?? null;
+    return (
+      this.product?.images?.[1] ??
+      null
+    );
   }
 
 
@@ -167,15 +162,23 @@ export class ProductCardComponent {
       return 'assets/images/product-placeholder.png';
     }
 
-    if (
-      imageUrl.startsWith('http://') ||
-      imageUrl.startsWith('https://')
-    ) {
+    const url =
+      imageUrl.trim();
 
-      return imageUrl;
+    if (!url) {
+
+      return 'assets/images/product-placeholder.png';
     }
 
-    return `${this.imageApi}${imageUrl}`;
+    if (
+      url.startsWith('http://') ||
+      url.startsWith('https://')
+    ) {
+
+      return url;
+    }
+
+    return `${this.imageApi}${url}`;
   }
 
 
@@ -242,25 +245,22 @@ export class ProductCardComponent {
     if (
       !this.product?.isInStock
     ) {
+
       return;
     }
 
     // Prevent repeated click when
-    // the parent is already showing the
-    // added state.
+    // the parent is already showing
+    // the added state.
     if (this.showAddedCheck) {
+
       return;
     }
 
     /*
-     * IMPORTANT:
-     *
      * If the product has active variants,
-     * it MUST NOT be added directly from
-     * the product card.
-     *
-     * Emit the product and let the parent
-     * open the product modal.
+     * the parent handles opening the
+     * product details/modal.
      */
     this.addToCartClicked.emit(
       this.product

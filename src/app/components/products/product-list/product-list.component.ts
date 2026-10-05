@@ -668,7 +668,7 @@ export class ProductListComponent implements OnInit {
       next: (
         response: ProductPageResponse
       ) => {
-
+console.log(response)
         if (
           requestVersion !==
           this.requestVersion

@@ -11,7 +11,10 @@ import { FormsModule } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
 
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
 
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -29,7 +32,6 @@ import { LanguageService } from '../../../services/language.service';
 import { ProductService } from '../../../services/product.service';
 
 import { RelativeProduct } from '../relative-product/relative-product';
-import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({
@@ -59,27 +61,30 @@ export class ProductModalComponent
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
-  private readonly dialog = inject(MatDialog);
 
-  readonly languageService = inject(LanguageService);
+  readonly languageService =
+    inject(LanguageService);
 
   // ============================================================
   // PRODUCT
   // ============================================================
 
-  readonly product = signal<Product | null>(null);
+  readonly product =
+    signal<Product | null>(null);
 
   // ============================================================
   // QUANTITY
   // ============================================================
 
-  readonly quantity = signal(1);
+  readonly quantity =
+    signal(1);
 
   // ============================================================
   // IMAGE SLIDER
   // ============================================================
 
-  readonly selectedImageIndex = signal(0);
+  readonly selectedImageIndex =
+    signal(0);
 
   private imageSliderInterval:
     ReturnType<typeof setInterval> | null = null;
@@ -88,9 +93,11 @@ export class ProductModalComponent
   // VARIANT SELECTION
   // ============================================================
 
-  readonly selectedSizeId = signal<number | null>(null);
+  readonly selectedSizeId =
+    signal<number | null>(null);
 
-  readonly selectedHeelSizeId = signal<number | null>(null);
+  readonly selectedHeelSizeId =
+    signal<number | null>(null);
 
   // ============================================================
   // RELATIVE PRODUCTS CART FEEDBACK
@@ -112,7 +119,8 @@ export class ProductModalComponent
   // IMAGE API
   // ============================================================
 
-  readonly api = environment.imageApiBaseUrl;
+  readonly api =
+    environment.imageApiBaseUrl;
 
   // ============================================================
   // LIFECYCLE
@@ -142,11 +150,15 @@ export class ProductModalComponent
     this.stopImageSlider();
 
     if (this.addedToCartTimer) {
-      clearTimeout(this.addedToCartTimer);
+      clearTimeout(
+        this.addedToCartTimer
+      );
     }
 
     if (this.alreadyInCartMessageTimer) {
-      clearTimeout(this.alreadyInCartMessageTimer);
+      clearTimeout(
+        this.alreadyInCartMessageTimer
+      );
     }
   }
 
@@ -186,15 +198,9 @@ export class ProductModalComponent
   // IMAGES
   // ============================================================
 
-  get images() {
+  get images(): any[] {
 
-    return [...(this.product()?.images ?? [])]
-      .filter(image => !!image.imageUrl)
-      .sort(
-        (a, b) =>
-          (a.sortOrder ?? 0) -
-          (b.sortOrder ?? 0)
-      );
+    return this.product()?.images ?? [];
   }
 
   get currentImageUrl(): string {
@@ -211,7 +217,7 @@ export class ProductModalComponent
     );
 
     return this.getImageUrl(
-      images[index]?.imageUrl
+      images[index]
     );
   }
 
@@ -320,7 +326,9 @@ export class ProductModalComponent
 
   get activeVariants(): ProductVariant[] {
 
-    return (this.product()?.variants ?? []);
+    return (
+      this.product()?.variants ?? []
+    );
   }
 
   get hasVariants(): boolean {
@@ -453,9 +461,7 @@ export class ProductModalComponent
     const heelId =
       this.selectedHeelSizeId();
 
-    if (
-      heelId == null
-    ) {
+    if (heelId == null) {
       return;
     }
 
@@ -481,7 +487,8 @@ export class ProductModalComponent
     }
 
     if (
-      this.selectedHeelSizeId() === heelSizeId
+      this.selectedHeelSizeId() ===
+      heelSizeId
     ) {
 
       this.selectedHeelSizeId.set(null);
@@ -504,14 +511,20 @@ export class ProductModalComponent
     sizeId: number
   ): boolean {
 
-    return this.selectedSizeId() === sizeId;
+    return (
+      this.selectedSizeId() ===
+      sizeId
+    );
   }
 
   isHeelSelected(
     heelSizeId: number
   ): boolean {
 
-    return this.selectedHeelSizeId() === heelSizeId;
+    return (
+      this.selectedHeelSizeId() ===
+      heelSizeId
+    );
   }
 
   // ============================================================
@@ -563,7 +576,8 @@ export class ProductModalComponent
       variant => {
 
         if (
-          variant.heelSizeId !== heelSizeId
+          variant.heelSizeId !==
+          heelSizeId
         ) {
           return false;
         }
@@ -586,7 +600,8 @@ export class ProductModalComponent
   // SELECTED DATABASE VARIANT
   // ============================================================
 
-  get selectedVariant(): ProductVariant | null {
+  get selectedVariant():
+    ProductVariant | null {
 
     const sizeId =
       this.selectedSizeId();
@@ -766,29 +781,38 @@ export class ProductModalComponent
 
   get newPrice(): number {
 
-    const product = this.product();
+    const product =
+      this.product();
 
     if (!product) {
       return 0;
     }
 
-    const price = Number(product.price ?? 0);
-    const discount = Number(
-      product.discountPercentage ?? 0
-    );
+    const price =
+      Number(product.price ?? 0);
+
+    const discount =
+      Number(
+        product.discountPercentage ?? 0
+      );
 
     if (discount <= 0) {
       return price;
     }
 
-    return price - (price * discount / 100);
+    return (
+      price -
+      (price * discount / 100)
+    );
   }
 
   // ============================================================
   // QUANTITY
   // ============================================================
 
-  setQuantity(value: number | string): void {
+  setQuantity(
+    value: number | string
+  ): void {
 
     const stockQuantity =
       this.product()?.stockQuantity ?? 0;
@@ -840,15 +864,19 @@ export class ProductModalComponent
       this.quantity();
 
     const stockQuantity =
-      this.product()?.stockQuantity ?? 0;
+      product.stockQuantity ?? 0;
 
     const maxQuantity =
       stockQuantity > 0
         ? stockQuantity
         : 5;
 
-    if (selectedQuantity > maxQuantity) {
-      selectedQuantity = maxQuantity;
+    if (
+      selectedQuantity >
+      maxQuantity
+    ) {
+      selectedQuantity =
+        maxQuantity;
     }
 
     // ----------------------------------------------------------
@@ -901,7 +929,9 @@ export class ProductModalComponent
   // RELATIVE PRODUCTS
   // ============================================================
 
-  addRelativeProductToCart(product: Product): void {
+  addRelativeProductToCart(
+    product: Product
+  ): void {
 
     if (product.hasVariants) {
       this.openProductDetails(product);
@@ -913,7 +943,9 @@ export class ProductModalComponent
 
     if (!added) {
 
-      this.addedToCartProductId.set(null);
+      this.addedToCartProductId.set(
+        null
+      );
 
       this.showAlreadyInCartMessage(
         product.id
@@ -922,7 +954,9 @@ export class ProductModalComponent
       return;
     }
 
-    this.alreadyInCartProductId.set(null);
+    this.alreadyInCartProductId.set(
+      null
+    );
 
     this.showAddedToCartSuccess(
       product.id
@@ -950,7 +984,10 @@ export class ProductModalComponent
           this.addedToCartProductId() ===
           productId
         ) {
-          this.addedToCartProductId.set(null);
+
+          this.addedToCartProductId.set(
+            null
+          );
         }
 
       }, 1500);
@@ -977,7 +1014,10 @@ export class ProductModalComponent
           this.alreadyInCartProductId() ===
           productId
         ) {
-          this.alreadyInCartProductId.set(null);
+
+          this.alreadyInCartProductId.set(
+            null
+          );
         }
 
       }, 3000);
@@ -1140,7 +1180,7 @@ export class ProductModalComponent
   }
 
   // ============================================================
-  // CATEGORY
+  // CATEGORY NAME
   // ============================================================
 
   getCategoryName(): string {

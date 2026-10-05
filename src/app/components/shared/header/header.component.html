@@ -6,16 +6,11 @@
   <div class="desktop-header">
 
     <!-- LOGO -->
-    <a routerLink="/" class="logo">
-     <!--  <span class="logo-symbol">
-<img src="../../../../assets/images/lilly.png" />
-
-      </span> -->
-
-      <span class="logo-text">
+    <div class="logo">
+ <span class="logo-text">
         {{ 'HEADER.TITLE' | translate }}
       </span>
-    </a>
+    </div>
 
 
     <!-- DESKTOP SEARCH -->
@@ -304,6 +299,8 @@
 
   <div class="mobile-header">
 
+   
+       
     <!-- MENU -->
     <button
       type="button"
@@ -318,22 +315,14 @@
 
 
     <!-- LOGO -->
-    <a
-      routerLink="/"
-      class="logo">
-
-     <!-- <span class="logo-symbol">
-<img src="../../../../assets/images/lilly.png" />
-
-      </span> -->
-
-      <span class="logo-text">
+    <div class="mobilelogo">
+ <span class="logo-text">
         {{ 'HEADER.TITLE' | translate }}
       </span>
 
-    </a>
+    </div>
 
-
+<div class="navMobile">
     <!-- MOBILE SEARCH -->
     <button
       type="button"
@@ -382,7 +371,7 @@
       </span>
 
     </button>
-
+</div>
   </div>
 
 

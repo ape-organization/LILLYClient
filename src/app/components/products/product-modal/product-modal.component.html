@@ -15,10 +15,8 @@
 
     <div class="product-image">
 
-      <!-- NEW: IMAGE GALLERY WRAPPER -->
       <div class="image-gallery">
 
-        <!-- EXISTING MAIN IMAGE SLIDER -->
         <div
           class="image-frame"
           [class.out-of-stock-image]="isOutOfStock"
@@ -94,7 +92,7 @@
 
 
         <!-- ======================================================
-             NEW: IMAGE THUMBNAILS
+             IMAGE THUMBNAILS
              ====================================================== -->
 
         <div
@@ -123,7 +121,7 @@
           >
 
             <img
-              [src]="getImageUrl(image.imageUrl)"
+              [src]="getImageUrl(image)"
               [alt]="
                 getProductName() +
                 ' image ' +
@@ -216,6 +214,8 @@
 
       </div>
 
+
+      <!-- CATEGORY -->
 
       <div
         class="product-description"
@@ -339,22 +339,32 @@
               type="button"
               class="option-button"
 
-              *ngFor="let variant of availableSizes"
+              *ngFor="
+                let variant of availableSizes
+              "
 
               [class.selected]="
-                isSizeSelected(variant.sizeId!)
+                isSizeSelected(
+                  variant.sizeId!
+                )
               "
 
               [class.disabled]="
-                !isSizeAvailable(variant.sizeId!)
+                !isSizeAvailable(
+                  variant.sizeId!
+                )
               "
 
               [disabled]="
-                !isSizeAvailable(variant.sizeId!)
+                !isSizeAvailable(
+                  variant.sizeId!
+                )
               "
 
               (click)="
-                selectSize(variant.sizeId!)
+                selectSize(
+                  variant.sizeId!
+                )
               "
             >
 
@@ -489,7 +499,9 @@
           *ngIf="selectedVariant"
         >
 
-          <div class="selected-combination-icon">
+          <div
+            class="selected-combination-icon"
+          >
 
             <mat-icon>
               check
@@ -497,9 +509,13 @@
 
           </div>
 
-          <div class="selected-combination-content">
+          <div
+            class="selected-combination-content"
+          >
 
-            <span class="selected-combination-label">
+            <span
+              class="selected-combination-label"
+            >
               {{ 'PRODUCT.SELECTED_OPTIONS' | translate }}
             </span>
 
