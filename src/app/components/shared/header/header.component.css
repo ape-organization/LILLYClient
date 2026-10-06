@@ -555,6 +555,8 @@ min-width: 130px;
 
 .category-list,
 .brand-list {
+  height: 150px;
+  overflow-y: scroll;
   display: flex;
   flex-direction: column;
 }
