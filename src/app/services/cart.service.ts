@@ -11,6 +11,7 @@ import {
   catchError,
   finalize,
   map,
+  shareReplay,
   tap
 } from 'rxjs/operators';
 
@@ -51,6 +52,7 @@ export interface OrderItemRequest {
   quantity: number;
 
   productVariantId?: number | null;
+   displayedUnitPrice?: number | null;
 }
 
 
@@ -112,6 +114,21 @@ export class CartService {
 
 
   // ============================================================
+  // REFRESH STATE
+  // ============================================================
+
+  /*
+   * Keeps the current API refresh request.
+   *
+   * This prevents CartComponent and CheckoutComponent
+   * from creating two simultaneous API requests when
+   * both ask for a refresh at nearly the same time.
+   */
+  private refreshInProgress$:
+    Observable<CartItem[]> | null = null;
+
+
+  // ============================================================
   // CONSTRUCTOR
   // ============================================================
 
@@ -132,14 +149,16 @@ export class CartService {
 
     const storedItems =
       this.readStoredCart();
-  if (storedItems.length === 0) {
+
+    if (storedItems.length === 0) {
 
       this.cartItems.next([]);
 
       this.updateCartCount();
 
       this.cartInitialized.next(true);
- return;
+
+      return;
     }
 
 
@@ -161,14 +180,15 @@ export class CartService {
            */
 
           this.cartInitialized.next(true);
-})
+
+        })
       )
       .subscribe({
         next: items => {
         },
 
         error: error => {
- }
+        }
       });
 
   }
@@ -595,29 +615,29 @@ export class CartService {
   // ============================================================
 
   getOrderItems(): OrderItemRequest[] {
+  return this.cartItems
+  .getValue()
+    .map(item => ({
+      productId: item.product.id,
 
-    return this.cartItems.value
+      quantity:
+        this.normalizeQuantity(
+          item.quantity
+        ),
 
-      .map(item => ({
+      productVariantId:
+        item.variant?.id ?? null,
 
-        productId:
-          item.product.id,
-
-        quantity:
-          this.normalizeQuantity(
-            item.quantity
-          ),
-
-        productVariantId:
-          item.variant?.id ?? null
-
-      }))
-
-      .filter(item =>
-        item.productId > 0 &&
-        item.quantity > 0
-      );
-  }
+      displayedUnitPrice:
+        this.getFinalPrice(
+          item.product
+        )
+    }))
+    .filter(item =>
+      item.productId > 0 &&
+      item.quantity > 0
+    );
+}
 
 
   // ============================================================
@@ -714,16 +734,20 @@ export class CartService {
   // REFRESH CART FROM API
   // ============================================================
 
-  /*
-   * PUBLIC because CartComponent can manually request
-   * a refresh if needed.
-   *
-   * However, the CartComponent below no longer needs
-   * to call this on initialization.
-   */
-
   public refreshCartFromApi():
     Observable<CartItem[]> {
+
+    /*
+     * If another refresh is already running,
+     * return the same observable instead of
+     * starting another HTTP request.
+     */
+    if (this.refreshInProgress$) {
+
+      return this.refreshInProgress$;
+
+    }
+
 
     const storedItems =
       this.readStoredCart();
@@ -736,6 +760,7 @@ export class CartService {
       this.updateCartCount();
 
       return of([]);
+
     }
 
 
@@ -746,73 +771,49 @@ export class CartService {
         )
       )
     ];
-this.cartLoading.next(true);
 
 
-    return this.productService
-      .getProductsByIds(productIds)
-
-      .pipe(
-
-        /*
-         * IMPORTANT:
-         *
-         * Prevent infinite loading if the API request
-         * never completes.
-         *
-         * 10 seconds is enough for a normal API call.
-         */
-
-        timeout(10000),
+    this.cartLoading.next(true);
 
 
-        map(products => {
- const validCart: CartItem[] = [];
+    const refresh$ =
+      this.productService
+        .getProductsByIds(productIds)
+
+        .pipe(
+
+          /*
+           * Prevent infinite loading if the API request
+           * never completes.
+           */
+
+          timeout(10000),
 
 
-          for (
-            const storedItem of storedItems
-          ) {
+          map(products => {
 
-            const product =
-              products.find(
-                p =>
-                  p.id ===
-                  storedItem.productId
-              );
+            const validCart: CartItem[] = [];
 
 
-            if (!product) {
-              continue;
-            }
-
-
-            if (
-              product.isInStock !== true
+            for (
+              const storedItem of storedItems
             ) {
 
-              continue;
-
-            }
-
-
-            const hasActiveVariants =
-              this.hasActiveVariants(
-                product
-              );
+              const product =
+                products.find(
+                  p =>
+                    p.id ===
+                    storedItem.productId
+                );
 
 
-            // --------------------------------------------------
-            // PRODUCT HAS ACTIVE VARIANTS
-            // --------------------------------------------------
+              if (!product) {
+                continue;
+              }
 
-            if (hasActiveVariants) {
 
               if (
-                storedItem.variantId ===
-                  null ||
-                storedItem.variantId ===
-                  undefined
+                product.isInStock !== true
               ) {
 
                 continue;
@@ -820,19 +821,73 @@ this.cartLoading.next(true);
               }
 
 
-              const variant =
-                product.variants?.find(
-                  v =>
-                    v.id ===
-                      storedItem.variantId &&
-                    v.isActive !== false
+              const hasActiveVariants =
+                this.hasActiveVariants(
+                  product
                 );
 
 
-              if (!variant) {
+              // --------------------------------------------------
+              // PRODUCT HAS ACTIVE VARIANTS
+              // --------------------------------------------------
+
+              if (hasActiveVariants) {
+
+                if (
+                  storedItem.variantId ===
+                    null ||
+                  storedItem.variantId ===
+                    undefined
+                ) {
+
+                  continue;
+
+                }
+
+
+                const variant =
+                  product.variants?.find(
+                    v =>
+                      v.id ===
+                        storedItem.variantId &&
+                      v.isActive !== false
+                  );
+
+
+                if (!variant) {
+                  continue;
+                }
+
+
+                const quantity =
+                  this.normalizeQuantity(
+                    storedItem.quantity
+                  );
+
+
+                if (quantity <= 0) {
+                  continue;
+                }
+
+
+                validCart.push({
+
+                  product,
+
+                  quantity,
+
+                  variant
+
+                });
+
+
                 continue;
               }
 
+
+              // --------------------------------------------------
+              // PRODUCT WITHOUT ACTIVE VARIANTS
+              // --------------------------------------------------
 
               const quantity =
                 this.normalizeQuantity(
@@ -849,87 +904,82 @@ this.cartLoading.next(true);
 
                 product,
 
-                quantity,
-
-                variant
+                quantity
 
               });
 
-
-              continue;
             }
 
 
-            // --------------------------------------------------
-            // PRODUCT WITHOUT ACTIVE VARIANTS
-            // --------------------------------------------------
+            return validCart;
 
-            const quantity =
-              this.normalizeQuantity(
-                storedItem.quantity
-              );
+          }),
 
 
-            if (quantity <= 0) {
-              continue;
-            }
+          tap(validCart => {
+
+            this.cartItems.next(
+              validCart
+            );
 
 
-            validCart.push({
-
-              product,
-
-              quantity
-
-            });
-
-          }
+            this.updateCartCount();
 
 
-          return validCart;
+            /*
+             * Save the cleaned cart.
+             */
 
-        }),
+            this.saveCartToStorage(
+              validCart
+            );
 
-
-        tap(validCart => {
- this.cartItems.next(
-            validCart
-          );
-
-
-          this.updateCartCount();
+          }),
 
 
-          /*
-           * Save the cleaned cart.
-           */
+          catchError(error => {
 
-          this.saveCartToStorage(
-            validCart
-          );
+            return of(
+              this.cartItems.value
+            );
 
-        }),
+          }),
 
 
-        catchError(error => {
-          return of(
-            this.cartItems.value
-          );
+          finalize(() => {
 
-        }),
+            /*
+             * Loading must ALWAYS stop.
+             */
 
+            this.cartLoading.next(false);
 
-        finalize(() => {
+            /*
+             * Allow the next cart/checkout entry
+             * to perform a fresh API request.
+             */
+
+            this.refreshInProgress$ = null;
+
+          }),
 
           /*
-           * Loading must ALWAYS stop.
+           * Share the same HTTP request with any
+           * simultaneous callers.
            */
+          shareReplay({
+            bufferSize: 1,
+            refCount: false
+          })
 
-          this.cartLoading.next(false);
+        );
 
-        })
 
-      );
+    this.refreshInProgress$ =
+      refresh$;
+
+
+    return refresh$;
   }
 
 
@@ -993,7 +1043,7 @@ this.cartLoading.next(true);
       );
 
     } catch (error) {
-}
+    }
   }
 
 
@@ -1137,7 +1187,8 @@ this.cartLoading.next(true);
       return [];
 
     } catch (error) {
- this.removeCartFromStorage();
+
+      this.removeCartFromStorage();
 
       return [];
 
@@ -1161,7 +1212,7 @@ this.cartLoading.next(true);
       );
 
     } catch (error) {
-}
+    }
   }
 
 

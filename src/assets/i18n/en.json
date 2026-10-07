@@ -160,6 +160,8 @@
     "PROCEED_TO_CHECKOUT": "Proceed to Checkout"
   },
  "CHECKOUT": {
+      "PRICE_CHANGED": "The price has been updated. Please review your order before placing it."
+ ,
     "BACK_TO_CART": "Back to Cart",
     "TITLE": "Checkout",
     "SUBTITLE": "Complete your order details and place your order",

@@ -105,7 +105,11 @@ import {
 export class CheckoutComponent
   implements OnInit, OnDestroy {
 
-private readonly cdr = inject(ChangeDetectorRef);
+
+  private readonly cdr =
+    inject(ChangeDetectorRef);
+
+
   // =========================================================
   // SERVICES
   // =========================================================
@@ -218,6 +222,26 @@ private readonly cdr = inject(ChangeDetectorRef);
 
     this.setupPhoneLookup();
 
+
+    /*
+     * IMPORTANT:
+     *
+     * Refresh the cart whenever checkout is opened.
+     *
+     * This retrieves the latest product price,
+     * discount, stock and active variant data.
+     *
+     * CartService prevents this from creating a
+     * duplicate request if another refresh is
+     * already running.
+     */
+    this.cartService
+      .refreshCartFromApi()
+      .pipe(
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
+
   }
 
 
@@ -238,32 +262,36 @@ private readonly cdr = inject(ChangeDetectorRef);
   // CART SUBSCRIPTION
   // =========================================================
 
-private subscribeToCart(): void {
+  private subscribeToCart(): void {
 
-  combineLatest([
-    this.cartService.cartItems$,
-    this.cartService.cartInitialized$,
-    this.cartService.cartLoading$
-  ])
+    combineLatest([
+      this.cartService.cartItems$,
+      this.cartService.cartInitialized$,
+      this.cartService.cartLoading$
+    ])
 
-    .pipe(
-      takeUntil(this.destroy$)
-    )
+      .pipe(
+        takeUntil(this.destroy$)
+      )
 
-    .subscribe(
-      ([items, initialized, loading]) => {
+      .subscribe(
+        ([items, initialized, loading]) => {
 
-        this.cartItems = items ?? [];
+          this.cartItems =
+            items ?? [];
 
-        this.isCartInitialized = initialized;
+          this.isCartInitialized =
+            initialized;
 
-        this.isCartLoading = loading;
-this.cdr.detectChanges();
+          this.isCartLoading =
+            loading;
 
-      }
-    );
+          this.cdr.detectChanges();
 
-}
+        }
+      );
+
+  }
 
 
   // =========================================================
@@ -469,7 +497,8 @@ this.cdr.detectChanges();
 
 
         error: error => {
-this.isSearchingClient.set(
+
+          this.isSearchingClient.set(
             false
           );
 
@@ -887,28 +916,29 @@ this.isSearchingClient.set(
   }
 
 
+  // =========================================================
+  // FIRST IMAGE
+  // =========================================================
 
- // =========================================================
-// FIRST IMAGE
-// =========================================================
+  getFirstImage(
+    product: Product
+  ): string | null {
 
-getFirstImage(
-  product: Product
-): string | null {
+    if (!product?.images?.length) {
+      return null;
+    }
 
-  if (!product?.images?.length) {
-    return null;
+
+    const firstImage =
+      product.images.find(
+        image =>
+          typeof image === 'string' &&
+          image.trim().length > 0
+      );
+
+
+    return firstImage?.trim() ?? null;
   }
-
-  const firstImage =
-    product.images.find(
-      image =>
-        typeof image === 'string' &&
-        image.trim().length > 0
-    );
-
-  return firstImage?.trim() ?? null;
-}
 
 
   // =========================================================
@@ -929,13 +959,6 @@ getFirstImage(
 
     const normalizedUrl =
       imageUrl.trim();
-
-
-    if (!normalizedUrl) {
-
-      return 'assets/images/product-placeholder.png';
-
-    }
 
 
     if (
@@ -1067,7 +1090,7 @@ getFirstImage(
      */
 
     if (!this.isCartInitialized) {
- return;
+      return;
     }
 
 
@@ -1145,7 +1168,9 @@ getFirstImage(
       items
 
     };
-this.isSubmitting.set(
+
+
+    this.isSubmitting.set(
       true
     );
 
@@ -1160,7 +1185,8 @@ this.isSubmitting.set(
       .subscribe({
 
         next: response => {
-this.isSubmitting.set(
+
+          this.isSubmitting.set(
             false
           );
 
@@ -1171,7 +1197,8 @@ this.isSubmitting.set(
 
 
         error: error => {
- this.isSubmitting.set(
+
+          this.isSubmitting.set(
             false
           );
 
@@ -1264,7 +1291,7 @@ this.isSubmitting.set(
 
             title:
               'ORDER.SUCCESS',
-
+icon:'check',
             message:
               'ORDER.SUCCESSORDER'
 
@@ -1310,7 +1337,7 @@ this.isSubmitting.set(
 
           title:
             'COMMON.ERROR',
-
+icon:'close',
           message
 
         }

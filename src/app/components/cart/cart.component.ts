@@ -1,4 +1,3 @@
-
 import {
   CommonModule
 } from '@angular/common';
@@ -122,10 +121,7 @@ export class CartComponent
   ngOnInit(): void {
 
     /*
-     * CartService is responsible for restoring
-     * the cart from localStorage/API.
-     *
-     * We ONLY listen here.
+     * Listen to the current cart state.
      */
 
     this.cartService
@@ -162,6 +158,26 @@ export class CartComponent
         this.cdr.detectChanges();
 
       });
+
+
+    /*
+     * IMPORTANT:
+     *
+     * Refresh the products whenever the cart page
+     * is opened so price/discount/stock/variant
+     * information comes from the latest API data.
+     *
+     * CartService prevents duplicate simultaneous
+     * refresh requests.
+     */
+    this.cartService
+      .refreshCartFromApi()
+      .pipe(
+        takeUntil(
+          this.destroy$
+        )
+      )
+      .subscribe();
 
   }
 

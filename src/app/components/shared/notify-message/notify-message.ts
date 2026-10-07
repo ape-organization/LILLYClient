@@ -13,7 +13,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 export class NotifyMessage {
  constructor(
     public dialogRef: MatDialogRef<NotifyMessage>,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }
+    @Inject(MAT_DIALOG_DATA) public data: { title: string; icon:string;message: string }
   ) {}
 
   onConfirm(): void {
