@@ -847,65 +847,52 @@ export class CartComponent
   // ============================================================
   // IMAGE
   // ============================================================
+// ============================================================
+// IMAGE
+// ============================================================
 
-  getFirstImage(
-    product: Product
-  ): string | null {
-
-    return (
-      product?.images?.[0] ??
-      null
-    );
-
+getFirstImage(
+  product: Product
+): string | null {
+  if (
+    !product?.images ||
+    !Array.isArray(product.images) ||
+    product.images.length === 0
+  ) {
+    return null;
   }
 
-
-  getImageUrl(
-    imageUrl?: string | null
-  ): string {
-
-    if (!imageUrl) {
-
-      return 'assets/images/product-placeholder.png';
-
-    }
+  return product.images[0] || null;
+}
 
 
-    const normalizedUrl =
-      imageUrl.trim();
-
-
-    if (
-      normalizedUrl.startsWith(
-        'http://'
-      ) ||
-      normalizedUrl.startsWith(
-        'https://'
-      )
-    ) {
-
-      return normalizedUrl;
-
-    }
-
-
-    const baseUrl =
-      this.api.replace(
-        /\/+$/,
-        ''
-      );
-
-
-    const path =
-      normalizedUrl.replace(
-        /^\/+/,
-        '/'
-      );
-
-
-    return `${baseUrl}${path}`;
-
+getImageUrl(
+  imageUrl?: string | null
+): string {
+  if (!imageUrl) {
+    return 'assets/images/product-placeholder.png';
   }
+
+  const normalizedUrl = imageUrl.trim();
+
+  // Already a complete URL
+  if (
+    normalizedUrl.startsWith('http://') ||
+    normalizedUrl.startsWith('https://')
+  ) {
+    return normalizedUrl;
+  }
+
+  const baseUrl = environment.imageApiBaseUrl
+    .replace(/\/+$/, '');
+
+  const path = normalizedUrl
+    .replace(/^\/+/, '');
+
+  const finalUrl = `${baseUrl}/${path}`;
+
+  return finalUrl;
+}
 
 
   // ============================================================
