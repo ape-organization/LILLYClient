@@ -9,18 +9,22 @@
 
 
 /* ============================================================
-   HERO
+   HERO SLIDER
    ============================================================ */
 
 .hero {
   position: relative;
-
   width: 100%;
-  height: 400px;
+
+  /*
+   * Responsive height:
+   * The slider can grow on wide screens and shrink on mobile.
+   * Images remain fully visible without cropping.
+   */
+  height: clamp(260px, 35vw, 560px);
 
   overflow: hidden;
-
-  background: var(--color-primary);
+  background: transparent;
 }
 
 
@@ -30,8 +34,14 @@
 
 .hero-slide {
   position: absolute;
-
   inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   opacity: 0;
   visibility: hidden;
@@ -44,7 +54,6 @@
 .hero-slide.active {
   opacity: 1;
   visibility: visible;
-
   z-index: 1;
 }
 
@@ -54,13 +63,25 @@
    ============================================================ */
 
 .hero-image {
+  display: block;
+
   width: 100%;
   height: 100%;
 
-  display: block;
-
-  object-fit: fill;
+  /*
+   * Show the complete image.
+   * Never crop or distort the original proportions.
+   */
+  object-fit: contain;
   object-position: center center;
+
+  /*
+   * Keep standard browser image rendering.
+   */
+  image-rendering: auto;
+
+  max-width: 100%;
+  border: none;
 }
 
 
@@ -68,18 +89,11 @@
    HERO OVERLAY
    ============================================================ */
 
-/*
-   Keep the image clean.
-   No dark left-to-right gradient.
-*/
-
 .hero-overlay {
   position: absolute;
-
   inset: 0;
 
   background: transparent;
-
   pointer-events: none;
 }
 
@@ -93,7 +107,6 @@
 
   left: 25px;
   right: auto;
-
   top: 80%;
 
   transform: translateY(-50%);
@@ -103,8 +116,12 @@
   width: min(560px, 80%);
 
   color: var(--color-surface);
-
   text-align: left;
+  pointer-events: none;
+}
+
+.hero-content button {
+  pointer-events: auto;
 }
 
 
@@ -115,7 +132,6 @@
 html[dir="rtl"] .hero-content {
   left: auto;
   right: 25px;
-
   text-align: right;
 }
 
@@ -133,7 +149,6 @@ html[dir="rtl"] .hero-content {
 
   font-size: 12px;
   font-weight: 700;
-
   letter-spacing: 3px;
 }
 
@@ -143,22 +158,19 @@ html[dir="rtl"] .hero-content {
    ============================================================ */
 
 .hero-button {
-  height: 41px;
+  min-height: 41px;
 
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
 
   gap: 8px;
-
   padding: 0 24px;
 
   border: 1px solid var(--color-primary-light);
   border-radius: var(--radius-sm);
 
   background: var(--color-primary-light);
-
   color: var(--color-surface);
 
   font-size: 13px;
@@ -182,9 +194,7 @@ html[dir="rtl"] .hero-content {
 
 .hero-button:hover {
   background: var(--color-accent);
-
   border-color: var(--color-accent-light);
-
   color: var(--color-primary-dark);
 
   transform: translateY(-1px);
@@ -220,7 +230,6 @@ html[dir="rtl"] .hero-button mat-icon {
 
 .slider-arrow {
   position: absolute;
-
   top: 50%;
 
   transform: translateY(-50%);
@@ -231,18 +240,15 @@ html[dir="rtl"] .hero-button mat-icon {
   height: 42px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   padding: 0;
 
   background: transparent;
-
   border: none;
 
-  color: var(--color-surface);
-
+  color:  var(--color-primary-light);
   cursor: pointer;
 
   transition:
@@ -252,7 +258,6 @@ html[dir="rtl"] .hero-button mat-icon {
 
 .slider-arrow:hover {
   transform: translateY(-50%) scale(1.08);
-
   opacity: 0.9;
 }
 
@@ -300,9 +305,7 @@ html[dir="rtl"] .slider-next {
   z-index: 5;
 
   display: flex;
-
   align-items: center;
-
   gap: 8px;
 }
 
@@ -311,12 +314,10 @@ html[dir="rtl"] .slider-next {
   height: 8px;
 
   padding: 0;
-
   border: none;
-
   border-radius: 50%;
 
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--color-primary-light);
 
   cursor: pointer;
 
@@ -367,7 +368,6 @@ html[dir="rtl"] .slider-next {
 
 .scroll-reveal {
   opacity: 1;
-
   transform: translateY(0);
 
   transition:
@@ -397,9 +397,11 @@ html[dir="rtl"] .slider-next {
    ============================================================ */
 
 @media (max-width: 900px) {
-
   .hero {
-    height: 350px;
+    /*
+     * Keep the entire image visible on tablet.
+     */
+    height: clamp(280px, 48vw, 430px);
   }
 
   .hero-content {
@@ -446,39 +448,30 @@ html[dir="rtl"] .slider-next {
    ============================================================ */
 
 @media (max-width: 600px) {
-
-  /* ----------------------------------------------------------
-     HERO
-     ---------------------------------------------------------- */
-
   .hero {
-    height: 300px;
+    /*
+     * A taller mobile area helps wide banner images remain
+     * readable without cropping their edges.
+     */
+    height: clamp(300px, 85vw, 420px);
   }
 
-
-  /* ----------------------------------------------------------
-     HERO IMAGE
-     ---------------------------------------------------------- */
+  .hero-slide {
+    width: 100%;
+    height: 100%;
+  }
 
   .hero-image {
-    object-fit: fill;
+    width: 100%;
+    height: 100%;
 
+    object-fit: contain;
     object-position: center center;
   }
-
-
-  /* ----------------------------------------------------------
-     HERO OVERLAY
-     ---------------------------------------------------------- */
 
   .hero-overlay {
     background: transparent;
   }
-
-
-  /* ----------------------------------------------------------
-     HERO CONTENT
-     ---------------------------------------------------------- */
 
   .hero-content {
     left: 20px;
@@ -487,27 +480,19 @@ html[dir="rtl"] .slider-next {
     width: auto;
 
     top: 78%;
-
     text-align: left;
   }
 
   html[dir="rtl"] .hero-content {
     left: auto;
     right: 20px;
-
     text-align: right;
   }
 
-
-  /* ----------------------------------------------------------
-     HERO BUTTON
-     ---------------------------------------------------------- */
-
   .hero-button {
-    height: 38px;
+    min-height: 38px;
 
     padding: 0 18px;
-
     gap: 6px;
 
     font-size: 12px;
@@ -519,11 +504,6 @@ html[dir="rtl"] .slider-next {
 
     font-size: 17px;
   }
-
-
-  /* ----------------------------------------------------------
-     SLIDER ARROWS
-     ---------------------------------------------------------- */
 
   .slider-arrow {
     width: 36px;
@@ -552,14 +532,8 @@ html[dir="rtl"] .slider-next {
     left: 8px;
   }
 
-
-  /* ----------------------------------------------------------
-     SLIDER DOTS
-     ---------------------------------------------------------- */
-
   .slider-dots {
     bottom: 15px;
-
     gap: 6px;
   }
 
@@ -572,19 +546,9 @@ html[dir="rtl"] .slider-next {
     width: 21px;
   }
 
-
-  /* ----------------------------------------------------------
-     CATEGORIES
-     ---------------------------------------------------------- */
-
   .categories-section {
     padding: 55px 15px 60px;
   }
-
-
-  /* ----------------------------------------------------------
-     SECTION HEADING
-     ---------------------------------------------------------- */
 
   .section-heading {
     margin-bottom: 30px;
@@ -601,21 +565,18 @@ html[dir="rtl"] .slider-next {
    ============================================================ */
 
 @media (max-width: 400px) {
-
   .hero {
-    height: 280px;
+    height: 240px;
   }
-
 
   .hero-image {
+    object-fit: contain;
     object-position: center center;
   }
-
 
   .hero-content {
     left: 18px;
     right: auto;
-
     top: 76%;
   }
 
@@ -624,15 +585,12 @@ html[dir="rtl"] .slider-next {
     right: 18px;
   }
 
-
   .hero-button {
-    height: 36px;
+    min-height: 36px;
 
     padding: 0 16px;
-
     font-size: 11px;
   }
-
 
   .slider-arrow {
     width: 32px;
@@ -655,5 +613,19 @@ html[dir="rtl"] .slider-next {
   html[dir="rtl"] .slider-next {
     right: auto;
     left: 5px;
+  }
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide,
+  .hero-button,
+  .slider-arrow,
+  .slider-dots button {
+    transition: none;
   }
 }

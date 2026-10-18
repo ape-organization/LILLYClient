@@ -153,7 +153,6 @@ export class Categories
   // =====================================================
 
   getCategoryName(category: Category): string {
-
     if (this.languageService.isArabic()) {
 
       return category.nameAr?.trim()
@@ -310,13 +309,7 @@ export class Categories
         },
 
         error: (error) => {
-
-          console.error(
-            'CATEGORIES ERROR:',
-            error
-          );
-
-          this.categories.set([]);
+ this.categories.set([]);
 
           this.isLoadingCategories.set(false);
 
