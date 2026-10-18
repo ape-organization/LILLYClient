@@ -257,7 +257,7 @@
   position: absolute;
 
   top: calc(70% + 25px);
-  left: 50%;
+  left: 15%;
 
   z-index: 7;
 
@@ -392,7 +392,7 @@
    ============================================================ */
 
 .add-cart-button.added {
-  background: var(--color-surface);
+  background:var(--color-primary);
   color: var(--color-text-secondary);
 
   opacity: 1;
@@ -400,21 +400,21 @@
 
   cursor: default;
 
-  transform:
+ /*  transform:
     translate(-50%, -50%)
-    scale(1);
+    scale(1); */
 
   box-shadow:
     0 3px 12px rgba(46, 155, 87, 0.15);
 }
 
 .add-cart-button.added:hover {
-  background: var(--color-surface);
+  background:var(--color-primary);
   color: var(--color-text-secondary);
 
-  transform:
+  /* transform:
     translate(-50%, -50%)
-    scale(1);
+    scale(1); */
 }
 
 

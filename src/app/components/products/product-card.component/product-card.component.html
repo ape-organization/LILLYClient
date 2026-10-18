@@ -23,9 +23,9 @@
     <!-- SECOND IMAGE - SHOWN ON DESKTOP HOVER -->
 
     <img
-      *ngIf="getSecondImage()"
+   
       class="product-image-hover"
-      [src]="getImageUrl(getSecondImage())"
+     [src]="getImageUrl(getSecondImage() || getFirstImage())"
       [alt]="getProductName()"
       loading="eager"
     />
