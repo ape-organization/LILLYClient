@@ -43,7 +43,7 @@
   align-items: center;
   justify-content: center;
 
-  opacity: 0;
+  opacity: 0.4;
   visibility: hidden;
 
   transition:
@@ -376,7 +376,7 @@ html[dir="rtl"] .slider-next {
 }
 
 .scroll-reveal.reveal-ready {
-  opacity: 0;
+  opacity: 0.8;
 
   transform:
     translateY(55px)
@@ -449,26 +449,22 @@ html[dir="rtl"] .slider-next {
 
 @media (max-width: 600px) {
   .hero {
-    /*
-     * A taller mobile area helps wide banner images remain
-     * readable without cropping their edges.
-     */
-    height: clamp(300px, 85vw, 420px);
+    height: auto;          /* height comes from the image */
+    display: grid;
   }
 
   .hero-slide {
-    width: 100%;
-    height: 100%;
+    position: relative;    /* no longer absolute */
+    inset: auto;
+    grid-area: 1 / 1;      /* all slides share one cell, still stacked */
+    height: auto;
   }
 
   .hero-image {
     width: 100%;
-    height: 100%;
-
-    object-fit: contain;
-    object-position: center center;
+    height: auto;          /* natural proportions, no empty bands */
+    object-fit: initial;
   }
-
   .hero-overlay {
     background: transparent;
   }
@@ -565,14 +561,7 @@ html[dir="rtl"] .slider-next {
    ============================================================ */
 
 @media (max-width: 400px) {
-  .hero {
-    height: 240px;
-  }
-
-  .hero-image {
-    object-fit: contain;
-    object-position: center center;
-  }
+ 
 
   .hero-content {
     left: 18px;
