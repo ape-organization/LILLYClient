@@ -8,7 +8,7 @@ type Language = 'en' | 'ar';
 })
 export class LanguageService {
 
-  currentLanguage = signal<Language>('en');
+  currentLanguage = signal<Language>('ar');
 
   constructor(
     private translate: TranslateService
@@ -16,7 +16,7 @@ export class LanguageService {
     const savedLanguage = localStorage.getItem('language') as Language | null;
 
     const language: Language =
-      savedLanguage === 'ar' ? 'ar' : 'en';
+      savedLanguage === 'en' ? 'en' : 'ar';
 
     this.setLanguage(language);
   }
@@ -38,9 +38,9 @@ export class LanguageService {
   toggleLanguage(): void {
 
     const nextLanguage: Language =
-      this.currentLanguage() === 'en'
-        ? 'ar'
-        : 'en';
+      this.currentLanguage() === 'ar'
+        ? 'en'
+        : 'ar';
 
     this.setLanguage(nextLanguage);
   }
