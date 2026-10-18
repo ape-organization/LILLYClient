@@ -173,7 +173,6 @@ export class ProductModalComponent
     this.productService.getProduct(id).subscribe({
 
       next: (product) => {
-
         this.product.set(product);
 
         this.selectedImageIndex.set(0);
@@ -224,6 +223,66 @@ export class ProductModalComponent
   // ============================================================
   // IMAGE SLIDER
   // ============================================================
+
+  // ============================================================
+  // MOBILE TOUCH SLIDER
+  // ============================================================
+
+  private touchStartX = 0;
+  private touchStartY = 0;
+
+  private readonly swipeThreshold = 45;
+
+  onTouchStart(event: TouchEvent): void {
+    if (event.touches.length !== 1) {
+      this.touchStartX = 0;
+      this.touchStartY = 0;
+      return;
+    }
+
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    if (this.touchStartX === 0 && this.touchStartY === 0) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+
+    if (!touch) {
+      return;
+    }
+
+    const deltaX = touch.clientX - this.touchStartX;
+    const deltaY = touch.clientY - this.touchStartY;
+
+    // Reset touch coordinates.
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+
+    // Ignore vertical scrolling and small movements.
+    if (
+      Math.abs(deltaX) < this.swipeThreshold ||
+      Math.abs(deltaX) <= Math.abs(deltaY)
+    ) {
+      return;
+    }
+
+    // Swipe left = next image.
+    if (deltaX < 0) {
+      this.nextImage();
+    } else {
+      // Swipe right = previous image.
+      this.previousImage();
+    }
+  }
+
+  onTouchCancel(): void {
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+  }
 
   private startImageSlider(): void {
 

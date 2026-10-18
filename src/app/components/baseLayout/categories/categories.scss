@@ -1,282 +1,198 @@
-/* ============================================================
-   CATEGORIES SECTION
-   ============================================================ */
+/* =========================================================
+   CATEGORY SECTION
+========================================================= */
 
 .categories-section {
   width: 100%;
-  padding: 75px 5% 80px;
-  background: var(--color-surface);
+  padding: 35px 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
+/* =========================================================
+   SECTION HEADING
+========================================================= */
 
-/* ============================================================
-   CATEGORY CONTAINER
-   ============================================================ */
-
-.category-carousel {
-  width: 100%;
-  max-width: 1250px;
-  margin: 40px auto 0;
+.section-heading {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
+.section-heading h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
 
-/* ============================================================
+.section-heading p {
+  margin-top: 8px;
+  font-size: 15px;
+  opacity: 0.75;
+}
+
+/* =========================================================
    CATEGORY GRID
-   ============================================================ */
+========================================================= */
 
-.category-track {
+.horizontal-track.category-track {
   width: 80%;
-
+  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  column-gap: 28px;
-  row-gap: 28px;
-
-  margin: 0 auto;
-
-  overflow: visible;
+  gap: 25px;
+  box-sizing: border-box;
 }
 
-
-/* ============================================================
+/* =========================================================
    CATEGORY CARD
-   ============================================================ */
+========================================================= */
 
 .category-card {
   position: relative;
-
   width: 100%;
   min-width: 0;
-
-  cursor: pointer;
   overflow: hidden;
-
-  border-radius: 0;
-
-  transition:
-    transform 0.45s cubic-bezier(.2, .8, .2, 1),
-    box-shadow 0.45s ease;
+  border-radius: 8px;
+  cursor: pointer;
+  isolation: isolate;
+  background: transparent;
 }
 
-
-/* ============================================================
-   CATEGORY IMAGE
-   ============================================================ */
+/* =========================================================
+   CATEGORY IMAGE CONTAINER
+   Fixed dimensions for every category.
+========================================================= */
 
 .category-image {
   position: relative;
-
   width: 100%;
-
-  /* Rectangle */
   aspect-ratio: 2.6 / 2;
-
   overflow: hidden;
-
-  background: #eee;
+  border-radius: 8px;
+  isolation: isolate;
+  background: transparent;
 }
 
+/* =========================================================
+   SOFT BACKGROUND
+   Uses a separate background image when provided.
+   The image remains fully visible in the foreground.
+========================================================= */
 
-/* ============================================================
-   IMAGE
-   ============================================================ */
+.category-image::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  z-index: 0;
+  pointer-events: none;
+  background: transparent;
+  filter: blur(18px);
+  opacity: 0.7;
+}
+
+/* =========================================================
+   CATEGORY IMAGE
+   Entire image visible, no cropping or stretching.
+========================================================= */
 
 .category-image img {
-  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 
+  display: block;
   width: 100%;
   height: 100%;
 
-  object-fit: fill;
+  object-fit: contain;
+  object-position: center;
 
-  transform: scale(1);
+  image-rendering: auto;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 
-  transition:
-    transform 0.8s cubic-bezier(.16, 1, .3, 1),
-    filter 0.6s ease;
+  transition: transform 0.4s ease;
 }
 
+/* =========================================================
+   IMAGE HOVER
+========================================================= */
 
-/* ============================================================
-   IMAGE OVERLAY
-   ============================================================ */
+.category-card:hover .category-image img {
+  transform: scale(1.02);
+}
+
+/* =========================================================
+   GRADIENT OVERLAY
+========================================================= */
 
 .category-image::after {
   content: "";
-
   position: absolute;
   inset: 0;
-
-  background:
-    linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.78) 0%,
-      rgba(0, 0, 0, 0.32) 40%,
-      rgba(0, 0, 0, 0.04) 72%,
-      rgba(0, 0, 0, 0) 100%
-    );
-
+  z-index: 2;
   pointer-events: none;
 
-  transition: background 0.5s ease;
+  /* background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.24) 35%,
+    rgba(0, 0, 0, 0) 72%
+  );
+
+  transition: background 0.3s ease; */
 }
 
-.section-heading
-{
-  padding: 10px;
-}
-/* ============================================================
+/* .category-card:hover .category-image::after {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.68) 0%,
+    rgba(0, 0, 0, 0.22) 40%,
+    rgba(0, 0, 0, 0) 100%
+  );
+} */
+
+/* =========================================================
    CATEGORY NAME
-   ============================================================ */
+========================================================= */
 
 .category-name {
   position: absolute;
-
-  /* Bottom-right */
+  z-index: 3;
   right: 20px;
-  bottom: 18px;
+  bottom: 20px;
 
-  z-index: 2;
+  max-width: calc(100% - 40px);
 
-  max-width: 75%;
-
-  color: #fff;
-
-  font-family: "Montserrat", sans-serif;
-
-  font-size: 28px;
+  color: black;
+  font-size: 23px;
   font-weight: 600;
-
-  line-height: 1.2;
-letter-spacing: 3px;
+  line-height: 1.3;
   text-align: right;
+  overflow-wrap: anywhere;
 
-  text-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 
-  transition:
-    transform 0.5s cubic-bezier(.2, .8, .2, 1),
-    letter-spacing 0.4s ease;
+  transition: transform 0.3s ease;
 }
 
-
-/* ============================================================
-   ACCENT LINE
-   ============================================================ */
-
-.category-name::after {
-  content: "";
-
-  display: block;
-
-  width: 0;
-  height: 2px;
-
-  margin-top: 7px;
-  margin-left: auto;
-
-  background: var(--color-accent);
-
-  transition:
-    width 0.45s cubic-bezier(.2, .8, .2, 1);
+.category-card:hover .category-name {
+  transform: translateY(-3px);
 }
 
-
-/* ============================================================
-   DESKTOP HOVER
-   ============================================================ */
-
-@media (min-width: 901px) {
-
-  .category-card:hover {
-    transform: translateY(-8px);
-
-    box-shadow:
-      0 18px 35px rgba(0, 0, 0, 0.18);
-  }
-
-  .category-card:hover .category-image img {
-    transform: scale(1.10);
-    filter: brightness(0.86);
-  }
-
-  .category-card:hover .category-image::after {
-    background:
-      linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.86) 0%,
-        rgba(0, 0, 0, 0.36) 42%,
-        rgba(0, 0, 0, 0.02) 75%,
-        rgba(0, 0, 0, 0) 100%
-      );
-  }
-
-  .category-card:hover .category-name {
-    transform: translateY(-7px);
-    letter-spacing: 0.3px;
-  }
-
-  .category-card:hover .category-name::after {
-    width: 45px;
-  }
-}
-
-
-/* ============================================================
+/* =========================================================
    TABLET
-   ============================================================ */
+========================================================= */
 
-@media (max-width: 900px) {
-
+@media (min-width: 768px) and (max-width: 1024px) {
   .categories-section {
-    padding-left: 4%;
-    padding-right: 4%;
+    padding: 30px 0;
   }
 
-  .category-carousel {
-    max-width: 850px;
-    margin-top: 35px;
-  }
-
-  .category-track {
+  .horizontal-track.category-track {
     width: 90%;
-
-    column-gap: 20px;
-    row-gap: 20px;
-  }
-
-  .category-name {
-    right: 16px;
-    bottom: 15px;
-    font-size: 18px;
-  }
-}
-
-
-/* ============================================================
-   MOBILE
-   ============================================================ */
-
-@media (max-width: 600px) {
-
-  .categories-section {
-    padding: 55px 5% 60px;
-  }
-
-  .category-carousel {
-    width: 100%;
-    max-width: 520px;
-
-    margin: 30px auto 0;
-  }
-
-  .category-track {
-    width: 100%;
-
-    grid-template-columns: 1fr;
-
-    gap: 18px;
+    gap: 20px;
   }
 
   .category-image {
@@ -284,112 +200,115 @@ letter-spacing: 3px;
   }
 
   .category-name {
-    right: 15px;
-    bottom: 14px;
-
-    font-size: 18px;
-  }
-
-  .category-card:active {
-    transform: scale(0.985);
-  }
-
-  .category-card:active .category-image img {
-    transform: scale(1.04);
+    right: 16px;
+    bottom: 16px;
+    font-size: 21px;
   }
 }
 
+/* =========================================================
+   MOBILE
+========================================================= */
 
-/* ============================================================
-   SMALL MOBILE
-   ============================================================ */
-
-@media (max-width: 400px) {
-
+@media (max-width: 767px) {
   .categories-section {
-    padding-left: 4%;
-    padding-right: 4%;
+    padding: 25px 0;
   }
 
-  .category-carousel {
-    max-width: 100%;
+  .section-heading {
+    margin-bottom: 22px;
+    padding: 0 15px;
   }
 
-  .category-track {
-    gap: 14px;
+  .section-heading h2 {
+    font-size: 24px;
+  }
+
+  .section-heading p {
+    font-size: 14px;
+  }
+
+  .horizontal-track.category-track {
+    width: 92%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .category-card {
+    width: 100%;
+  }
+
+  .category-image {
+    width: 100%;
+    aspect-ratio: 2.3 / 2;
+  }
+
+  .category-image img {
+    object-fit: contain;
+    object-position: center;
   }
 
   .category-name {
-    right: 13px;
-    bottom: 12px;
+    right: 15px;
+    bottom: 15px;
+    max-width: calc(100% - 30px);
+    font-size: 20px;
+  }
 
-    font-size: 16px;
+  .category-card:hover .category-image img {
+    transform: none;
+  }
+
+  .category-card:hover .category-name {
+    transform: none;
   }
 }
 
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
 
-/* ============================================================
-   RTL
-   ============================================================ */
+@media (max-width: 400px) {
+  .horizontal-track.category-track {
+    width: 94%;
+    gap: 15px;
+  }
+
+  .category-image {
+    aspect-ratio: 2.3 / 2;
+  }
+
+  .category-name {
+    right: 12px;
+    bottom: 12px;
+    font-size: 18px;
+  }
+}
+
+/* =========================================================
+   RTL SUPPORT
+========================================================= */
 
 [dir="rtl"] .category-name {
   right: auto;
   left: 20px;
-
   text-align: left;
 }
 
-[dir="rtl"] .category-name::after {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-
-@media (max-width: 900px) {
-
+@media (min-width: 768px) and (max-width: 1024px) {
   [dir="rtl"] .category-name {
     left: 16px;
   }
 }
 
-
-@media (max-width: 600px) {
-
+@media (max-width: 767px) {
   [dir="rtl"] .category-name {
     left: 15px;
   }
 }
 
-
 @media (max-width: 400px) {
-
   [dir="rtl"] .category-name {
-    left: 13px;
-  }
-}
-
-
-/* ============================================================
-   ACCESSIBILITY
-   ============================================================ */
-
-.category-card:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 4px;
-}
-
-
-/* ============================================================
-   REDUCE MOTION
-   ============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-
-  .category-card,
-  .category-image img,
-  .category-image::after,
-  .category-name,
-  .category-name::after {
-    transition: none;
+    left: 12px;
   }
 }

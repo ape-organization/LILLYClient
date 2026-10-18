@@ -1,15 +1,13 @@
+
 /* ============================================================
    PRODUCT CARD HOST
    ============================================================ */
 
 :host {
   display: block;
-
   width: 100%;
   height: 100%;
-
   min-width: 0;
-
   box-sizing: border-box;
 }
 
@@ -20,13 +18,11 @@
 
 .product-card {
   position: relative;
-
   width: 100%;
   height: 100%;
+  min-width: 0;
 
   background-color: var(--color-surface);
-
-  min-width: 0;
 
   text-align: center;
 
@@ -34,9 +30,7 @@
   flex-direction: column;
 
   box-sizing: border-box;
-
   overflow: hidden;
-
   cursor: pointer;
 
   transition:
@@ -56,20 +50,29 @@
 
 /* ============================================================
    PRODUCT IMAGE CONTAINER
+   FIXED SQUARE DIMENSIONS
    ============================================================ */
 
 .product-image {
   position: relative;
 
   width: 100%;
-
   aspect-ratio: 1 / 1;
 
   flex-shrink: 0;
+  min-width: 0;
 
   overflow: hidden;
 
-  background: #f3eee8;
+  background: transparent;
+
+  box-sizing: border-box;
+
+  /*
+   * Keep image painting contained within the image area.
+   * Source image dimensions cannot change container height.
+   */
+  contain: layout paint;
 }
 
 
@@ -88,9 +91,17 @@
 
   display: block;
 
-  object-fit: cover;
+  /*
+   * Show the complete image without cropping.
+   * Keep the image container dimensions unchanged.
+   */
+  object-fit: contain;
+  object-position: center center;
 
   pointer-events: none;
+
+  -webkit-user-drag: none;
+  user-select: none;
 
   transition:
     opacity 0.45s ease,
@@ -120,7 +131,7 @@
 
   opacity: 0;
 
-  transform: scale(1.03);
+  transform: scale(1);
 }
 
 
@@ -131,25 +142,21 @@
 @media (min-width: 769px) {
 
   /*
-   * Show second image when hovering
-   * anywhere over the product card.
+   * Show the second image when hovering over the card.
    */
 
   .product-card:hover .product-image-hover {
     opacity: 1;
-
     transform: scale(1);
   }
 
   /*
-   * Fade the first image away at the
-   * same time for a smooth transition.
+   * Fade the first image out.
    */
 
   .product-card:hover .product-image-main {
     opacity: 0;
-
-    transform: scale(1.01);
+    transform: scale(1);
   }
 }
 
@@ -190,7 +197,6 @@
 
 .out-of-stock {
   background: rgba(58, 39, 33, 0.85);
-
   color: #fff;
 }
 
@@ -201,7 +207,6 @@
 
 .add-cart-button {
   width: 80%;
-
   height: 38px;
 
   margin: 1px auto;
@@ -214,11 +219,9 @@
   padding: 0;
 
   border: none;
-
   border-radius: 10px;
 
   background: var(--color-primary-light);
-
   color: var(--color-primary-light);
 
   cursor: pointer;
@@ -242,7 +245,6 @@
 
 .add-cart-button:disabled {
   cursor: not-allowed;
-
   opacity: 0.7;
 }
 
@@ -255,13 +257,11 @@
   position: absolute;
 
   top: calc(70% + 25px);
-
   left: 50%;
 
   z-index: 7;
 
   width: max-content;
-
   max-width: 150px;
 
   padding: 5px 9px;
@@ -271,19 +271,14 @@
   border-radius: 5px;
 
   background: var(--color-surface-soft);
-
   color: var(--color-primary-light);
 
   font-size: 11px;
-
   font-weight: 600;
-
   line-height: 1.3;
 
   text-align: center;
-
   white-space: normal;
-
   overflow-wrap: break-word;
 
   pointer-events: none;
@@ -296,13 +291,11 @@
 
 .product-content {
   width: 100%;
-
   min-width: 0;
 
   flex: 1;
 
   display: flex;
-
   flex-direction: column;
 
   padding: 12px 4px 14px;
@@ -337,15 +330,12 @@
   color: var(--color-primary);
 
   font-size: 15px;
-
   font-weight: 600;
-
   line-height: 1.4;
 
   display: -webkit-box;
 
   -webkit-line-clamp: 2;
-
   -webkit-box-orient: vertical;
 
   overflow: hidden;
@@ -360,7 +350,6 @@
   display: flex;
 
   align-items: center;
-
   justify-content: center;
 
   gap: 8px;
@@ -384,7 +373,6 @@
   color: var(--color-accent);
 
   font-size: 17px;
-
   font-weight: 700;
 }
 
@@ -395,7 +383,6 @@
 
 .addToCart {
   margin-top: auto;
-
   flex-shrink: 0;
 }
 
@@ -406,11 +393,9 @@
 
 .add-cart-button.added {
   background: var(--color-surface);
-
   color: var(--color-text-secondary);
 
   opacity: 1;
-
   visibility: visible;
 
   cursor: default;
@@ -425,7 +410,6 @@
 
 .add-cart-button.added:hover {
   background: var(--color-surface);
-
   color: var(--color-text-secondary);
 
   transform:
@@ -440,7 +424,6 @@
 
 .added-check-icon {
   width: 23px !important;
-
   height: 23px !important;
 
   font-size: 23px !important;
@@ -460,19 +443,16 @@
 
   0% {
     opacity: 0;
-
     transform: scale(0.4);
   }
 
   60% {
     opacity: 1;
-
     transform: scale(1.15);
   }
 
   100% {
     opacity: 1;
-
     transform: scale(1);
   }
 }
@@ -489,37 +469,27 @@
   }
 
 
-  /* ----------------------------------------------------------
-     REMOVE DESKTOP CARD HOVER
-     ---------------------------------------------------------- */
+  /* Remove desktop hover movement */
 
   .product-card:hover {
     transform: none;
-
     box-shadow: none;
   }
 
 
-  /* ----------------------------------------------------------
-     DISABLE SECOND IMAGE ON MOBILE
-     ---------------------------------------------------------- */
+  /* Hide the second image on mobile and tablet */
 
   .product-image-hover {
     opacity: 0;
-
     transform: none;
-
     pointer-events: none;
   }
 
 
-  /* ----------------------------------------------------------
-     KEEP FIRST IMAGE VISIBLE
-     ---------------------------------------------------------- */
+  /* Keep the first image visible */
 
   .product-image-main {
     opacity: 1;
-
     transform: none;
   }
 }
@@ -548,7 +518,6 @@
 
   .product-price {
     gap: 6px;
-
     margin-bottom: 10px;
   }
 
@@ -612,7 +581,6 @@
 
   .add-cart-button {
     width: 80%;
-
     height: 32px;
   }
 }

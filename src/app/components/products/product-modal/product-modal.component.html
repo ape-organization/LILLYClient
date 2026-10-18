@@ -20,6 +20,9 @@
         <div
           class="image-frame"
           [class.out-of-stock-image]="isOutOfStock"
+           (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)"
+  (touchcancel)="onTouchCancel()"
         >
 
           <img
@@ -352,13 +355,13 @@
               [class.disabled]="
                 !isSizeAvailable(
                   variant.sizeId!
-                )
+                ) 
               "
 
               [disabled]="
                 !isSizeAvailable(
                   variant.sizeId!
-                )
+                ) 
               "
 
               (click)="
@@ -433,13 +436,13 @@
               [class.disabled]="
                 !isHeelAvailable(
                   variant.heelSizeId!
-                )
+                ) || !variant.isInStock
               "
 
               [disabled]="
                 !isHeelAvailable(
                   variant.heelSizeId!
-                )
+                ) || !variant.isInStock
               "
 
               (click)="
