@@ -1,3 +1,4 @@
+
 /* ============================================================
    HOME
    ============================================================ */
@@ -15,14 +16,7 @@
 .hero {
   position: relative;
   width: 100%;
-
-  /*
-   * Responsive height:
-   * The slider can grow on wide screens and shrink on mobile.
-   * Images remain fully visible without cropping.
-   */
   height: clamp(260px, 35vw, 560px);
-
   overflow: hidden;
   background: transparent;
 }
@@ -35,7 +29,6 @@
 .hero-slide {
   position: absolute;
   inset: 0;
-
   width: 100%;
   height: 100%;
 
@@ -64,22 +57,13 @@
 
 .hero-image {
   display: block;
-
   width: 100%;
   height: 100%;
 
-  /*
-   * Show the complete image.
-   * Never crop or distort the original proportions.
-   */
   object-fit: contain;
   object-position: center center;
 
-  /*
-   * Keep standard browser image rendering.
-   */
   image-rendering: auto;
-
   max-width: 100%;
   border: none;
 }
@@ -92,7 +76,6 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-
   background: transparent;
   pointer-events: none;
 }
@@ -104,7 +87,6 @@
 
 .hero-content {
   position: absolute;
-
   left: 25px;
   right: auto;
   top: 80%;
@@ -112,7 +94,6 @@
   transform: translateY(-50%);
 
   z-index: 2;
-
   width: min(560px, 80%);
 
   color: var(--color-surface);
@@ -142,11 +123,9 @@ html[dir="rtl"] .hero-content {
 
 .hero-small-title {
   display: block;
-
   margin-bottom: 15px;
 
   color: var(--color-surface);
-
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 3px;
@@ -208,7 +187,6 @@ html[dir="rtl"] .hero-content {
 .hero-button mat-icon {
   width: 18px;
   height: 18px;
-
   font-size: 18px;
 
   transition: transform 0.2s ease;
@@ -231,7 +209,6 @@ html[dir="rtl"] .hero-button mat-icon {
 .slider-arrow {
   position: absolute;
   top: 50%;
-
   transform: translateY(-50%);
 
   z-index: 5;
@@ -248,7 +225,7 @@ html[dir="rtl"] .hero-button mat-icon {
   background: transparent;
   border: none;
 
-  color:  var(--color-primary-light);
+  color: var(--color-primary-light);
   cursor: pointer;
 
   transition:
@@ -296,7 +273,6 @@ html[dir="rtl"] .slider-next {
 
 .slider-dots {
   position: absolute;
-
   left: 50%;
   bottom: 25px;
 
@@ -318,7 +294,6 @@ html[dir="rtl"] .slider-next {
   border-radius: 50%;
 
   background: var(--color-primary-light);
-
   cursor: pointer;
 
   transition:
@@ -328,9 +303,7 @@ html[dir="rtl"] .slider-next {
 
 .slider-dots button.active {
   width: 25px;
-
   border-radius: 10px;
-
   background: var(--color-accent-light);
 }
 
@@ -363,32 +336,33 @@ html[dir="rtl"] .slider-next {
 
 
 /* ============================================================
-   SCROLL REVEAL
+   SCROLL REVEAL - SLIDE UP
+   No opacity fade
    ============================================================ */
 
+/* Default state */
 .scroll-reveal {
   opacity: 1;
   transform: translateY(0);
 
   transition:
-    opacity 0.8s ease,
-    transform 0.9s cubic-bezier(.16, 1, .3, 1);
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  will-change: auto;
 }
 
+/* Starting position before the section enters the viewport */
 .scroll-reveal.reveal-ready {
   opacity: 1;
+  transform: translateY(45px);
 
-  transform:
-    translateY(55px)
-    scale(.98);
+  will-change: transform;
 }
 
+/* Final position when the section becomes visible */
 .scroll-reveal.visible {
   opacity: 1;
-
-  transform:
-    translateY(0)
-    scale(1);
+  transform: translateY(0);
 }
 
 
@@ -398,9 +372,6 @@ html[dir="rtl"] .slider-next {
 
 @media (max-width: 900px) {
   .hero {
-    /*
-     * Keep the entire image visible on tablet.
-     */
     height: clamp(280px, 48vw, 430px);
   }
 
@@ -449,22 +420,23 @@ html[dir="rtl"] .slider-next {
 
 @media (max-width: 600px) {
   .hero {
-    height: auto;          /* height comes from the image */
+    height: auto;
     display: grid;
   }
 
   .hero-slide {
-    position: relative;    /* no longer absolute */
+    position: relative;
     inset: auto;
-    grid-area: 1 / 1;      /* all slides share one cell, still stacked */
+    grid-area: 1 / 1;
     height: auto;
   }
 
   .hero-image {
     width: 100%;
-    height: auto;          /* natural proportions, no empty bands */
+    height: auto;
     object-fit: initial;
   }
+
   .hero-overlay {
     background: transparent;
   }
@@ -472,9 +444,7 @@ html[dir="rtl"] .slider-next {
   .hero-content {
     left: 20px;
     right: auto;
-
     width: auto;
-
     top: 78%;
     text-align: left;
   }
@@ -487,17 +457,14 @@ html[dir="rtl"] .slider-next {
 
   .hero-button {
     min-height: 38px;
-
     padding: 0 18px;
     gap: 6px;
-
     font-size: 12px;
   }
 
   .hero-button mat-icon {
     width: 17px;
     height: 17px;
-
     font-size: 17px;
   }
 
@@ -561,8 +528,6 @@ html[dir="rtl"] .slider-next {
    ============================================================ */
 
 @media (max-width: 400px) {
- 
-
   .hero-content {
     left: 18px;
     right: auto;
@@ -576,7 +541,6 @@ html[dir="rtl"] .slider-next {
 
   .hero-button {
     min-height: 36px;
-
     padding: 0 16px;
     font-size: 11px;
   }
@@ -614,7 +578,18 @@ html[dir="rtl"] .slider-next {
   .hero-slide,
   .hero-button,
   .slider-arrow,
-  .slider-dots button {
+  .slider-dots button,
+  .scroll-reveal,
+  .scroll-reveal.reveal-ready,
+  .scroll-reveal.visible {
     transition: none;
+  }
+
+  .scroll-reveal,
+  .scroll-reveal.reveal-ready,
+  .scroll-reveal.visible {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
   }
 }

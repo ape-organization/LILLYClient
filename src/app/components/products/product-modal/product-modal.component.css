@@ -28,6 +28,9 @@
   padding: 28px;
 
   background: var(--color-surface-soft);
+
+  /* NEW: Modal slides upward when rendered */
+  animation: productModalSlideUp 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 
@@ -44,11 +47,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* NEW */
+  animation: productModalSlideUp 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 80ms;
 }
 
 
 /* ============================================================
-   NEW: IMAGE GALLERY
+   IMAGE GALLERY
    ============================================================ */
 
 .image-gallery {
@@ -68,7 +75,6 @@
 .image-frame {
   position: relative;
 
-  /* Keep the frame dimensions independent of each image's natural size. */
   flex: 1 1 0%;
   min-width: 0;
   min-height: 0;
@@ -98,7 +104,6 @@
 .image-frame img {
   display: block;
 
-  /* Never let the source image's intrinsic dimensions resize the frame. */
   flex: 0 0 100%;
   min-width: 0;
   min-height: 0;
@@ -111,20 +116,18 @@
   object-fit: contain;
   object-position: center;
 
-  /* Keep browser interpolation smooth on high-density mobile screens. */
   image-rendering: auto;
 
   transition: filter 0.3s ease;
 }
 
-/* Avoid enlarging the source image on hover, which can make it look soft. */
 .image-frame:hover img {
   transform: none;
 }
 
 
 /* ============================================================
-   NEW: IMAGE THUMBNAILS
+   IMAGE THUMBNAILS
    ============================================================ */
 
 .image-thumbnails {
@@ -193,8 +196,7 @@
 
   transform: translateX(-2px);
 
-  box-shadow:
-    0 4px 12px rgba(58, 39, 33, 0.12);
+  box-shadow: 0 4px 12px rgba(58, 39, 33, 0.12);
 }
 
 .image-thumbnail:hover img {
@@ -211,8 +213,7 @@
 
   border: 2px solid var(--color-accent);
 
-  box-shadow:
-    0 4px 14px rgba(184, 138, 90, 0.22);
+  box-shadow: 0 4px 14px rgba(184, 138, 90, 0.22);
 
   transform: translateX(-2px);
 }
@@ -221,13 +222,11 @@
   content: "";
 
   position: absolute;
-
   inset: 0;
 
   border-radius: 7px;
 
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
 
   pointer-events: none;
 }
@@ -244,7 +243,6 @@
 
 .out-of-stock-overlay {
   position: absolute;
-
   inset: 0;
 
   display: flex;
@@ -360,6 +358,10 @@
   flex-direction: column;
 
   padding: 4px 0;
+
+  /* NEW */
+  animation: productModalSlideUp 750ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 160ms;
 }
 
 .details-header {
@@ -466,17 +468,12 @@
 }
 
 .product-data {
-  display: -webkit-box;
-
   margin-bottom: 10px;
 
   color: var(--color-text-secondary);
 
   font-size: 13px;
   line-height: 1.65;
-
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
 
   padding: 10px 12px;
 
@@ -556,7 +553,9 @@
    ============================================================ */
 
 .price-section {
+  display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 10px;
 
   margin: 18px 0;
@@ -758,17 +757,15 @@
 .option-button.selected {
   border-color: var(--color-accent);
 
-  background:
-    linear-gradient(
-      135deg,
-      rgba(184, 138, 90, 0.16),
-      rgba(184, 138, 90, 0.06)
-    );
+  background: linear-gradient(
+    135deg,
+    rgba(184, 138, 90, 0.16),
+    rgba(184, 138, 90, 0.06)
+  );
 
   color: var(--color-primary);
 
-  box-shadow:
-    0 3px 10px rgba(58, 39, 33, 0.08);
+  box-shadow: 0 3px 10px rgba(58, 39, 33, 0.08);
 }
 
 .option-button.selected mat-icon {
@@ -1171,9 +1168,7 @@
   background: var(--color-primary);
   color: #fff;
 
-  transform:
-    translateY(-50%)
-    scale(1.05);
+  transform: translateY(-50%) scale(1.05);
 }
 
 .image-nav mat-icon {
@@ -1190,6 +1185,7 @@
 .image-nav.next {
   right: 10px;
 }
+
 
 /* ============================================================
    TOUCH-SWIPE IMAGE SLIDER
@@ -1213,7 +1209,6 @@
    ============================================================ */
 
 @media (max-width: 768px) {
-
   .dialog-content {
     flex-direction: column;
 
@@ -1244,14 +1239,12 @@
     max-height: 380px;
   }
 
-  /* NEW */
   .image-thumbnails {
     width: 62px;
 
     gap: 8px;
   }
 
-  /* NEW */
   .image-thumbnail {
     width: 56px;
     height: 56px;
@@ -1281,7 +1274,6 @@
    ============================================================ */
 
 @media (max-width: 480px) {
-
   .container {
     padding: 10px;
   }
@@ -1292,8 +1284,6 @@
     gap: 15px;
   }
 
-  /* NEW:
-     thumbnails move below the main image */
   .image-gallery {
     flex-direction: column;
 
@@ -1321,7 +1311,6 @@
     object-position: center;
   }
 
-  /* NEW */
   .image-thumbnails {
     width: 100%;
     height: 66px;
@@ -1338,23 +1327,19 @@
     scrollbar-width: none;
   }
 
-  /* NEW */
   .image-thumbnails::-webkit-scrollbar {
     display: none;
   }
 
-  /* NEW */
   .image-thumbnail {
     width: 60px;
     height: 60px;
   }
 
-  /* NEW */
   .image-thumbnail:hover {
     transform: translateY(-2px);
   }
 
-  /* NEW */
   .image-thumbnail.active {
     transform: translateY(-2px);
   }
@@ -1452,5 +1437,87 @@
   .image-nav {
     width: 30px;
     height: 30px;
+  }
+}
+
+
+/* ============================================================
+   NEW: PRODUCT CONTENT STAGGERED ENTRANCE
+   ============================================================ */
+
+.product-data,
+.price-section,
+.offer-box,
+.variant-section,
+.out-of-stock-message,
+.dialog-actions {
+  animation: productContentSlideUp 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.product-data {
+  animation-delay: 200ms;
+}
+
+.price-section {
+  animation-delay: 250ms;
+}
+
+.offer-box {
+  animation-delay: 300ms;
+}
+
+.variant-section {
+  animation-delay: 350ms;
+}
+
+.out-of-stock-message {
+  animation-delay: 350ms;
+}
+
+.dialog-actions {
+  animation-delay: 400ms;
+}
+
+
+/* ============================================================
+   NEW: ANIMATION KEYFRAMES
+   ============================================================ */
+
+@keyframes productModalSlideUp {
+  from {
+    transform: translateY(35px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes productContentSlideUp {
+  from {
+    transform: translateY(18px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+
+/* ============================================================
+   ACCESSIBILITY: REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog-content,
+  .product-image,
+  .product-details,
+  .product-data,
+  .price-section,
+  .offer-box,
+  .variant-section,
+  .out-of-stock-message,
+  .dialog-actions {
+    animation: none;
   }
 }
