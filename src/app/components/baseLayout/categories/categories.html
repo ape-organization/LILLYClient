@@ -1,9 +1,10 @@
+
 <div class="section-heading">
   <!-- <span class="section-small-title">
     {{ 'CATEGORY.CATEGORY' | translate }}
   </span> -->
 
-  <h2 >
+  <h2>
     {{ 'CATEGORY.Shop_By_Category' | translate }}
   </h2>
 
@@ -26,18 +27,21 @@
       (click)="selectCategory(category)"
     >
       <div class="category-image">
-
         <img
           [src]="getCategoryImage(category)"
           [alt]="getCategoryName(category)"
           loading="lazy"
         />
-
-        <div class="category-name">
-          {{ getCategoryName(category) }}
-        </div>
-
+        
       </div>
+ <div class="category-name">
+        {{ getCategoryName(category) }}
+      </div>
+
+      <div class="category-text">
+        {{ 'HOME.SHOP_NOW' | translate }}
+      </div>
+     
     </div>
   </div>
 </div>

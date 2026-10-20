@@ -1,3 +1,4 @@
+
 /* =========================================================
    SECTION HEADING
 ========================================================= */
@@ -12,7 +13,7 @@
 
 .section-heading h2 {
   margin: 0;
-   font-family: 'Amiri', serif;
+  font-family: 'Amiri', serif;
   font-size: 30px;
   font-weight: 600;
   line-height: 1.4;
@@ -74,7 +75,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  /* Every card row has exactly the same height */
+  /* Fixed card height */
   grid-auto-rows: 300px;
 
   gap: 25px;
@@ -89,56 +90,50 @@
 ========================================================= */
 
 .category-card {
-  position: relative;
-
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
-
-  overflow: hidden;
-  isolation: isolate;
 
   border-radius: 8px;
   background: transparent;
 
   cursor: pointer;
   box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 
 /* =========================================================
    IMAGE CONTAINER
+   Image uses the remaining available card space
 ========================================================= */
 
 .category-image {
-  position: absolute;
-  inset: 0;
-
   width: 100%;
-  height: 100%;
+  height: auto;
+
+  flex: 1 1 0;
   min-width: 0;
   min-height: 0;
-
-  overflow: hidden;
-  isolation: isolate;
 
   border-radius: 8px;
   background: transparent;
 
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 
 /* =========================================================
    CATEGORY IMAGE
-   Contain keeps the complete image visible
+   Complete image visible without cropping
 ========================================================= */
 
 .category-image img {
-  position: absolute;
-  inset: 0;
-
   display: block;
   width: 100%;
   height: 100%;
@@ -167,48 +162,61 @@
 ========================================================= */
 
 .category-name {
-  position: absolute;
-  right: 18px;
-  bottom: 18px;
-  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 
-  max-width: calc(100% - 36px);
+  width: 100%;
+  padding: 0 5px;
 
-  padding: 10px 16px;
+  flex-shrink: 0;
+  box-sizing: border-box;
 
   color: black;
   background: transparent;
 
-  border-radius: 4px;
-
-   font-family: 'Amiri', serif;
+  font-family: 'Amiri', serif;
   font-size: 22px;
   font-weight: 800;
-  line-height: 1.7;
-  text-align: right;
+  line-height: 1.4;
 
   overflow-wrap: anywhere;
-  box-sizing: border-box;
 
   transition:
     background 0.3s ease,
     transform 0.3s ease;
 }
 
-/* .category-card:hover .category-name {
-  background: rgba(58, 42, 32, 0.92);
-} */
-
 
 /* =========================================================
-   RTL SUPPORT
+   SHOP NOW TEXT
 ========================================================= */
 
-[dir='rtl'] .category-name,
-:host-context([dir='rtl']) .category-name {
-  left: auto;
-  right: 18px;
-  text-align: left;
+.category-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  width: 100%;
+  padding: 0 5px;
+  margin-bottom: 5px;
+
+  flex-shrink: 0;
+  box-sizing: border-box;
+
+  color: var(--color-accent);
+  background: transparent;
+
+  font-family: 'Amiri', serif;
+  font-size: 12px;
+  font-weight: 100;
+  line-height: 1.5;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
 }
 
 
@@ -227,20 +235,6 @@
 
   .section-heading h2 {
     font-size: 27px;
-  }
-
-  .category-name {
-    right: 14px;
-    bottom: 14px;
-    max-width: calc(100% - 28px);
-    padding: 9px 13px;
-    font-size: 16px;
-  }
-
-  [dir='rtl'] .category-name,
-  :host-context([dir='rtl']) .category-name {
-    left: auto;
-    right: 14px;
   }
 }
 
@@ -280,42 +274,81 @@
 
     gap: 18px;
   }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+/* =========================================================
+   MOBILE
+   Large image with text underneath
+========================================================= */
+
+@media (max-width: 767px) {
+  .categories-section {
+    padding: 25px 0;
+  }
+
+  .section-heading {
+    margin-bottom: 20px;
+  }
+
+  .section-heading h2 {
+    font-size: 24px;
+  }
+
+  .title-line {
+    margin-top: 10px;
+  }
+
+  .title-line::before,
+  .title-line::after {
+    width: 40px;
+  }
+
+  .horizontal-track.category-track {
+    width: 92%;
+    grid-template-columns: minmax(0, 1fr);
+
+    /* More room for image and text */
+    grid-auto-rows: 340px;
+
+    gap: 18px;
+  }
 
   .category-card {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    min-height: 0;
   }
 
   .category-image {
     width: 100%;
-    height: 100%;
+    height: auto;
+    flex: 1 1 0;
+    min-height: 0;
   }
 
   .category-image img {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    object-position: center center;
-    transform: none;
-  }
-
-  /* Disable zoom on touch-sized screens */
-  .category-card:hover .category-image img {
-    transform: none;
+    object-position: center;
   }
 
   .category-name {
-    right: 14px;
-    bottom: 14px;
-
-    max-width: calc(100% - 28px);
-
-    padding: 9px 13px;
-    font-size: 15px;
+    flex-shrink: 0;
+    font-size: 22px;
+    line-height: 1.4;
   }
 
-  [dir='rtl'] .category-name,
-  :host-context([dir='rtl']) .category-name {
-    left: auto;
-    right: 14px;
+  .category-text {
+    flex-shrink: 0;
+    font-size: 12px;
+    line-height: 1.5;
   }
 }
 
@@ -331,23 +364,17 @@
 
   .horizontal-track.category-track {
     width: 94%;
-    grid-auto-rows: 210px;
+
+    /* Keep the image large on small phones */
+    grid-auto-rows: 320px;
+
     gap: 15px;
   }
 
-  .category-name {
-    right: 10px;
-    bottom: 10px;
-
-    max-width: calc(100% - 20px);
-
-    padding: 8px 11px;
-    font-size: 14px;
-  }
-
-  [dir='rtl'] .category-name,
-  :host-context([dir='rtl']) .category-name {
-    left: auto;
-    right: 10px;
+  .category-image {
+    width: 100%;
+    flex: 1 1 0;
+    min-height: 0;
   }
 }
+

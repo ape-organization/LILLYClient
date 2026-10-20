@@ -668,7 +668,6 @@ export class ProductListComponent implements OnInit {
       next: (
         response: ProductPageResponse
       ) => {
-console.log(response)
         if (
           requestVersion !==
           this.requestVersion
@@ -790,7 +789,6 @@ console.log(response)
       next: (
         response: ProductPageResponse
       ) => {
-
         if (
           requestVersion !==
           this.requestVersion
@@ -1550,7 +1548,6 @@ onWindowScroll(): void {
   // =====================================================
 
   addToCart(product: Product): void {
-console.log(product)
      if (product.hasVariants) {
        this.openProductDetails(
       product

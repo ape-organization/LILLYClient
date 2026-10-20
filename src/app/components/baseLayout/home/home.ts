@@ -145,7 +145,7 @@ ngAfterViewInit(): void {
   // =====================================================
 
   addToCart(product: Product): void {
-console.log(product)
+    
      if (product.hasVariants) {
        this.openProductDetails(
       product
