@@ -336,7 +336,32 @@
                 }
 
               </div>
+ <div class="form-field full-width">
 
+                <label for="address">
+
+                  {{ 'CHECKOUT.NOTE' | translate }}
+
+                  <span class="required">*</span>
+
+                </label>
+
+                <div class="textarea-wrapper">
+
+                  <mat-icon>note</mat-icon>
+
+                  <textarea
+                    id="note"
+                    rows="4"
+                    formControlName="note"
+                   
+                    [placeholder]="'CHECKOUT.NOTE' | translate"
+                  ></textarea>
+
+                </div>
+
+
+              </div>
             </div>
 
             <!-- PAYMENT -->

@@ -208,7 +208,10 @@ export class CheckoutComponent
           Validators.minLength(5)
         ]
       ]
-
+,
+    note: [
+        ''
+      ]
     });
 
 
@@ -1082,18 +1085,9 @@ export class CheckoutComponent
     if (this.isSubmitting()) {
       return;
     }
-
-
-    /*
-     * DO NOT allow checkout while the cart
-     * is still being restored.
-     */
-
-    if (!this.isCartInitialized) {
+if (!this.isCartInitialized) {
       return;
     }
-
-
     if (
       this.cartItems.length === 0
     ) {
@@ -1144,7 +1138,6 @@ export class CheckoutComponent
       return;
     }
 
-
     const request = {
 
       client: {
@@ -1165,7 +1158,8 @@ export class CheckoutComponent
 
       },
 
-      items
+      items,
+      note: form.note.trim()
 
     };
 

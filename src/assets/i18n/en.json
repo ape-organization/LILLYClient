@@ -160,6 +160,7 @@
     "PROCEED_TO_CHECKOUT": "Proceed to Checkout"
   },
  "CHECKOUT": {
+"NOTE": "Order Notes (Names to print on napkins or any general instructions)",
       "PRICE_CHANGED": "The price has been updated. Please review your order before placing it."
  ,
     "BACK_TO_CART": "Back to Cart",
