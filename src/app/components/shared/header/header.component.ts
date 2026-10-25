@@ -359,24 +359,14 @@ export class HeaderComponent implements OnInit {
     categoryId: number
   ): void {
 
-    if (
-      this.expandedCategoryId() ===
-      categoryId
-    ) {
-
-      this.expandedCategoryId.set(
-        null
-      );
-
-      return;
-
-    }
+    /*
+     * Selecting a category always closes the menu and
+     * navigates. A stale expandedCategoryId used to turn
+     * a repeat click into a no-op.
+     */
     this.closeAllMenus();
 
-    this.expandedCategoryId.set(
-      categoryId
-    );
-this.router.navigate(
+    this.router.navigate(
       ['/products'],
       {
         queryParams: {

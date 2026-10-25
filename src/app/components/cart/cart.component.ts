@@ -138,7 +138,7 @@ export class CartComponent
 
         this.calculateCartTotal();
 
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
 
       });
 
@@ -155,7 +155,7 @@ export class CartComponent
         this.isLoading =
           loading;
 
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
 
       });
 
@@ -583,7 +583,8 @@ export class CartComponent
   /**
    * Maximum quantity allowed for a cart item.
    *
-   * If real stock exists:
+   * If real stock exists (variant stock for
+   * variant items):
    *     max = stockQuantity
    *
    * If stock is 0:
@@ -598,15 +599,10 @@ export class CartComponent
     }
 
 
-    const stockQuantity =
-      Number(
-        item.product.stockQuantity ?? 0
-      );
-
-
-    return stockQuantity > 0
-      ? Math.floor(stockQuantity)
-      : 5;
+    return this.cartService.getMaxQuantity(
+      item.product,
+      item.variant
+    );
 
   }
 
@@ -870,7 +866,7 @@ getImageUrl(
   imageUrl?: string | null
 ): string {
   if (!imageUrl) {
-    return 'assets/images/product-placeholder.png';
+    return 'assets/images/product-placeholder.svg';
   }
 
   const normalizedUrl = imageUrl.trim();

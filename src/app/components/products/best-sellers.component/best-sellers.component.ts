@@ -53,7 +53,6 @@ export class BestSellers implements OnInit {
 
     this.productService.getBestSellerProducts(10).subscribe({
       next: (products) => {
-        console.log(products)
         this.products.set(products ?? []);
         this.isLoading.set(false);
       },

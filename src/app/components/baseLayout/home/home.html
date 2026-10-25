@@ -13,7 +13,8 @@
     >
       <img
         [src]="getCategoryImage(slide)"
-        
+        alt=""
+        [attr.fetchpriority]="i === 0 ? 'high' : null"
         class="hero-image"
       />
 

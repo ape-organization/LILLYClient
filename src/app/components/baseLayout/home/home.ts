@@ -1,16 +1,18 @@
 import {
   AfterViewInit,
   Component,
+  DestroyRef,
   inject,
   OnDestroy,
   OnInit,
   signal
 } from '@angular/core';
 
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
 
 import { Categories } from '../categories/categories';
 
@@ -23,7 +25,6 @@ import { environment } from '../../../../environments/environment';
 
 import { TranslatePipe } from '@ngx-translate/core';
 
-import { ProductModalComponent } from '../../products/product-modal/product-modal.component';
 import { BestSellers } from '../../products/best-sellers.component/best-sellers.component';
 import { NewArrivalProducts } from '../../products/new-arrival-products/new-arrival-products';
 
@@ -105,8 +106,8 @@ ngAfterViewInit(): void {
   private readonly sliderService =
     inject(SliderService);
 
-  private readonly dialog =
-    inject(MatDialog);
+  private readonly destroyRef =
+    inject(DestroyRef);
 
   private readonly cartService =
     inject(CartService);
@@ -315,8 +316,15 @@ ngAfterViewInit(): void {
 
   private loadSliders(): void {
 
+    /*
+     * Cancel on destroy so startSlider() never runs
+     * after the page is gone (leaked interval).
+     */
     this.sliderService
       .getSliders()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
 
         next: (
@@ -356,7 +364,7 @@ ngAfterViewInit(): void {
       slider.imageUrl.trim() === ''
     ) {
 
-      return 'assets/images/category-placeholder.jpg';
+      return 'assets/images/category-placeholder.svg';
     }
 
     return this.api +

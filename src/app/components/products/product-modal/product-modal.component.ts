@@ -1,10 +1,23 @@
 import {
   Component,
+  DestroyRef,
   OnDestroy,
   OnInit,
+  computed,
   inject,
   signal
 } from '@angular/core';
+
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import {
+  EMPTY,
+  catchError,
+  filter,
+  map,
+  switchMap,
+  tap
+} from 'rxjs';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -61,6 +74,7 @@ export class ProductModalComponent
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly languageService =
     inject(LanguageService);
@@ -128,21 +142,61 @@ export class ProductModalComponent
 
   ngOnInit(): void {
 
-    this.route.paramMap.subscribe(params => {
+    /*
+     * switchMap cancels the previous request when the
+     * user opens another product before it returns, and
+     * takeUntilDestroyed cancels it when leaving the page.
+     */
+    this.route.paramMap
+      .pipe(
+        map(params => Number(params.get('id'))),
 
-      const idParam = params.get('id');
-      const productId = Number(idParam);
+        tap(productId => {
+          if (!this.isValidProductId(productId)) {
+            this.goBack();
+          }
+        }),
 
-      if (
-        !Number.isInteger(productId) ||
-        productId <= 0
-      ) {
-        this.goBack();
-        return;
-      }
+        filter(productId =>
+          this.isValidProductId(productId)
+        ),
 
-      this.loadProduct(productId);
-    });
+        tap(() => this.stopImageSlider()),
+
+        switchMap(productId =>
+          this.productService.getProduct(productId).pipe(
+            catchError(() => {
+              this.goBack();
+              return EMPTY;
+            })
+          )
+        ),
+
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(product => {
+        this.product.set(product);
+
+        this.selectedImageIndex.set(0);
+
+        this.selectedSizeId.set(null);
+
+        this.selectedHeelSizeId.set(null);
+
+        this.setQuantity(1);
+
+        this.startImageSlider();
+      });
+  }
+
+  private isValidProductId(
+    productId: number
+  ): boolean {
+
+    return (
+      Number.isInteger(productId) &&
+      productId > 0
+    );
   }
 
   ngOnDestroy(): void {
@@ -163,37 +217,6 @@ export class ProductModalComponent
   }
 
   // ============================================================
-  // LOAD PRODUCT
-  // ============================================================
-
-  private loadProduct(id: number): void {
-
-    this.stopImageSlider();
-
-    this.productService.getProduct(id).subscribe({
-
-      next: (product) => {
-        this.product.set(product);
-
-        this.selectedImageIndex.set(0);
-
-        this.selectedSizeId.set(null);
-
-        this.selectedHeelSizeId.set(null);
-
-        this.setQuantity(1);
-
-        this.startImageSlider();
-      },
-
-      error: () => {
-        this.goBack();
-      }
-
-    });
-  }
-
-  // ============================================================
   // IMAGES
   // ============================================================
 
@@ -207,7 +230,7 @@ export class ProductModalComponent
     const images = this.images;
 
     if (!images.length) {
-      return 'assets/images/product-placeholder.png';
+      return 'assets/images/product-placeholder.svg';
     }
 
     const index = Math.min(
@@ -383,11 +406,30 @@ export class ProductModalComponent
   // ACTIVE VARIANTS
   // ============================================================
 
+  /*
+   * Inactive variants are never offered. This matches
+   * CartService, which rejects inactive variants.
+   *
+   * computed() caches the result between change
+   * detection runs; the getters keep the template API.
+   */
+  private readonly activeVariantList =
+    computed(() =>
+      (this.product()?.variants ?? []).filter(
+        variant => variant.isActive !== false
+      )
+    );
+
   get activeVariants(): ProductVariant[] {
 
-    return (
-      this.product()?.variants ?? []
-    );
+    return this.activeVariantList();
+  }
+
+  private isVariantInStock(
+    variant: ProductVariant
+  ): boolean {
+
+    return variant.isInStock !== false;
   }
 
   get hasVariants(): boolean {
@@ -419,6 +461,16 @@ export class ProductModalComponent
 
   get availableSizes(): ProductVariant[] {
 
+    return this.availableSizeList();
+  }
+
+  /*
+   * Lists every size that exists with the selected heel.
+   * Out-of-stock sizes stay visible but disabled
+   * (see isSizeAvailable).
+   */
+  private readonly availableSizeList = computed(() => {
+
     const seen = new Set<number>();
 
     return this.activeVariants.filter(
@@ -435,7 +487,7 @@ export class ProductModalComponent
         }
 
         if (
-          !this.isSizeAvailable(sizeId)
+          !this.isSizeCompatible(sizeId)
         ) {
           return false;
         }
@@ -449,13 +501,23 @@ export class ProductModalComponent
         return true;
       }
     );
-  }
+  });
 
   // ============================================================
   // AVAILABLE HEEL OPTIONS
   // ============================================================
 
   get availableHeelSizes(): ProductVariant[] {
+
+    return this.availableHeelSizeList();
+  }
+
+  /*
+   * Lists every heel that exists with the selected size.
+   * Out-of-stock heels stay visible but disabled
+   * (see isHeelAvailable).
+   */
+  private readonly availableHeelSizeList = computed(() => {
 
     const seen = new Set<number>();
 
@@ -473,7 +535,7 @@ export class ProductModalComponent
         }
 
         if (
-          !this.isHeelAvailable(heelId)
+          !this.isHeelCompatible(heelId)
         ) {
           return false;
         }
@@ -487,7 +549,7 @@ export class ProductModalComponent
         return true;
       }
     );
-  }
+  });
 
   // ============================================================
   // SIZE SELECTION
@@ -590,8 +652,27 @@ export class ProductModalComponent
   // SIZE AVAILABILITY
   // ============================================================
 
+  /**
+   * True when the size exists with the selected heel
+   * and at least one matching variant is in stock.
+   */
   isSizeAvailable(
     sizeId: number
+  ): boolean {
+
+    return this.matchesSize(sizeId, true);
+  }
+
+  private isSizeCompatible(
+    sizeId: number
+  ): boolean {
+
+    return this.matchesSize(sizeId, false);
+  }
+
+  private matchesSize(
+    sizeId: number,
+    requireStock: boolean
   ): boolean {
 
     const selectedHeel =
@@ -602,6 +683,13 @@ export class ProductModalComponent
 
         if (
           variant.sizeId !== sizeId
+        ) {
+          return false;
+        }
+
+        if (
+          requireStock &&
+          !this.isVariantInStock(variant)
         ) {
           return false;
         }
@@ -624,8 +712,27 @@ export class ProductModalComponent
   // HEEL AVAILABILITY
   // ============================================================
 
+  /**
+   * True when the heel exists with the selected size
+   * and at least one matching variant is in stock.
+   */
   isHeelAvailable(
     heelSizeId: number
+  ): boolean {
+
+    return this.matchesHeel(heelSizeId, true);
+  }
+
+  private isHeelCompatible(
+    heelSizeId: number
+  ): boolean {
+
+    return this.matchesHeel(heelSizeId, false);
+  }
+
+  private matchesHeel(
+    heelSizeId: number,
+    requireStock: boolean
   ): boolean {
 
     const selectedSize =
@@ -637,6 +744,13 @@ export class ProductModalComponent
         if (
           variant.heelSizeId !==
           heelSizeId
+        ) {
+          return false;
+        }
+
+        if (
+          requireStock &&
+          !this.isVariantInStock(variant)
         ) {
           return false;
         }
@@ -661,6 +775,11 @@ export class ProductModalComponent
 
   get selectedVariant():
     ProductVariant | null {
+
+    return this.selectedVariantValue();
+  }
+
+  private readonly selectedVariantValue = computed((): ProductVariant | null => {
 
     const sizeId =
       this.selectedSizeId();
@@ -718,7 +837,7 @@ export class ProductModalComponent
     }
 
     return null;
-  }
+  });
 
   // ============================================================
   // VARIANT SELECTION REQUIRED
@@ -814,9 +933,13 @@ export class ProductModalComponent
       return true;
     }
 
+    const variant =
+      this.selectedVariant;
+
     return (
       !this.requiresVariantSelection &&
-      this.selectedVariant !== null
+      variant !== null &&
+      this.isVariantInStock(variant)
     );
   }
 
@@ -869,17 +992,27 @@ export class ProductModalComponent
   // QUANTITY
   // ============================================================
 
+  get maxQuantity(): number {
+
+    const product =
+      this.product();
+
+    if (!product) {
+      return 5;
+    }
+
+    return this.cartService.getMaxQuantity(
+      product,
+      this.selectedVariant
+    );
+  }
+
   setQuantity(
     value: number | string
   ): void {
 
-    const stockQuantity =
-      this.product()?.stockQuantity ?? 0;
-
     const maxQuantity =
-      stockQuantity > 0
-        ? stockQuantity
-        : 5;
+      this.maxQuantity;
 
     let parsed =
       typeof value === 'number'
@@ -922,13 +1055,8 @@ export class ProductModalComponent
     let selectedQuantity =
       this.quantity();
 
-    const stockQuantity =
-      product.stockQuantity ?? 0;
-
     const maxQuantity =
-      stockQuantity > 0
-        ? stockQuantity
-        : 5;
+      this.maxQuantity;
 
     if (
       selectedQuantity >
@@ -1156,14 +1284,14 @@ export class ProductModalComponent
   ): string {
 
     if (!imageUrl) {
-      return 'assets/images/product-placeholder.png';
+      return 'assets/images/product-placeholder.svg';
     }
 
     const url =
       imageUrl.trim();
 
     if (!url) {
-      return 'assets/images/product-placeholder.png';
+      return 'assets/images/product-placeholder.svg';
     }
 
     if (

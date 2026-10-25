@@ -1,5 +1,6 @@
 
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -35,6 +36,12 @@ import {
     MaterialModule,
     TranslatePipe
   ],
+
+  /*
+   * All state comes from @Input()s and signals, so the
+   * card only re-renders when its inputs change.
+   */
+  changeDetection: ChangeDetectionStrategy.OnPush,
 
   templateUrl: './product-card.component.html',
 
@@ -159,7 +166,7 @@ export class ProductCardComponent {
 
     if (!imageUrl) {
 
-      return 'assets/images/product-placeholder.png';
+      return 'assets/images/product-placeholder.svg';
     }
 
     const url =
@@ -167,7 +174,7 @@ export class ProductCardComponent {
 
     if (!url) {
 
-      return 'assets/images/product-placeholder.png';
+      return 'assets/images/product-placeholder.svg';
     }
 
     if (

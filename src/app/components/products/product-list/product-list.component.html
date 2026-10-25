@@ -212,7 +212,8 @@
 
         <app-product-card
           *ngFor="
-            let product of filteredProducts()
+            let product of filteredProducts();
+            trackBy: trackByProductId
           "
 
           [product]="product"
@@ -314,6 +315,18 @@
         </button>
 
       </section>
+
+
+      <!-- ==================================================
+           INFINITE SCROLL SENTINEL
+           (must stay outside any *ngIf)
+           ================================================== -->
+
+      <div
+        #scrollSentinel
+        class="scroll-sentinel"
+        aria-hidden="true">
+      </div>
 
     </section>
 

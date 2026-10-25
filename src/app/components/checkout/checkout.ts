@@ -40,10 +40,15 @@ import {
 } from '@angular/router';
 
 import {
+  EMPTY,
   Subject,
+  catchError,
   combineLatest,
   debounceTime,
   distinctUntilChanged,
+  map,
+  of,
+  switchMap,
   takeUntil
 } from 'rxjs';
 
@@ -66,6 +71,10 @@ import {
 } from '../../services/client.service';
 
 import {
+  Client
+} from '../../models/client.model';
+
+import {
   environment
 } from '../../../environments/environment';
 
@@ -80,6 +89,13 @@ import {
 import {
   LanguageService
 } from '../../services/language.service';
+
+
+const AUTOFILL_FIELDS =
+  ['fullName', 'email', 'address'] as const;
+
+type AutofillField =
+  typeof AUTOFILL_FIELDS[number];
 
 
 @Component({
@@ -289,7 +305,7 @@ export class CheckoutComponent
           this.isCartLoading =
             loading;
 
-          this.cdr.detectChanges();
+          this.cdr.markForCheck();
 
         }
       );
@@ -358,59 +374,74 @@ export class CheckoutComponent
       this.checkoutForm.controls.phone;
 
 
+    /*
+     * switchMap cancels the previous lookup whenever the
+     * phone changes, so an older response can never
+     * overwrite the form after a newer one.
+     */
     phoneControl.valueChanges
 
       .pipe(
 
         debounceTime(400),
 
+        map(phone => phone.trim()),
+
         distinctUntilChanged(),
+
+        switchMap(normalizedPhone => {
+
+          if (
+            normalizedPhone.length < 7 ||
+            phoneControl.errors?.['pattern']
+          ) {
+
+            this.isSearchingClient.set(
+              false
+            );
+
+            this.clientFound.set(
+              false
+            );
+
+            this.applyClientAutofill(null);
+
+            return EMPTY;
+          }
+
+
+          this.isSearchingClient.set(
+            true
+          );
+
+          this.clientFound.set(
+            false
+          );
+
+
+          return this.clientService
+            .getByPhone(normalizedPhone)
+            .pipe(
+              catchError(() => of(null))
+            );
+
+        }),
 
         takeUntil(this.destroy$)
 
       )
 
-      .subscribe(phone => {
+      .subscribe(client => {
 
-        const normalizedPhone =
-          phone.trim();
-
-
-        if (
-          normalizedPhone.length < 7
-        ) {
-
-          this.isSearchingClient.set(
-            false
-          );
-
-          this.clientFound.set(
-            false
-          );
-
-          return;
-        }
-
-
-        if (
-          phoneControl.errors?.['pattern']
-        ) {
-
-          this.isSearchingClient.set(
-            false
-          );
-
-          this.clientFound.set(
-            false
-          );
-
-          return;
-        }
-
-
-        this.searchClient(
-          normalizedPhone
+        this.isSearchingClient.set(
+          false
         );
+
+        this.clientFound.set(
+          !!client
+        );
+
+        this.applyClientAutofill(client);
 
       });
 
@@ -418,100 +449,66 @@ export class CheckoutComponent
 
 
   // =========================================================
-  // SEARCH CLIENT
+  // CLIENT AUTOFILL
   // =========================================================
 
-  private searchClient(
-    phone: string
+  /*
+   * Values last written by the phone lookup.
+   *
+   * A field is only overwritten (or cleared) while it
+   * still holds the value we filled in, so anything the
+   * user typed themselves is never replaced.
+   */
+  private autofilledValues: Partial<
+    Record<AutofillField, string>
+  > = {};
+
+
+  private applyClientAutofill(
+    client: Client | null
   ): void {
 
-    this.isSearchingClient.set(
-      true
-    );
+    const values: Record<AutofillField, string> = {
 
-    this.clientFound.set(
-      false
-    );
+      fullName:
+        client?.name?.trim() ?? '',
 
+      email:
+        client?.email?.trim() ?? '',
 
-    this.clientService
-      .getByPhone(phone)
+      address:
+        client?.address?.trim() ?? ''
 
-      .pipe(
-        takeUntil(this.destroy$)
-      )
-
-      .subscribe({
-
-        next: client => {
-
-          this.isSearchingClient.set(
-            false
-          );
+    };
 
 
-          if (!client) {
+    for (const field of AUTOFILL_FIELDS) {
 
-            this.clientFound.set(
-              false
-            );
+      const control =
+        this.checkoutForm.controls[field];
 
+      const current =
+        control.value.trim();
 
-            this.checkoutForm.patchValue(
-              {
-                fullName: '',
-                email: '',
-                address: ''
-              },
-              {
-                emitEvent: false
-              }
-            );
+      const ownedByAutofill =
+        current === '' ||
+        current === this.autofilledValues[field];
 
+      if (!ownedByAutofill) {
+        continue;
+      }
 
-            return;
-          }
-
-
-          this.clientFound.set(
-            true
-          );
-
-
-          this.checkoutForm.patchValue(
-            {
-
-              fullName:
-                client.name?.trim() ?? '',
-
-              email:
-                client.email?.trim() ?? '',
-
-              address:
-                client.address?.trim() ?? ''
-
-            },
-            {
-              emitEvent: false
-            }
-          );
-
-        },
-
-
-        error: error => {
-
-          this.isSearchingClient.set(
-            false
-          );
-
-          this.clientFound.set(
-            false
-          );
-
+      control.setValue(
+        values[field],
+        {
+          emitEvent: false
         }
+      );
 
-      });
+      this.autofilledValues[field] =
+        values[field];
+
+    }
 
   }
 
@@ -955,7 +952,7 @@ export class CheckoutComponent
 
     if (!imageUrl) {
 
-      return 'assets/images/product-placeholder.png';
+      return 'assets/images/product-placeholder.svg';
 
     }
 
@@ -1085,7 +1082,14 @@ export class CheckoutComponent
     if (this.isSubmitting()) {
       return;
     }
-if (!this.isCartInitialized) {
+    /*
+     * Wait for the cart refresh so the order is never
+     * placed with outdated prices or stock.
+     */
+    if (
+      !this.isCartInitialized ||
+      this.isCartLoading
+    ) {
       return;
     }
     if (

@@ -37,7 +37,6 @@ export class NewArrivalProducts {
 
     this.productService.newArrivalProducts().subscribe({
       next: (products) => {
-        console.log(products)
         this.products.set(products ?? []);
         this.isLoading.set(false);
       },

@@ -128,6 +128,17 @@ export class CartService {
     Observable<CartItem[]> | null = null;
 
 
+  /*
+   * Stored items that could not be restored because the
+   * API refresh failed.
+   *
+   * They are kept in localStorage on every save so a failed
+   * refresh followed by an add-to-cart never wipes the saved
+   * cart. The next successful refresh restores them.
+   */
+  private unrestoredItems: StoredCartItem[] = [];
+
+
   // ============================================================
   // CONSTRUCTOR
   // ============================================================
@@ -268,7 +279,10 @@ export class CartService {
 
       product,
 
-      quantity,
+      quantity: Math.min(
+        quantity,
+        this.getMaxQuantity(product, variant)
+      ),
 
       variant
 
@@ -346,7 +360,10 @@ export class CartService {
 
       product,
 
-      quantity,
+      quantity: Math.min(
+        quantity,
+        this.getMaxQuantity(product, variant)
+      ),
 
       variant
 
@@ -464,8 +481,8 @@ export class CartService {
       [...this.cartItems.value];
 
 
-    const item =
-      currentCart.find(cartItem =>
+    const itemIndex =
+      currentCart.findIndex(cartItem =>
         cartItem.product.id === productId &&
         this.isSameVariant(
           cartItem.variant,
@@ -474,9 +491,13 @@ export class CartService {
       );
 
 
-    if (!item) {
+    if (itemIndex === -1) {
       return;
     }
+
+
+    const item =
+      currentCart[itemIndex];
 
 
     if (item.product.isInStock !== true) {
@@ -504,7 +525,20 @@ export class CartService {
     }
 
 
-    item.quantity = quantity;
+    /*
+     * Replace the item instead of mutating it so
+     * subscribers see a new reference.
+     */
+    currentCart[itemIndex] = {
+      ...item,
+      quantity: Math.min(
+        quantity,
+        this.getMaxQuantity(
+          item.product,
+          item.variant
+        )
+      )
+    };
 
     this.setCart(currentCart);
   }
@@ -579,6 +613,8 @@ export class CartService {
   // ============================================================
 
   clearCart(): void {
+
+    this.unrestoredItems = [];
 
     this.cartItems.next([]);
 
@@ -773,6 +809,23 @@ export class CartService {
     ];
 
 
+    /*
+     * Keys of the items this refresh is restoring.
+     *
+     * Anything added while the request is running
+     * is not in this set and must be kept.
+     */
+    const refreshedKeys =
+      new Set(
+        storedItems.map(item =>
+          this.getStoredKey(
+            item.productId,
+            item.variantId
+          )
+        )
+      );
+
+
     this.cartLoading.next(true);
 
 
@@ -916,10 +969,23 @@ export class CartService {
           }),
 
 
-          tap(validCart => {
+          map(validCart => {
+
+            /*
+             * Apply any add/remove/quantity change the user
+             * made while the request was running.
+             */
+            const cart =
+              this.mergeRefreshedCart(
+                validCart,
+                refreshedKeys
+              );
+
+
+            this.unrestoredItems = [];
 
             this.cartItems.next(
-              validCart
+              cart
             );
 
 
@@ -931,13 +997,37 @@ export class CartService {
              */
 
             this.saveCartToStorage(
-              validCart
+              cart
             );
+
+
+            return cart;
 
           }),
 
 
           catchError(error => {
+
+            /*
+             * Keep every stored item that is not in memory
+             * so the next save does not drop it.
+             */
+            const loadedKeys =
+              new Set(
+                this.cartItems.value.map(item =>
+                  this.getCartItemKey(item)
+                )
+              );
+
+            this.unrestoredItems =
+              this.readStoredCart().filter(item =>
+                !loadedKeys.has(
+                  this.getStoredKey(
+                    item.productId,
+                    item.variantId
+                  )
+                )
+              );
 
             return of(
               this.cartItems.value
@@ -1033,6 +1123,35 @@ export class CartService {
       }));
 
 
+    /*
+     * Never drop items that failed to restore.
+     */
+    const savedKeys =
+      new Set(
+        storedItems.map(item =>
+          this.getStoredKey(
+            item.productId,
+            item.variantId
+          )
+        )
+      );
+
+    for (const item of this.unrestoredItems) {
+
+      if (
+        !savedKeys.has(
+          this.getStoredKey(
+            item.productId,
+            item.variantId
+          )
+        )
+      ) {
+        storedItems.push(item);
+      }
+
+    }
+
+
     try {
 
       localStorage.setItem(
@@ -1048,16 +1167,155 @@ export class CartService {
 
 
   // ============================================================
+  // MERGE REFRESHED CART
+  // ============================================================
+
+  /*
+   * Combines the refreshed products with the current
+   * localStorage state, which reflects anything the user
+   * changed while the refresh request was running:
+   *
+   * - removed items stay removed
+   * - updated quantities are kept
+   * - items added during the refresh are kept
+   */
+  private mergeRefreshedCart(
+    validCart: CartItem[],
+    refreshedKeys: Set<string>
+  ): CartItem[] {
+
+    const currentStored =
+      new Map(
+        this.readStoredCart().map(item => [
+          this.getStoredKey(
+            item.productId,
+            item.variantId
+          ),
+          item
+        ])
+      );
+
+
+    const merged: CartItem[] = [];
+
+    for (const item of validCart) {
+
+      const stored =
+        currentStored.get(
+          this.getCartItemKey(item)
+        );
+
+      if (!stored) {
+        continue;
+      }
+
+      merged.push({
+        ...item,
+        quantity: Math.min(
+          stored.quantity,
+          this.getMaxQuantity(
+            item.product,
+            item.variant
+          )
+        )
+      });
+
+    }
+
+
+    for (const item of this.cartItems.value) {
+
+      const key =
+        this.getCartItemKey(item);
+
+      if (
+        !refreshedKeys.has(key) &&
+        currentStored.has(key)
+      ) {
+        merged.push(item);
+      }
+
+    }
+
+
+    return merged;
+  }
+
+
+  // ============================================================
+  // CART ITEM KEYS
+  // ============================================================
+
+  private getStoredKey(
+    productId: number,
+    variantId?: number | null
+  ): string {
+
+    return `${productId}-${variantId ?? 'default'}`;
+  }
+
+
+  private getCartItemKey(
+    item: CartItem
+  ): string {
+
+    return this.getStoredKey(
+      item.product.id,
+      item.variant?.id
+    );
+  }
+
+
+  // ============================================================
+  // MAX QUANTITY
+  // ============================================================
+
+  /**
+   * Maximum quantity allowed for a product/variant.
+   *
+   * Uses the variant stock when a variant is selected,
+   * otherwise the product stock. When no stock is
+   * recorded (0), the limit is 5.
+   */
+  getMaxQuantity(
+    product: Product,
+    variant?: ProductVariant | null
+  ): number {
+
+    const stockQuantity =
+      Number(
+        variant
+          ? variant.stockQuantity ?? 0
+          : product?.stockQuantity ?? 0
+      );
+
+    return stockQuantity > 0
+      ? Math.floor(stockQuantity)
+      : 5;
+  }
+
+
+  // ============================================================
   // READ CART FROM LOCAL STORAGE
   // ============================================================
 
   private readStoredCart():
     StoredCartItem[] {
 
-    const saved =
-      localStorage.getItem(
-        this.CART_STORAGE_KEY
-      );
+    let saved: string | null = null;
+
+    try {
+
+      saved =
+        localStorage.getItem(
+          this.CART_STORAGE_KEY
+        );
+
+    } catch (error) {
+
+      return [];
+
+    }
 
 
     if (!saved) {
@@ -1222,9 +1480,14 @@ export class CartService {
 
   private removeCartFromStorage(): void {
 
-    localStorage.removeItem(
-      this.CART_STORAGE_KEY
-    );
+    try {
+
+      localStorage.removeItem(
+        this.CART_STORAGE_KEY
+      );
+
+    } catch (error) {
+    }
   }
 
 

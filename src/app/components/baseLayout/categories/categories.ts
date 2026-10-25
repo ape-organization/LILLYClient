@@ -175,7 +175,7 @@ export class Categories
       !category.imageUrl ||
       category.imageUrl.trim() === ''
     ) {
-      return 'assets/images/category-placeholder.jpg';
+      return 'assets/images/category-placeholder.svg';
     }
 
     return this.api + category.imageUrl;

@@ -105,48 +105,6 @@ export class ProductService {
   }
 
   // =====================================================
-  // ADD PRODUCT
-  // =====================================================
-
-  addProduct(
-    product: FormData
-  ): Observable<Product> {
-
-    return this.http.post<Product>(
-      this.apiUrl,
-      product
-    );
-  }
-
-  // =====================================================
-  // UPDATE PRODUCT
-  // =====================================================
-
-  updateProduct(
-    id: number,
-    product: FormData
-  ): Observable<void> {
-
-    return this.http.put<void>(
-      `${this.apiUrl}/${id}`,
-      product
-    );
-  }
-
-  // =====================================================
-  // DELETE PRODUCT
-  // =====================================================
-
-  deleteProduct(
-    id: number
-  ): Observable<void> {
-
-    return this.http.delete<void>(
-      `${this.apiUrl}/${id}`
-    );
-  }
-
-  // =====================================================
   // GET PRODUCTS BY IDS
   // =====================================================
 

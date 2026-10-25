@@ -436,13 +436,13 @@
               [class.disabled]="
                 !isHeelAvailable(
                   variant.heelSizeId!
-                ) || !variant.isInStock
+                )
               "
 
               [disabled]="
                 !isHeelAvailable(
                   variant.heelSizeId!
-                ) || !variant.isInStock
+                )
               "
 
               (click)="
@@ -606,11 +606,7 @@
             min="1"
             step="1"
 
-            [max]="
-              product.stockQuantity > 0
-                ? product.stockQuantity
-                : 5
-            "
+            [max]="maxQuantity"
 
             class="quantity-input"
           />
@@ -621,6 +617,8 @@
           <button
             type="button"
             class="quantity-btn"
+
+            [disabled]="quantity() >= maxQuantity"
 
             (click)="
               setQuantity(

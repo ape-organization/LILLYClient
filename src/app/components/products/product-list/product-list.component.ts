@@ -1,9 +1,13 @@
 
 import {
+  AfterViewInit,
   Component,
   DestroyRef,
-  HostListener,
+  ElementRef,
+  Injector,
   OnInit,
+  ViewChild,
+  afterNextRender,
   computed,
   inject,
   signal
@@ -36,7 +40,6 @@ import {
   Product
 } from '../../../models/product.model';
 
-import { ProductModalComponent } from '../product-modal/product-modal.component';
 
 import { environment } from '../../../../environments/environment';
 
@@ -80,7 +83,7 @@ import {
     './product-list.component.css'
   ]
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, AfterViewInit {
 
   // ========================================================
   // DEPENDENCIES
@@ -306,6 +309,23 @@ export class ProductListComponent implements OnInit {
 
 
   // ========================================================
+  // INFINITE SCROLL SENTINEL
+  // ========================================================
+
+  /*
+   * Distance (px) before the end of the list at which
+   * the next page starts loading.
+   */
+  private readonly scrollThreshold = 500;
+
+  @ViewChild('scrollSentinel', { static: true })
+  private scrollSentinel?: ElementRef<HTMLElement>;
+
+  private readonly injector =
+    inject(Injector);
+
+
+  // ========================================================
   // INIT
   // ========================================================
 
@@ -394,6 +414,84 @@ export class ProductListComponent implements OnInit {
         this.loadProducts();
 
       });
+  }
+
+
+  // ========================================================
+  // VIEW INIT
+  // ========================================================
+
+  ngAfterViewInit(): void {
+
+    const sentinel =
+      this.scrollSentinel?.nativeElement;
+
+    if (!sentinel) {
+      return;
+    }
+
+    /*
+     * Replaces the window:scroll listener, which ran
+     * change detection for the whole app on every
+     * scroll event.
+     */
+    const observer =
+      new IntersectionObserver(
+        entries => {
+          if (entries.some(entry => entry.isIntersecting)) {
+            this.loadNextPage();
+          }
+        },
+        {
+          rootMargin: `0px 0px ${this.scrollThreshold}px 0px`
+        }
+      );
+
+    observer.observe(sentinel);
+
+    this.destroyRef.onDestroy(() =>
+      observer.disconnect()
+    );
+  }
+
+
+  // ========================================================
+  // FILL VIEWPORT
+  // ========================================================
+
+  /*
+   * The observer only fires when the sentinel enters the
+   * viewport. If a page loads and the sentinel is still
+   * visible (tall screens, short pages), keep loading
+   * until the viewport is filled.
+   */
+  private scheduleViewportCheck(): void {
+
+    afterNextRender(
+      () => {
+
+        const sentinel =
+          this.scrollSentinel?.nativeElement;
+
+        if (!sentinel) {
+          return;
+        }
+
+        const top =
+          sentinel.getBoundingClientRect().top;
+
+        if (
+          top <=
+          window.innerHeight + this.scrollThreshold
+        ) {
+          this.loadNextPage();
+        }
+
+      },
+      {
+        injector: this.injector
+      }
+    );
   }
 
 
@@ -715,6 +813,8 @@ export class ProductListComponent implements OnInit {
         );
 
         this.isLoading.set(false);
+
+        this.scheduleViewportCheck();
       },
 
       error: () => {
@@ -916,6 +1016,8 @@ export class ProductListComponent implements OnInit {
         );
 
         this.isLoadingMore.set(false);
+
+        this.scheduleViewportCheck();
       },
 
       error: () => {
@@ -1190,35 +1292,22 @@ export class ProductListComponent implements OnInit {
   // INFINITE SCROLL
   // ========================================================
 
-  @HostListener('window:scroll')
-onWindowScroll(): void {
+  /*
+   * Handled by the IntersectionObserver set up in
+   * ngAfterViewInit (see scheduleViewportCheck).
+   */
 
-  if (this.hasSearch()) {
-    return;
+
+  // ========================================================
+  // TRACK BY
+  // ========================================================
+
+  trackByProductId(
+    index: number,
+    product: Product
+  ): number {
+    return product.id;
   }
-
-  if (
-    this.isLoading() ||
-    this.isLoadingMore() ||
-    !this.hasMoreProducts()
-  ) {
-    return;
-  }
-
-  const scrollPosition =
-    window.innerHeight +
-    window.scrollY;
-
-  const pageHeight =
-    document.documentElement.scrollHeight;
-
-  if (
-    scrollPosition >=
-    pageHeight - 500
-  ) {
-    this.loadNextPage();
-  }
-}
 
 
   // ========================================================
@@ -1589,130 +1678,6 @@ onWindowScroll(): void {
 
 
   // ========================================================
-  // DIRECT CART ADD
-  // ========================================================
-
-  private addProductDirectlyToCart(
-    product: Product
-  ): void {
-
-    const alreadyExists =
-      this.cartService.addToCart(
-        product
-      );
-
-
-    // ------------------------------------------------------
-    // ALREADY EXISTS
-    // ------------------------------------------------------
-
-    if (!alreadyExists) {
-
-      this.addedToCartProductId.set(
-        null
-      );
-
-      this.showAlreadyInCartMessage(
-        product.id
-      );
-
-      return;
-    }
-
-
-    // ------------------------------------------------------
-    // SUCCESS
-    // ------------------------------------------------------
-
-    this.alreadyInCartProductId.set(
-      null
-    );
-
-    this.showAddedToCartSuccess(
-      product.id
-    );
-  }
-
-
-  // ========================================================
-  // ADD SELECTED VARIANT
-  // ========================================================
-
-  private addSelectedProductToCart(
-    result: any
-  ): void {
-
-    /*
-     * The modal can return either:
-     *
-     * 1. Product directly
-     *
-     * OR
-     *
-     * 2. {
-     *      product: product,
-     *      size: selectedSize,
-     *      heelSize: selectedHeelSize
-     *    }
-     *
-     * We support both.
-     */
-
-    const product =
-      result.product ??
-      result;
-
-
-    if (!product) {
-      return;
-    }
-
-
-    // ------------------------------------------------------
-    // Add selected product/variant
-    // ------------------------------------------------------
-
-    const alreadyExists =
-      this.cartService.addToCart(
-        result.product
-          ? result
-          : product
-      );
-
-
-    // ------------------------------------------------------
-    // ALREADY IN CART
-    // ------------------------------------------------------
-
-    if (!alreadyExists) {
-
-      this.addedToCartProductId.set(
-        null
-      );
-
-      this.showAlreadyInCartMessage(
-        product.id
-      );
-
-      return;
-    }
-
-
-    // ------------------------------------------------------
-    // SUCCESS
-    // ------------------------------------------------------
-
-    this.alreadyInCartProductId.set(
-      null
-    );
-
-    this.showAddedToCartSuccess(
-      product.id
-    );
-  }
-
-
-  // ========================================================
   // SUCCESS MESSAGE
   // ========================================================
 
@@ -1819,7 +1784,7 @@ onWindowScroll(): void {
 
     if (!imageUrl) {
 
-      return 'assets/images/product-placeholder.png';
+      return 'assets/images/product-placeholder.svg';
     }
 
 
